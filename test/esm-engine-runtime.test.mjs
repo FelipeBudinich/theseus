@@ -50,3 +50,28 @@ test('ESM engine entry exposes window.ig and ig.main', async () => {
   assert.equal('ig' in engineModule, false);
   assert.equal('main' in engineModule, false);
 });
+
+test('ESM engine entry resolves classes without direct ig.global lookups', async () => {
+  installBrowserLikeGlobals();
+
+  const moduleUrl =
+    `${pathToFileURL(path.resolve('lib-esm/impact/impact.js')).href}?test=${Date.now()}-registry`;
+  const ig = (await import(moduleUrl)).default;
+
+  const EntityRegistryTest = ig.Entity.extend({});
+  ig.registerClass('EntityRegistryTest', EntityRegistryTest);
+
+  const game = new ig.Game();
+  const entity = game.spawnEntity('EntityRegistryTest', 4, 8, { name: 'registry-test' });
+
+  assert.equal(entity instanceof EntityRegistryTest, true);
+  assert.deepEqual(game.getEntitiesByType('EntityRegistryTest'), [entity]);
+  assert.equal(ig.getClass('EntityRegistryTest'), EntityRegistryTest);
+
+  const EntityLegacyFallback = ig.Entity.extend({});
+  globalThis.window.EntityLegacyFallback = EntityLegacyFallback;
+
+  assert.equal(ig.getClass('EntityLegacyFallback'), EntityLegacyFallback);
+  delete globalThis.window.EntityLegacyFallback;
+  assert.equal(ig.getClass('EntityLegacyFallback'), EntityLegacyFallback);
+});

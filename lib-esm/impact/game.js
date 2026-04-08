@@ -99,9 +99,7 @@ ig.Game = ig.Class.extend({
 	
 	
 	getEntitiesByType: function( type ) {
-		var entityClass = typeof(type) === 'string'
-			? ig.global[type]
-			: type;
+		var entityClass = ig.resolveClass( type );
 			
 		var a = [];
 		for( var i = 0; i < this.entities.length; i++ ) {
@@ -115,9 +113,7 @@ ig.Game = ig.Class.extend({
 	
 	
 	spawnEntity: function( type, x, y, settings ) {
-		var entityClass = typeof(type) === 'string'
-			? ig.global[type]
-			: type;
+		var entityClass = ig.resolveClass( type );
 			
 		if( !entityClass ) {
 			throw("Can't spawn entity of type " + type);

@@ -32,6 +32,10 @@
       windowIgMatchesImport: window.ig === ig,
       igMainExists: typeof ig.main === 'function',
       gameClassPresent: typeof ig.Game?.extend === 'function',
+      classRegistryPresent:
+        typeof ig.registerClass === 'function' &&
+        typeof ig.getClass === 'function' &&
+        typeof ig.resolveClass === 'function',
       noLegacyLoaderApiUsedForImport: typeof ig.module === 'undefined'
     };
     const passed = Object.values(results).every((value) => value === true);

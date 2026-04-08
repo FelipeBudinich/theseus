@@ -101,6 +101,7 @@ ig.game ??= null;
 ig.debug ??= null;
 ig.version ??= '1.24';
 ig.global = globalScope;
+ig.classes ??= Object.create(null);
 ig.modules ??= {};
 ig.resources ??= [];
 ig.ready ??= false;
@@ -131,6 +132,29 @@ ig.$new ??= (name) => globalScope.document?.createElement(name) ?? null;
 ig.addResource ??= (resource) => {
   ig.resources.push(resource);
 };
+ig.registerClass ??= (name, klass) => {
+  if (!name || !klass) {
+    return klass ?? null;
+  }
+
+  ig.classes[name] = klass;
+  klass.className ??= name;
+  return klass;
+};
+ig.getClass ??= (name) => {
+  if (!name) {
+    return null;
+  }
+
+  const existingClass = ig.classes[name];
+  if (existingClass) {
+    return existingClass;
+  }
+
+  const globalClass = ig.global?.[name];
+  return globalClass ? ig.registerClass(name, globalClass) : null;
+};
+ig.resolveClass ??= (type) => (typeof type === 'string' ? ig.getClass(type) : type);
 ig.setNocache ??= (set) => {
   ig.nocache = set ? `?${Date.now()}` : '';
 };
