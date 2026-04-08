@@ -316,7 +316,3 @@ ig.Game.SORT = {
 	POS_X: function( a, b ){ return (a.pos.x+a.size.x) - (b.pos.x+b.size.x); },
 	POS_Y: function( a, b ){ return (a.pos.y+a.size.y) - (b.pos.y+b.size.y); }
 };
-
-const { Game } = ig;
-export { Game };
-export default Game;

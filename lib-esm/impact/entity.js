@@ -424,7 +424,3 @@ ig.Entity.seperateOnYAxis = function( top, bottom, weak ) {
 		bottom.pos.y = resBottom.pos.y;
 	}
 };
-
-const { Entity } = ig;
-export { Entity };
-export default Entity;

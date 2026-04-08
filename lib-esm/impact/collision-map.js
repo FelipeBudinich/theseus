@@ -268,7 +268,3 @@ ig.CollisionMap.staticNoCollision = { trace: function( x, y, vx, vy ) {
 		tile: {x: 0, y: 0}
 	};
 }};
-
-const { CollisionMap } = ig;
-export { CollisionMap };
-export default CollisionMap;

@@ -1,6 +1,6 @@
 import ig from '../impact/impact.js';
 
-const MyGame = (ig.global.MyGame = ig.Game.extend({
+ig.global.MyGame = ig.Game.extend({
   // Load a font
   font: new ig.Font('media/04b03.font.png'),
 
@@ -25,8 +25,8 @@ const MyGame = (ig.global.MyGame = ig.Game.extend({
 
     this.font.draw('It Works!', x, y, ig.Font.ALIGN.CENTER);
   }
-}));
+});
 
 // Start the Game with 60fps, a resolution of 320x240, scaled
 // up by a factor of 2
-ig.main('#canvas', MyGame, 60, 320, 240, 2);
+ig.main('#canvas', ig.global.MyGame, 60, 320, 240, 2);

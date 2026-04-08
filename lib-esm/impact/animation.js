@@ -123,7 +123,3 @@ ig.Animation = ig.Class.extend({
 		}
 	}
 });
-
-const { AnimationSheet, Animation } = ig;
-export { AnimationSheet, Animation };
-export default Animation;

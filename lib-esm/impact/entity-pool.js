@@ -51,7 +51,3 @@ ig.Game.inject({
 		this.parent(data);
 	}
 });
-
-const { EntityPool } = ig;
-export { EntityPool };
-export default EntityPool;

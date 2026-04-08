@@ -312,7 +312,3 @@ ig.Input = ig.Class.extend({
 		return false;
 	}
 });
-
-const { KEY, Input } = ig;
-export { KEY, Input };
-export default Input;

@@ -136,7 +136,3 @@ ig.System.SCALE = {
 	}
 };
 ig.System.scaleMode = ig.System.SCALE.SMOOTH;
-
-const { System } = ig;
-export { System };
-export default System;

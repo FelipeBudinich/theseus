@@ -143,7 +143,3 @@ ig.Font.ALIGN = {
 	RIGHT: 1,
 	CENTER: 2
 };
-
-const { Font } = ig;
-export { Font };
-export default Font;

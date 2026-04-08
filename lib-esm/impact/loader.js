@@ -92,7 +92,3 @@ ig.Loader = ig.Class.extend({
 		}
 	}
 });
-
-const { Loader } = ig;
-export { Loader };
-export default Loader;

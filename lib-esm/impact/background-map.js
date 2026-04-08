@@ -253,7 +253,3 @@ ig.BackgroundMap = ig.Map.extend({
 		} // end for y
 	}
 });
-
-const { BackgroundMap } = ig;
-export { BackgroundMap };
-export default BackgroundMap;

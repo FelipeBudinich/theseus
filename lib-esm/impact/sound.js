@@ -516,7 +516,3 @@ ig.Sound.enabled = true;
 
 ig.normalizeVendorAttribute(window, 'AudioContext');
 ig.Sound.useWebAudio = !!window.AudioContext;
-
-const { SoundManager, Music, Sound } = ig;
-export { SoundManager, Music, Sound };
-export default Sound;

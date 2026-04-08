@@ -1,33 +1,53 @@
 import ig from './ig.js';
-import { Animation, AnimationSheet } from './animation.js';
-import { BackgroundMap } from './background-map.js';
-import { CollisionMap } from './collision-map.js';
-import { Entity } from './entity.js';
-import { EntityPool } from './entity-pool.js';
-import { Font } from './font.js';
-import { Game } from './game.js';
-import { Image } from './image.js';
-import { KEY, Input } from './input.js';
-import { Loader } from './loader.js';
-import { Map } from './map.js';
-import { Music, Sound, SoundManager } from './sound.js';
-import { System } from './system.js';
-import { Timer } from './timer.js';
+import './animation.js';
+import './background-map.js';
+import './collision-map.js';
+import './entity.js';
+import './entity-pool.js';
+import './font.js';
+import './game.js';
+import './image.js';
+import './input.js';
+import './loader.js';
+import './map.js';
+import './sound.js';
+import './system.js';
+import './timer.js';
 
 ig.boot();
 
 ig.main = function main(canvasId, gameClass, fps, width, height, scale, loaderClass) {
   ig.boot();
-  ig.system = new System(canvasId, fps, width, height, scale || 1);
-  ig.input = new Input();
-  ig.soundManager = new SoundManager();
-  ig.music = new Music();
+  ig.system = new ig.System(canvasId, fps, width, height, scale || 1);
+  ig.input = new ig.Input();
+  ig.soundManager = new ig.SoundManager();
+  ig.music = new ig.Music();
   ig.ready = true;
 
-  const loader = new (loaderClass || Loader)(gameClass, ig.resources);
+  const loader = new (loaderClass || ig.Loader)(gameClass, ig.resources);
   loader.load();
 };
 
+const {
+  Animation,
+  AnimationSheet,
+  BackgroundMap,
+  CollisionMap,
+  Entity,
+  EntityPool,
+  Font,
+  Game,
+  Image,
+  Input,
+  KEY,
+  Loader,
+  Map,
+  Music,
+  Sound,
+  SoundManager,
+  System,
+  Timer
+} = ig;
 const { main } = ig;
 
 export {

@@ -47,7 +47,3 @@ ig.Map = ig.Class.extend({
 		}
 	}
 });
-
-const { Map } = ig;
-export { Map };
-export default Map;

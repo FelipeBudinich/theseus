@@ -65,7 +65,3 @@ ig.Timer.step = function() {
 	ig.Timer.time += Math.min(delta, ig.Timer.maxStep) * ig.Timer.timeScale;
 	ig.Timer._last = current;
 };
-
-const { Timer } = ig;
-export { Timer };
-export default Timer;
