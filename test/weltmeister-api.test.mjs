@@ -7,8 +7,10 @@ import test from 'node:test';
 import {
   browseFiles,
   getGlobPatterns,
+  getWeltmeisterUrlencodedOptions,
   globFiles,
-  saveFile
+  saveFile,
+  WELTMEISTER_URLENCODED_LIMIT
 } from '../lib/weltmeister/api/node-api.mjs';
 
 const makeTempProjectRoot = async () =>
@@ -171,4 +173,12 @@ test('getGlobPatterns accepts the legacy glob[] query shape', () => {
     }),
     ['lib/game/entities/*.js', 'lib/game/powerups/*.js']
   );
+});
+
+test('save route uses a larger urlencoded parser limit for Weltmeister level payloads', () => {
+  assert.deepEqual(getWeltmeisterUrlencodedOptions(), {
+    extended: false,
+    limit: WELTMEISTER_URLENCODED_LIMIT
+  });
+  assert.equal(WELTMEISTER_URLENCODED_LIMIT, '10mb');
 });
