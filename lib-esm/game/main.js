@@ -1,8 +1,8 @@
-import ig, { Font, Game } from '../impact/impact.js';
+import ig from '../impact/impact.js';
 
-const MyGame = (ig.global.MyGame = Game.extend({
+const MyGame = (ig.global.MyGame = ig.Game.extend({
   // Load a font
-  font: new Font('media/04b03.font.png'),
+  font: new ig.Font('media/04b03.font.png'),
 
   init: function () {
     // Initialize your game here; bind keys etc.
@@ -30,6 +30,3 @@ const MyGame = (ig.global.MyGame = Game.extend({
 // Start the Game with 60fps, a resolution of 320x240, scaled
 // up by a factor of 2
 ig.main('#canvas', MyGame, 60, 320, 240, 2);
-
-export { MyGame };
-export default MyGame;
