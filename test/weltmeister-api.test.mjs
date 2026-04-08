@@ -40,6 +40,25 @@ test('saveFile writes .js files relative to the configured project root', async 
   );
 });
 
+test('saveFile writes .json files relative to the configured project root', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  await fs.mkdir(path.join(projectRoot, 'lib-esm/game/levels'), { recursive: true });
+
+  const result = await saveFile({
+    projectRoot,
+    filePath: 'lib-esm/game/levels/test-level.json',
+    data: '{\n  "entities": [],\n  "layer": []\n}\n'
+  });
+
+  assert.deepEqual(result, { error: 0 });
+  assert.equal(
+    await fs.readFile(path.join(projectRoot, 'lib-esm/game/levels/test-level.json'), 'utf8'),
+    '{\n  "entities": [],\n  "layer": []\n}\n'
+  );
+});
+
 test('saveFile strips traversal markers but keeps writes rooted inside the project', async (t) => {
   const projectRoot = await makeTempProjectRoot();
   const sandboxRoot = path.dirname(projectRoot);
@@ -62,19 +81,19 @@ test('saveFile strips traversal markers but keeps writes rooted inside the proje
   await assert.rejects(fs.access(path.join(sandboxRoot, 'lib/game/levels/safe.js')));
 });
 
-test('saveFile preserves the legacy .js-only constraint', async (t) => {
+test('saveFile preserves the .js/.json level suffix constraint', async (t) => {
   const projectRoot = await makeTempProjectRoot();
   t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
 
   const result = await saveFile({
     projectRoot,
-    filePath: 'lib/game/levels/not-allowed.json',
+    filePath: 'lib/game/levels/not-allowed.txt',
     data: '{}'
   });
 
   assert.deepEqual(result, {
     error: '3',
-    msg: 'File must have a .js suffix'
+    msg: 'File must have a .js or .json suffix'
   });
 });
 
@@ -86,6 +105,7 @@ test('browseFiles returns parent, directory, and file lists with legacy filterin
   await writeProjectFile(projectRoot, 'media/readme.txt');
   await writeProjectFile(projectRoot, 'media/.hidden.png');
   await writeProjectFile(projectRoot, 'media/scripts/player.js');
+  await writeProjectFile(projectRoot, 'media/scripts/player.json');
   await fs.mkdir(path.join(projectRoot, 'media/backgrounds'), { recursive: true });
 
   const imageBrowse = await browseFiles({
@@ -109,6 +129,18 @@ test('browseFiles returns parent, directory, and file lists with legacy filterin
     parent: '',
     dirs: ['media/backgrounds', 'media/scripts'],
     files: ['media/hero.png', 'media/readme.txt']
+  });
+
+  const scriptBrowse = await browseFiles({
+    projectRoot,
+    dir: 'media/scripts',
+    type: 'scripts'
+  });
+
+  assert.deepEqual(scriptBrowse, {
+    parent: 'media',
+    dirs: [],
+    files: ['media/scripts/player.js', 'media/scripts/player.json']
   });
 });
 

@@ -41,3 +41,15 @@ npm run build:weltmeister-entity-manifest
 
 This also refreshes `lib-esm/weltmeister/entity-manifest.json`, which mirrors
 the manifest contents in a debug-friendly format.
+
+## Weltmeister Browser Cutover
+
+`weltmeister.html` now boots from `lib-esm/weltmeister/main.js` and uses the
+native ESM port in `lib-esm/weltmeister/` while keeping the existing jQuery UI.
+
+Level format stays explicit through the target file path:
+
+- saving to a `.js` path writes a native ESM level module
+- saving to a `.json` path writes plain JSON
+- legacy module-wrapped `.js` levels are still readable through the embedded
+  `/*JSON[*/ ... /*]JSON*/` markers
