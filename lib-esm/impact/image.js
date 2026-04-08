@@ -172,6 +172,6 @@ ig.Image.reloadCache = function() {
 	}
 };
 
-const { Image } = ig;
-export { Image };
-export default Image;
+const ImpactImage = ig.Image;
+export { ImpactImage as Image };
+export default ImpactImage;
