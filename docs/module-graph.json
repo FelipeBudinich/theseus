@@ -1,0 +1,722 @@
+{
+  "generatedAt": "2026-04-08T14:24:42.501Z",
+  "roots": [
+    "game.main",
+    "impact.debug.debug",
+    "impact.entity-pool",
+    "weltmeister.entityLoader",
+    "weltmeister.loader",
+    "weltmeister.weltmeister"
+  ],
+  "leaves": [
+    "impact.image",
+    "impact.input",
+    "impact.map",
+    "impact.sound",
+    "impact.timer",
+    "weltmeister.config",
+    "weltmeister.entities",
+    "weltmeister.loader",
+    "weltmeister.select-file-dropdown",
+    "weltmeister.tile-select"
+  ],
+  "filesScanned": 33,
+  "modulesFound": 33,
+  "staticEdgesFound": 59,
+  "unresolvedDependencies": [
+    {
+      "name": "dom.ready",
+      "requiredBy": [
+        "impact.debug.menu",
+        "impact.impact",
+        "weltmeister.weltmeister"
+      ]
+    }
+  ],
+  "duplicateDefinitions": [],
+  "modules": [
+    {
+      "definesLine": 8,
+      "dynamicRequiresExpression": null,
+      "file": "lib/game/main.js",
+      "line": 1,
+      "moduleName": "game.main",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.game",
+        "impact.font"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 8,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/animation.js",
+      "line": 1,
+      "moduleName": "impact.animation",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.timer",
+        "impact.image"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 8,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/background-map.js",
+      "line": 1,
+      "moduleName": "impact.background-map",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.map",
+        "impact.image"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 7,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/collision-map.js",
+      "line": 1,
+      "moduleName": "impact.collision-map",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.map"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 9,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/debug/debug.js",
+      "line": 1,
+      "moduleName": "impact.debug.debug",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.debug.entities-panel",
+        "impact.debug.maps-panel",
+        "impact.debug.graph-panel"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 8,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/debug/entities-panel.js",
+      "line": 1,
+      "moduleName": "impact.debug.entities-panel",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.debug.menu",
+        "impact.entity"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 10,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/debug/graph-panel.js",
+      "line": 1,
+      "moduleName": "impact.debug.graph-panel",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.debug.menu",
+        "impact.system",
+        "impact.game",
+        "impact.image"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 9,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/debug/maps-panel.js",
+      "line": 1,
+      "moduleName": "impact.debug.maps-panel",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.debug.menu",
+        "impact.game",
+        "impact.background-map"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 8,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/debug/menu.js",
+      "line": 1,
+      "moduleName": "impact.debug.menu",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "dom.ready",
+        "impact.system"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 8,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/entity.js",
+      "line": 1,
+      "moduleName": "impact.entity",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.animation",
+        "impact.impact"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 7,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/entity-pool.js",
+      "line": 1,
+      "moduleName": "impact.entity-pool",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.game"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 7,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/font.js",
+      "line": 1,
+      "moduleName": "impact.font",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.image"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 10,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/game.js",
+      "line": 1,
+      "moduleName": "impact.game",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.impact",
+        "impact.entity",
+        "impact.collision-map",
+        "impact.background-map"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 4,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/image.js",
+      "line": 1,
+      "moduleName": "impact.image",
+      "moduleNameIsStatic": true,
+      "requires": [],
+      "requiresLine": null,
+      "requiresMode": "none"
+    },
+    {
+      "definesLine": 577,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/impact.js",
+      "line": 567,
+      "moduleName": "impact.impact",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "dom.ready",
+        "impact.loader",
+        "impact.system",
+        "impact.input",
+        "impact.sound"
+      ],
+      "requiresLine": 570,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 4,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/input.js",
+      "line": 1,
+      "moduleName": "impact.input",
+      "moduleNameIsStatic": true,
+      "requires": [],
+      "requiresLine": null,
+      "requiresMode": "none"
+    },
+    {
+      "definesLine": 9,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/loader.js",
+      "line": 1,
+      "moduleName": "impact.loader",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.image",
+        "impact.font",
+        "impact.sound"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 4,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/map.js",
+      "line": 1,
+      "moduleName": "impact.map",
+      "moduleNameIsStatic": true,
+      "requires": [],
+      "requiresLine": null,
+      "requiresMode": "none"
+    },
+    {
+      "definesLine": 4,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/sound.js",
+      "line": 1,
+      "moduleName": "impact.sound",
+      "moduleNameIsStatic": true,
+      "requires": [],
+      "requiresLine": null,
+      "requiresMode": "none"
+    },
+    {
+      "definesLine": 8,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/system.js",
+      "line": 1,
+      "moduleName": "impact.system",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.timer",
+        "impact.image"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 4,
+      "dynamicRequiresExpression": null,
+      "file": "lib/impact/timer.js",
+      "line": 1,
+      "moduleName": "impact.timer",
+      "moduleNameIsStatic": true,
+      "requires": [],
+      "requiresLine": null,
+      "requiresMode": "none"
+    },
+    {
+      "definesLine": 4,
+      "dynamicRequiresExpression": null,
+      "file": "lib/weltmeister/config.js",
+      "line": 1,
+      "moduleName": "weltmeister.config",
+      "moduleNameIsStatic": true,
+      "requires": [],
+      "requiresLine": null,
+      "requiresMode": "none"
+    },
+    {
+      "definesLine": 11,
+      "dynamicRequiresExpression": null,
+      "file": "lib/weltmeister/edit-entities.js",
+      "line": 1,
+      "moduleName": "weltmeister.edit-entities",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.game",
+        "impact.background-map",
+        "weltmeister.config",
+        "weltmeister.tile-select",
+        "weltmeister.entities"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 8,
+      "dynamicRequiresExpression": null,
+      "file": "lib/weltmeister/edit-map.js",
+      "line": 1,
+      "moduleName": "weltmeister.edit-map",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.background-map",
+        "weltmeister.tile-select"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 48,
+      "dynamicRequiresExpression": "ig, moduleNames",
+      "file": "lib/weltmeister/entities.js",
+      "line": 46,
+      "moduleName": "weltmeister.entities",
+      "moduleNameIsStatic": true,
+      "requires": [],
+      "requiresLine": 47,
+      "requiresMode": "apply"
+    },
+    {
+      "definesLine": 7,
+      "dynamicRequiresExpression": null,
+      "file": "lib/weltmeister/entities.js",
+      "line": 1,
+      "moduleName": "weltmeister.entityLoader",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "weltmeister.config"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 7,
+      "dynamicRequiresExpression": null,
+      "file": "lib/weltmeister/evented-input.js",
+      "line": 1,
+      "moduleName": "weltmeister.evented-input",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "impact.input"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 1001,
+      "dynamicRequiresExpression": "ig, wm.config.plugins",
+      "file": "lib/weltmeister/weltmeister.js",
+      "line": 1001,
+      "moduleName": "weltmeister.loader",
+      "moduleNameIsStatic": true,
+      "requires": [],
+      "requiresLine": 1001,
+      "requiresMode": "apply"
+    },
+    {
+      "definesLine": 7,
+      "dynamicRequiresExpression": null,
+      "file": "lib/weltmeister/modal-dialogs.js",
+      "line": 1,
+      "moduleName": "weltmeister.modal-dialogs",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "weltmeister.select-file-dropdown"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 4,
+      "dynamicRequiresExpression": null,
+      "file": "lib/weltmeister/select-file-dropdown.js",
+      "line": 1,
+      "moduleName": "weltmeister.select-file-dropdown",
+      "moduleNameIsStatic": true,
+      "requires": [],
+      "requiresLine": null,
+      "requiresMode": "none"
+    },
+    {
+      "definesLine": 4,
+      "dynamicRequiresExpression": null,
+      "file": "lib/weltmeister/tile-select.js",
+      "line": 1,
+      "moduleName": "weltmeister.tile-select",
+      "moduleNameIsStatic": true,
+      "requires": [],
+      "requiresLine": null,
+      "requiresMode": "none"
+    },
+    {
+      "definesLine": 7,
+      "dynamicRequiresExpression": null,
+      "file": "lib/weltmeister/undo.js",
+      "line": 1,
+      "moduleName": "weltmeister.undo",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "weltmeister.config"
+      ],
+      "requiresLine": 4,
+      "requiresMode": "static"
+    },
+    {
+      "definesLine": 18,
+      "dynamicRequiresExpression": null,
+      "file": "lib/weltmeister/weltmeister.js",
+      "line": 4,
+      "moduleName": "weltmeister.weltmeister",
+      "moduleNameIsStatic": true,
+      "requires": [
+        "dom.ready",
+        "impact.game",
+        "weltmeister.evented-input",
+        "weltmeister.config",
+        "weltmeister.edit-map",
+        "weltmeister.edit-entities",
+        "weltmeister.select-file-dropdown",
+        "weltmeister.modal-dialogs",
+        "weltmeister.undo"
+      ],
+      "requiresLine": 7,
+      "requiresMode": "static"
+    }
+  ],
+  "edges": [
+    {
+      "from": "game.main",
+      "to": "impact.font"
+    },
+    {
+      "from": "game.main",
+      "to": "impact.game"
+    },
+    {
+      "from": "impact.animation",
+      "to": "impact.image"
+    },
+    {
+      "from": "impact.animation",
+      "to": "impact.timer"
+    },
+    {
+      "from": "impact.background-map",
+      "to": "impact.image"
+    },
+    {
+      "from": "impact.background-map",
+      "to": "impact.map"
+    },
+    {
+      "from": "impact.collision-map",
+      "to": "impact.map"
+    },
+    {
+      "from": "impact.debug.debug",
+      "to": "impact.debug.entities-panel"
+    },
+    {
+      "from": "impact.debug.debug",
+      "to": "impact.debug.graph-panel"
+    },
+    {
+      "from": "impact.debug.debug",
+      "to": "impact.debug.maps-panel"
+    },
+    {
+      "from": "impact.debug.entities-panel",
+      "to": "impact.debug.menu"
+    },
+    {
+      "from": "impact.debug.entities-panel",
+      "to": "impact.entity"
+    },
+    {
+      "from": "impact.debug.graph-panel",
+      "to": "impact.debug.menu"
+    },
+    {
+      "from": "impact.debug.graph-panel",
+      "to": "impact.game"
+    },
+    {
+      "from": "impact.debug.graph-panel",
+      "to": "impact.image"
+    },
+    {
+      "from": "impact.debug.graph-panel",
+      "to": "impact.system"
+    },
+    {
+      "from": "impact.debug.maps-panel",
+      "to": "impact.background-map"
+    },
+    {
+      "from": "impact.debug.maps-panel",
+      "to": "impact.debug.menu"
+    },
+    {
+      "from": "impact.debug.maps-panel",
+      "to": "impact.game"
+    },
+    {
+      "from": "impact.debug.menu",
+      "to": "dom.ready"
+    },
+    {
+      "from": "impact.debug.menu",
+      "to": "impact.system"
+    },
+    {
+      "from": "impact.entity",
+      "to": "impact.animation"
+    },
+    {
+      "from": "impact.entity",
+      "to": "impact.impact"
+    },
+    {
+      "from": "impact.entity-pool",
+      "to": "impact.game"
+    },
+    {
+      "from": "impact.font",
+      "to": "impact.image"
+    },
+    {
+      "from": "impact.game",
+      "to": "impact.background-map"
+    },
+    {
+      "from": "impact.game",
+      "to": "impact.collision-map"
+    },
+    {
+      "from": "impact.game",
+      "to": "impact.entity"
+    },
+    {
+      "from": "impact.game",
+      "to": "impact.impact"
+    },
+    {
+      "from": "impact.impact",
+      "to": "dom.ready"
+    },
+    {
+      "from": "impact.impact",
+      "to": "impact.input"
+    },
+    {
+      "from": "impact.impact",
+      "to": "impact.loader"
+    },
+    {
+      "from": "impact.impact",
+      "to": "impact.sound"
+    },
+    {
+      "from": "impact.impact",
+      "to": "impact.system"
+    },
+    {
+      "from": "impact.loader",
+      "to": "impact.font"
+    },
+    {
+      "from": "impact.loader",
+      "to": "impact.image"
+    },
+    {
+      "from": "impact.loader",
+      "to": "impact.sound"
+    },
+    {
+      "from": "impact.system",
+      "to": "impact.image"
+    },
+    {
+      "from": "impact.system",
+      "to": "impact.timer"
+    },
+    {
+      "from": "weltmeister.edit-entities",
+      "to": "impact.background-map"
+    },
+    {
+      "from": "weltmeister.edit-entities",
+      "to": "impact.game"
+    },
+    {
+      "from": "weltmeister.edit-entities",
+      "to": "weltmeister.config"
+    },
+    {
+      "from": "weltmeister.edit-entities",
+      "to": "weltmeister.entities"
+    },
+    {
+      "from": "weltmeister.edit-entities",
+      "to": "weltmeister.tile-select"
+    },
+    {
+      "from": "weltmeister.edit-map",
+      "to": "impact.background-map"
+    },
+    {
+      "from": "weltmeister.edit-map",
+      "to": "weltmeister.tile-select"
+    },
+    {
+      "from": "weltmeister.entityLoader",
+      "to": "weltmeister.config"
+    },
+    {
+      "from": "weltmeister.evented-input",
+      "to": "impact.input"
+    },
+    {
+      "from": "weltmeister.modal-dialogs",
+      "to": "weltmeister.select-file-dropdown"
+    },
+    {
+      "from": "weltmeister.undo",
+      "to": "weltmeister.config"
+    },
+    {
+      "from": "weltmeister.weltmeister",
+      "to": "dom.ready"
+    },
+    {
+      "from": "weltmeister.weltmeister",
+      "to": "impact.game"
+    },
+    {
+      "from": "weltmeister.weltmeister",
+      "to": "weltmeister.config"
+    },
+    {
+      "from": "weltmeister.weltmeister",
+      "to": "weltmeister.edit-entities"
+    },
+    {
+      "from": "weltmeister.weltmeister",
+      "to": "weltmeister.edit-map"
+    },
+    {
+      "from": "weltmeister.weltmeister",
+      "to": "weltmeister.evented-input"
+    },
+    {
+      "from": "weltmeister.weltmeister",
+      "to": "weltmeister.modal-dialogs"
+    },
+    {
+      "from": "weltmeister.weltmeister",
+      "to": "weltmeister.select-file-dropdown"
+    },
+    {
+      "from": "weltmeister.weltmeister",
+      "to": "weltmeister.undo"
+    }
+  ]
+}
