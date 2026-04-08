@@ -5,10 +5,12 @@
   "scripts": {
     "start": "node server.mjs",
     "dev": "node --watch server.mjs",
+    "build:weltmeister-entity-manifest": "node scripts/build-weltmeister-entity-manifest.mjs",
     "module-graph": "node scripts/build-module-graph.mjs",
     "test": "node --test test/*.test.mjs",
     "test:esm-engine": "node --test test/esm-engine-runtime.test.mjs",
-    "test:weltmeister-api": "node --test test/weltmeister-api.test.mjs"
+    "test:weltmeister-api": "node --test test/weltmeister-api.test.mjs",
+    "test:weltmeister-entity-manifest": "node --test test/weltmeister-entity-manifest.test.mjs"
   },
   "dependencies": {
     "express": "^5.2.1"

@@ -1,0 +1,63 @@
+{
+  "sourceDirectories": [
+    "lib-esm/game/entities"
+  ],
+  "entities": [
+    {
+      "key": "game/entities/blob",
+      "moduleId": "game.entities.blob",
+      "className": "EntityBlob",
+      "displayName": "Blob",
+      "filePath": "lib-esm/game/entities/blob.js",
+      "importPath": "../game/entities/blob.js"
+    },
+    {
+      "key": "game/entities/coin",
+      "moduleId": "game.entities.coin",
+      "className": "EntityCoin",
+      "displayName": "Coin",
+      "filePath": "lib-esm/game/entities/coin.js",
+      "importPath": "../game/entities/coin.js"
+    },
+    {
+      "key": "game/entities/fireball",
+      "moduleId": "game.entities.fireball",
+      "className": "EntityFireball",
+      "displayName": "Fireball",
+      "filePath": "lib-esm/game/entities/fireball.js",
+      "importPath": "../game/entities/fireball.js"
+    },
+    {
+      "key": "game/entities/hurt",
+      "moduleId": "game.entities.hurt",
+      "className": "EntityHurt",
+      "displayName": "Hurt",
+      "filePath": "lib-esm/game/entities/hurt.js",
+      "importPath": "../game/entities/hurt.js"
+    },
+    {
+      "key": "game/entities/levelchange",
+      "moduleId": "game.entities.levelchange",
+      "className": "EntityLevelchange",
+      "displayName": "Levelchange",
+      "filePath": "lib-esm/game/entities/levelchange.js",
+      "importPath": "../game/entities/levelchange.js"
+    },
+    {
+      "key": "game/entities/player",
+      "moduleId": "game.entities.player",
+      "className": "EntityPlayer",
+      "displayName": "Player",
+      "filePath": "lib-esm/game/entities/player.js",
+      "importPath": "../game/entities/player.js"
+    },
+    {
+      "key": "game/entities/trigger",
+      "moduleId": "game.entities.trigger",
+      "className": "EntityTrigger",
+      "displayName": "Trigger",
+      "filePath": "lib-esm/game/entities/trigger.js",
+      "importPath": "../game/entities/trigger.js"
+    }
+  ]
+}

@@ -25,3 +25,19 @@ export default Something;
 
 Use `ig.module()`, `.requires()`, and `.defines()` only in the legacy tree. New
 files in `lib-esm/` should stay native ESM from the start.
+
+## Weltmeister Entity Manifest
+
+The future ESM Weltmeister loader path now reads generated entity metadata from
+`lib-esm/weltmeister/entity-manifest.js` instead of discovering entities through
+the legacy synchronous `glob.php` request.
+
+When you add, remove, or rename an ESM entity module, regenerate the manifest
+with:
+
+```sh
+npm run build:weltmeister-entity-manifest
+```
+
+This also refreshes `lib-esm/weltmeister/entity-manifest.json`, which mirrors
+the manifest contents in a debug-friendly format.
