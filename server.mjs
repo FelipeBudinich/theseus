@@ -1,22 +1,37 @@
 import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createWeltmeisterApiRouter } from './lib/weltmeister/api/node-api.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const app = express();
+const createApp = ({
+  projectRoot = __dirname,
+  staticRoot = __dirname
+} = {}) => {
+  const app = express();
 
-app.get('/', (_req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
+  app.use('/lib/weltmeister/api', createWeltmeisterApiRouter({ projectRoot }));
 
-app.use(express.static(__dirname, { index: false }));
+  app.get('/', (_req, res) => {
+    res.sendFile(path.join(staticRoot, 'index.html'));
+  });
+
+  app.use(express.static(staticRoot, { index: false }));
+
+  return app;
+};
+
+const app = createApp();
 
 const startServer = ({
   host = process.env.HOST || '127.0.0.1',
-  port = Number(process.env.PORT) || 3000
+  port = Number(process.env.PORT) || 3000,
+  projectRoot = __dirname,
+  staticRoot = __dirname
 } = {}) => {
+  const app = createApp({ projectRoot, staticRoot });
   const server = app.listen(port, host, () => {
     const address = server.address();
     const actualPort =
@@ -32,4 +47,4 @@ if (process.argv[1] === __filename) {
   startServer();
 }
 
-export { app, startServer };
+export { app, createApp, startServer };

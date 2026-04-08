@@ -6,7 +6,9 @@
     "start": "node server.mjs",
     "dev": "node --watch server.mjs",
     "module-graph": "node scripts/build-module-graph.mjs",
-    "test:esm-engine": "node --test test/esm-engine-runtime.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "test:esm-engine": "node --test test/esm-engine-runtime.test.mjs",
+    "test:weltmeister-api": "node --test test/weltmeister-api.test.mjs"
   },
   "dependencies": {
     "express": "^5.2.1"
