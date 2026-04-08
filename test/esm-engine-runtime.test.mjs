@@ -45,7 +45,8 @@ test('ESM engine entry exposes window.ig and ig.main', async () => {
   const engineModule = await import(moduleUrl);
 
   assert.equal(engineModule.default, globalThis.window.ig);
-  assert.equal(engineModule.ig, globalThis.window.ig);
-  assert.equal(typeof engineModule.ig.main, 'function');
-  assert.equal(engineModule.main, engineModule.ig.main);
+  assert.equal(typeof engineModule.default.main, 'function');
+  assert.equal(typeof engineModule.default.Game.extend, 'function');
+  assert.equal('ig' in engineModule, false);
+  assert.equal('main' in engineModule, false);
 });

@@ -28,49 +28,4 @@ ig.main = function main(canvasId, gameClass, fps, width, height, scale, loaderCl
   loader.load();
 };
 
-const {
-  Animation,
-  AnimationSheet,
-  BackgroundMap,
-  CollisionMap,
-  Entity,
-  EntityPool,
-  Font,
-  Game,
-  Image,
-  Input,
-  KEY,
-  Loader,
-  Map,
-  Music,
-  Sound,
-  SoundManager,
-  System,
-  Timer
-} = ig;
-const { main } = ig;
-
-export {
-  ig,
-  Animation,
-  AnimationSheet,
-  BackgroundMap,
-  CollisionMap,
-  Entity,
-  EntityPool,
-  Font,
-  Game,
-  Image,
-  Input,
-  KEY,
-  Loader,
-  main,
-  Map,
-  Music,
-  Sound,
-  SoundManager,
-  System,
-  Timer
-};
-
 export default ig;

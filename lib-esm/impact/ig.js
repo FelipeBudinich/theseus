@@ -185,5 +185,4 @@ attachClassSystem(ig);
 globalScope.ig = ig;
 bootEnvironment();
 
-export { ig };
 export default ig;

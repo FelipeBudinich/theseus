@@ -25,14 +25,13 @@
   <pre id="status">Loading…</pre>
 
   <script type="module">
-    import ig, { Game, main } from './lib-esm/impact/impact.js';
+    import ig from './lib-esm/impact/impact.js';
 
     const results = {
       engineEntryLoaded: true,
       windowIgMatchesImport: window.ig === ig,
       igMainExists: typeof ig.main === 'function',
-      namedMainMatches: main === ig.main,
-      gameClassExportPresent: typeof Game.extend === 'function',
+      gameClassPresent: typeof ig.Game?.extend === 'function',
       noLegacyLoaderApiUsedForImport: typeof ig.module === 'undefined'
     };
     const passed = Object.values(results).every((value) => value === true);
