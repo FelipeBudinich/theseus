@@ -52,8 +52,6 @@ Level format stays explicit through the target file path:
 
 - saving to a `.js` path writes a native ESM level module
 - saving to a `.json` path writes plain JSON
-- legacy module-wrapped `.js` levels are still readable through the embedded
-  `/*JSON[*/ ... /*]JSON*/` markers
 
 ## Historical Tooling
 

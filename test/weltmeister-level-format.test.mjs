@@ -19,7 +19,7 @@ test('parseLevelSource reads current ESM level modules through the embedded JSON
   assert.equal(levelData.layer.length > 0, true);
 });
 
-test('parseLevelSource still reads legacy ig.module-wrapped levels', () => {
+test('parseLevelSource rejects legacy ig.module-wrapped levels', () => {
   const source = [
     "ig.module('game.levels.legacy-test')",
     ".requires('impact.image', 'game.entities.player')",
@@ -28,10 +28,7 @@ test('parseLevelSource still reads legacy ig.module-wrapped levels', () => {
     '});'
   ].join('\n');
 
-  assert.deepEqual(parseLevelSource(source), {
-    entities: [{ type: 'EntityPlayer', x: 8, y: 16 }],
-    layer: []
-  });
+  assert.throws(() => parseLevelSource(source), SyntaxError);
 });
 
 test('buildLevelSave keeps .json paths explicit and round-trips their contents', () => {
