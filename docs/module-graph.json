@@ -14,8 +14,8 @@
       "moduleName": "weltmeister/weltmeister"
     }
   ],
-  "filesScanned": 51,
-  "generatedAt": "2026-04-09T14:56:45.793Z",
+  "filesScanned": 52,
+  "generatedAt": "2026-04-09T16:03:27.886Z",
   "leaves": [
     "impact/core/class",
     "impact/core/namespace",
@@ -144,6 +144,19 @@
         }
       ],
       "moduleName": "game/levels/snowhills"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/game/levels/snowhills2.js",
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../../impact/impact.js"
+        }
+      ],
+      "moduleName": "game/levels/snowhills2"
     },
     {
       "dynamicImports": [],
@@ -969,7 +982,7 @@
       "moduleName": "weltmeister/wm"
     }
   ],
-  "modulesFound": 51,
+  "modulesFound": 52,
   "roots": [
     "game/entities/blob",
     "game/entities/coin",
@@ -978,6 +991,7 @@
     "game/entities/levelchange",
     "game/entities/player",
     "game/entities/trigger",
+    "game/levels/snowhills2",
     "game/main",
     "plugins/camera",
     "plugins/gamepad",
@@ -992,7 +1006,7 @@
     "weltmeister/undo"
   ],
   "sourceRoot": "lib",
-  "staticEdgesFound": 97,
+  "staticEdgesFound": 98,
   "unresolvedDependencies": [],
   "modulesWithoutStaticImports": [
     {
