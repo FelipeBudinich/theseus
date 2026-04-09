@@ -1,12 +1,10 @@
-# Impact ESM
+# Theseus
 
-Impact ESM is an HTML5 game engine port that keeps the classic sample game and Weltmeister workflow running on a native ESM + Node/Express baseline.
+Theseus is an HTML5 game engine port of Impact.js that keeps the classic API and Weltmeister workflow running on a native ESM + Node/Express baseline.
 
 More info & documentation about the original engine: http://impactjs.com/
 
-Various example games to get you started are available on http://impactjs.com/download
-
-Impact is published under the [MIT Open Source License](http://opensource.org/licenses/mit-license.php). Note that Weltmeister (Impact's level editor) uses jQuery which comes with its own license.
+Impact was published under the [MIT Open Source License](http://opensource.org/licenses/mit-license.php). Note that Weltmeister (Impact's level editor) uses jQuery which comes with its own license.
 
 ## Getting started
 
