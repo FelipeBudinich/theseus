@@ -7,6 +7,7 @@ import {
   buildLevelSave,
   ensureLevelFileExtension,
   getLevelFileFormat,
+  normalizeLevelOutputFormat,
   parseLevelSource
 } from '../lib/weltmeister/level-format.js';
 
@@ -88,4 +89,8 @@ test('level file format helpers keep extension-based format selection explicit',
   assert.equal(getLevelFileFormat('lib/game/levels/test.js', 'json'), 'esm');
   assert.equal(ensureLevelFileExtension('lib/game/levels/test', 'json'), 'lib/game/levels/test.json');
   assert.equal(ensureLevelFileExtension('lib/game/levels/test', 'esm'), 'lib/game/levels/test.js');
+  assert.throws(
+    () => normalizeLevelOutputFormat('module'),
+    /Unsupported Weltmeister level output format: module/
+  );
 });
