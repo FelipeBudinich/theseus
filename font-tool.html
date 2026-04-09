@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Theseus Font Atlas Tool</title>
+  <link rel="stylesheet" href="/tools/font-tool.css">
+  <script type="module" src="/tools/font-tool.js"></script>
+</head>
+<body>
+  <main class="tool-shell">
+    <header class="hero">
+      <p class="eyebrow">Theseus</p>
+      <h1>Font Atlas Tool</h1>
+      <p class="intro">
+        Generate `ig.Font`-compatible PNG atlases, validate the metric row with the same parsing rules
+        as `font.js`, and save the finished strip straight into `media/`.
+      </p>
+    </header>
+
+    <section class="panel controls-panel">
+      <div class="controls-grid">
+        <div class="field-group field-group--wide">
+          <label class="field-label" for="loadLocalFonts">Local font faces</label>
+          <div class="action-row">
+            <button id="loadLocalFonts" type="button">Load local fonts</button>
+            <select id="localFontSelect" disabled>
+              <option value="">No local fonts loaded</option>
+            </select>
+          </div>
+          <p class="hint" id="localFontHint">Click “Load local fonts” to query installed faces.</p>
+        </div>
+
+        <div class="field-group field-group--wide is-hidden" id="manualFallback">
+          <label class="field-label" for="manualFamily">Manual CSS font family</label>
+          <input id="manualFamily" type="text" placeholder="Example: &quot;Courier New&quot;, monospace">
+          <label class="checkbox-row" for="manualBold">
+            <input id="manualBold" type="checkbox">
+            Bold fallback rendering
+          </label>
+          <p class="hint">Fallback mode is only used when local font access is unavailable.</p>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="preset">Character range preset</label>
+          <select id="preset"></select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="firstChar">First character code</label>
+          <input id="firstChar" type="number" min="0" max="65535" step="1" value="32">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="lastChar">Last character code</label>
+          <input id="lastChar" type="number" min="0" max="65535" step="1" value="126">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="fontSize">Font size (px)</label>
+          <input id="fontSize" type="number" min="1" step="1" value="16">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="fillColor">Fill color</label>
+          <input id="fillColor" type="color" value="#ffffff">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="spaceWidth">Space width override</label>
+          <input id="spaceWidth" type="number" min="1" step="1" placeholder="Auto">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="extraAdvance">Extra advance</label>
+          <input id="extraAdvance" type="number" min="0" step="1" value="0">
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="alphaThreshold">Alpha threshold</label>
+          <input id="alphaThreshold" type="number" min="0" max="255" step="1" value="128">
+        </div>
+
+        <div class="field-group field-group--checkbox">
+          <label class="checkbox-row" for="binaryAlpha">
+            <input id="binaryAlpha" type="checkbox" checked>
+            Binary alpha
+          </label>
+        </div>
+
+        <div class="field-group field-group--wide">
+          <label class="field-label" for="outputPath">Output path</label>
+          <input id="outputPath" type="text" value="media/font.font.png" spellcheck="false">
+        </div>
+
+        <div class="field-group field-group--wide field-group--actions">
+          <div class="action-row">
+            <button id="renderAtlas" type="button">Render</button>
+            <button id="saveAtlas" type="button" disabled>Save PNG</button>
+          </div>
+        </div>
+
+        <div class="field-group field-group--wide">
+          <p class="status" id="status" data-tone="info">Ready to render.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="preview-layout">
+      <article class="panel preview-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Preview</p>
+            <h2>Exported atlas</h2>
+          </div>
+          <p class="panel-meta" id="atlasMeta">Render an atlas to see its dimensions.</p>
+        </div>
+        <div class="preview-frame">
+          <canvas id="atlasCanvas" width="1" height="1"></canvas>
+        </div>
+      </article>
+
+      <article class="panel preview-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Validation</p>
+            <h2>Runtime-style sample</h2>
+          </div>
+          <p class="panel-meta" id="validationNote">Render an atlas to draw the validation preview.</p>
+        </div>
+        <div class="preview-frame preview-frame--compact">
+          <canvas id="validationCanvas" width="1" height="1"></canvas>
+        </div>
+      </article>
+
+      <article class="panel result-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Metrics</p>
+            <h2>Validation output</h2>
+          </div>
+        </div>
+        <p class="result-summary" id="validationSummary">
+          Render an atlas to parse the bottom metric row.
+        </p>
+        <pre id="parsedWidths">Parsed widths will appear here.</pre>
+      </article>
+
+      <article class="panel result-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Save</p>
+            <h2>Output snippet</h2>
+          </div>
+        </div>
+        <p class="result-summary" id="saveSummary">
+          Save is disabled until validation passes.
+        </p>
+        <pre id="usageSnippet"></pre>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

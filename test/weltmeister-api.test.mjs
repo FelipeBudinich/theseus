@@ -8,9 +8,15 @@ import test from 'node:test';
 
 import {
   browseFiles,
+  saveImageFile,
   saveFile
 } from '../lib/weltmeister/api/node-api.mjs';
 import { createApp } from '../server.mjs';
+
+const ONE_BY_ONE_PNG_BASE64 =
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HwAGgwJ/lbn4WQAAAABJRU5ErkJggg==';
+const ONE_BY_ONE_PNG_DATA_URL = `data:image/png;base64,${ONE_BY_ONE_PNG_BASE64}`;
+const ONE_BY_ONE_PNG_BUFFER = Buffer.from(ONE_BY_ONE_PNG_BASE64, 'base64');
 
 const makeTempProjectRoot = async () =>
   fs.mkdtemp(path.join(os.tmpdir(), 'theseus-weltmeister-api-'));
@@ -157,6 +163,107 @@ test('saveFile preserves the .js/.json level suffix constraint', async (t) => {
   });
 });
 
+test('saveImageFile writes .png files inside media relative to the configured project root', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  const result = await saveImageFile({
+    projectRoot,
+    filePath: 'media/generated/test.font.png',
+    data: ONE_BY_ONE_PNG_DATA_URL
+  });
+
+  assert.deepEqual(result, {
+    error: 0,
+    path: 'media/generated/test.font.png'
+  });
+  assert.deepEqual(
+    await fs.readFile(path.join(projectRoot, 'media/generated/test.font.png')),
+    ONE_BY_ONE_PNG_BUFFER
+  );
+});
+
+test('saveImageFile strips traversal markers but keeps writes rooted inside media', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  const sandboxRoot = path.dirname(projectRoot);
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  const result = await saveImageFile({
+    projectRoot,
+    filePath: '../media/generated/safe.font.png',
+    data: ONE_BY_ONE_PNG_DATA_URL
+  });
+
+  assert.deepEqual(result, {
+    error: 0,
+    path: 'media/generated/safe.font.png'
+  });
+  assert.deepEqual(
+    await fs.readFile(path.join(projectRoot, 'media/generated/safe.font.png')),
+    ONE_BY_ONE_PNG_BUFFER
+  );
+  await assert.rejects(fs.access(path.join(sandboxRoot, 'media/generated/safe.font.png')));
+});
+
+test('saveImageFile preserves the .png-only suffix constraint', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  const result = await saveImageFile({
+    projectRoot,
+    filePath: 'media/generated/not-allowed.txt',
+    data: ONE_BY_ONE_PNG_DATA_URL
+  });
+
+  assert.deepEqual(result, {
+    error: '3',
+    msg: 'File must have a .png suffix'
+  });
+});
+
+test('saveImageFile rejects writes outside media', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  const result = await saveImageFile({
+    projectRoot,
+    filePath: 'lib/game/generated.font.png',
+    data: ONE_BY_ONE_PNG_DATA_URL
+  });
+
+  assert.deepEqual(result, {
+    error: '4',
+    msg: 'Image path must stay inside media/'
+  });
+});
+
+test('saveImageFile rejects missing or invalid PNG data', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  const missingDataResult = await saveImageFile({
+    projectRoot,
+    filePath: 'media/generated/missing.font.png',
+    data: ''
+  });
+
+  assert.deepEqual(missingDataResult, {
+    error: '1',
+    msg: 'No Data or Path specified'
+  });
+
+  const invalidDataResult = await saveImageFile({
+    projectRoot,
+    filePath: 'media/generated/invalid.font.png',
+    data: 'data:image/png;base64,not-a-real-png'
+  });
+
+  assert.deepEqual(invalidDataResult, {
+    error: '5',
+    msg: 'Image data must be base64-encoded PNG data'
+  });
+});
+
 test('save route accepts JSON requests and returns ok on success', async (t) => {
   const projectRoot = await makeTempProjectRoot();
   t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
@@ -212,6 +319,65 @@ test('save route returns 400 with a JSON error for unsupported file suffixes', a
   assert.equal(response.statusCode, 400);
   assert.deepEqual(JSON.parse(response.body), {
     error: 'File must have a .js or .json suffix'
+  });
+});
+
+test('save-image route accepts JSON requests and returns ok with the written path', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  const { port } = await startTestServer(projectRoot, t);
+  const requestBody = JSON.stringify({
+    path: 'media/generated/test.font.png',
+    data: ONE_BY_ONE_PNG_DATA_URL
+  });
+
+  const response = await requestServer({
+    method: 'POST',
+    port,
+    path: '/lib/weltmeister/api/save-image',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(requestBody)
+    },
+    body: requestBody
+  });
+
+  assert.equal(response.statusCode, 200);
+  assert.deepEqual(JSON.parse(response.body), {
+    ok: true,
+    path: 'media/generated/test.font.png'
+  });
+  assert.deepEqual(
+    await fs.readFile(path.join(projectRoot, 'media/generated/test.font.png')),
+    ONE_BY_ONE_PNG_BUFFER
+  );
+});
+
+test('save-image route returns 400 with a JSON error for invalid PNG payloads', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  const { port } = await startTestServer(projectRoot, t);
+  const requestBody = JSON.stringify({
+    path: 'media/generated/invalid.font.png',
+    data: 'data:image/png;base64,not-a-real-png'
+  });
+
+  const response = await requestServer({
+    method: 'POST',
+    port,
+    path: '/lib/weltmeister/api/save-image',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(requestBody)
+    },
+    body: requestBody
+  });
+
+  assert.equal(response.statusCode, 400);
+  assert.deepEqual(JSON.parse(response.body), {
+    error: 'Image data must be base64-encoded PNG data'
   });
 });
 
