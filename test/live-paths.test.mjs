@@ -28,8 +28,8 @@ const listFiles = async (directory) => {
 
 test('live app and editor files no longer reference retired pre-rename paths', async () => {
   const files = [
-    'esm-engine-smoke.html',
-    'esm-smoke.html',
+    'test/esm-engine-smoke.html',
+    'test/esm-smoke.html',
     'index.html',
     'server.mjs',
     'weltmeister.html',

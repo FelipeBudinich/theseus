@@ -9,8 +9,8 @@ runtime has been retired.
 - `index.html` loads the sample game from `lib/game/main.js`.
 - `dist.html` is a server route that serves the latest Vite production build from `dist/index.html`.
 - `weltmeister.html` loads the editor from `lib/weltmeister/main.js`.
-- `esm-smoke.html` imports `lib/impact/ig.js` directly.
-- `esm-engine-smoke.html` imports `lib/impact/impact.js` directly.
+- `test/esm-smoke.html` imports `lib/impact/ig.js` directly.
+- `test/esm-engine-smoke.html` imports `lib/impact/impact.js` directly.
 
 ## Conversion Rule For Future Modules
 

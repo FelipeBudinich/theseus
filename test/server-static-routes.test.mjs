@@ -148,3 +148,25 @@ test('/weltmeister.html still resolves from the source tree', async (t) => {
   assert.equal(response.statusCode, 200);
   assert.match(response.text, /<script type="module" src="lib\/weltmeister\/main\.js"><\/script>/);
 });
+
+test('/test/esm-smoke.html still resolves from the source tree', async (t) => {
+  const distRoot = await makeTempDirectory('theseus-source-esm-smoke-');
+  t.after(() => fs.rm(distRoot, { recursive: true, force: true }));
+
+  const { port } = await startTestServer({ distRoot }, t);
+  const response = await requestServer({ port, path: '/test/esm-smoke.html' });
+
+  assert.equal(response.statusCode, 200);
+  assert.match(response.text, /\.\.\/lib\/impact\/ig\.js/);
+});
+
+test('/test/esm-engine-smoke.html still resolves from the source tree', async (t) => {
+  const distRoot = await makeTempDirectory('theseus-source-esm-engine-smoke-');
+  t.after(() => fs.rm(distRoot, { recursive: true, force: true }));
+
+  const { port } = await startTestServer({ distRoot }, t);
+  const response = await requestServer({ port, path: '/test/esm-engine-smoke.html' });
+
+  assert.equal(response.statusCode, 200);
+  assert.match(response.text, /\.\.\/lib\/impact\/impact\.js/);
+});
