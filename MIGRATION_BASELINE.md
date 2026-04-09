@@ -19,7 +19,7 @@ The server listens on `http://127.0.0.1:3000` by default and is also reachable a
 
 ## What currently works
 
-- The live repo layout is centered on `lib/`, alongside the existing top-level HTML files, `media/`, and `tools/`.
+- The live repo layout is centered on `lib/`, alongside the existing top-level HTML files, `media/`, and the active Node-based scripts in `tools/`.
 - `/` serves `index.html`, which loads the sample game directly from `lib/game/main.js`.
 - `weltmeister.html` loads the editor shell from `lib/weltmeister/main.js`, which prepares entity metadata from the generated manifest before booting the editor.
 - Static assets under `lib/`, `media/`, and `tools/` are served directly by Express.
@@ -34,8 +34,8 @@ The server listens on `http://127.0.0.1:3000` by default and is also reachable a
 - `npm run module-graph` regenerates `docs/module-graph.json` and `docs/module-graph.md` from the live `lib/` tree.
 - The test suite covers the ESM engine entry, live pathing, Weltmeister API behavior, the generated entity manifest, the editor HTML shell, and level-format helpers.
 
-## Historical leftovers
+## Historical cutovers
 
 - The live `lib/` tree is now the ESM runtime; the old legacy `ig.module(...)` implementation has been retired.
 - The Express baseline serves the Node-backed Weltmeister save API at `/lib/weltmeister/api/save` and browse API at `/lib/weltmeister/api/browse`; legacy `.php` editor endpoints are intentionally not served.
-- `tools/` now mixes active maintenance scripts with archived reference utilities for the retired `ig.module(...)` bake workflow.
+- The retired bake helpers have been removed from `tools/`; `npm run bake` is now the supported game build path.

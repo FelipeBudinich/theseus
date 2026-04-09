@@ -97,10 +97,8 @@ source `index.html`, while `/dist.html` serves the latest baked `dist/index.html
 Built JavaScript is served from `/dist/assets/...`, but runtime media and sound
 paths still come from the source-hosted `/media/...` tree.
 
-## Historical Tooling
+## Build Tooling
 
-The active maintenance scripts now live in `tools/`, alongside the archived
-`tools/bake.*` helpers for the retired `ig.module(...)` workflow. The bake
-helpers and `tools/jsmin.php` remain historical reference only and are not
-compatible with the current ESM `lib/` runtime. Use `npm run bake` for the
-current game build instead.
+The active maintenance scripts in `tools/` are Node-based helpers for the live
+ESM project. The old `ig.module(...)` bake utilities have been removed from the
+repo; use `npm run bake` for the current game build instead.
