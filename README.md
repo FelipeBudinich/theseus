@@ -20,6 +20,7 @@ Set `PORT` to use a different port or `HOST` on `server.mjs` to change the bind 
 - Sample game: `http://localhost:3000/`
 - Latest baked game: `http://localhost:3000/dist.html`
 - Weltmeister shell: `http://localhost:3000/weltmeister.html` loads the editor shell from `lib/weltmeister/main.js`, which prepares entity metadata from the generated manifest before booting the editor.
+- Font atlas tool: `http://localhost:3000/font-tool.html` generates `ig.Font`-compatible PNG atlases from local or fallback CSS fonts, validates the metric row, and saves the result into `media/`.
 
 ## Changes in this port
 
