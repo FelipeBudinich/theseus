@@ -75,3 +75,21 @@ test('ESM engine entry resolves classes without direct ig.global lookups', async
   delete globalThis.window.EntityLegacyFallback;
   assert.equal(ig.getClass('EntityLegacyFallback'), EntityLegacyFallback);
 });
+
+test('game instances expose getLevelByName while sharing the static level registry', async () => {
+  installBrowserLikeGlobals();
+
+  const moduleUrl =
+    `${pathToFileURL(path.resolve('lib/impact/impact.js')).href}?test=${Date.now()}-levels`;
+  const ig = (await import(moduleUrl)).default;
+
+  const levelData = { entities: [], layer: [] };
+  const registeredLevel = ig.Game.registerLevel('LevelRuntimeLookup', levelData);
+  const game = new ig.Game();
+
+  assert.equal(registeredLevel, levelData);
+  assert.equal(ig.game, game);
+  assert.equal(game.getLevelByName('runtimeLookup'), levelData);
+  assert.equal(game.getLevelByName('LevelRuntimeLookup'), levelData);
+  assert.equal(ig.Game.getLevelByName('runtimeLookup'), levelData);
+});
