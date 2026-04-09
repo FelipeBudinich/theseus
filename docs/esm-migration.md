@@ -7,6 +7,7 @@ runtime has been retired.
 ## Live Entrypoints
 
 - `index.html` loads the sample game from `lib/game/main.js`.
+- `dist.html` is a server route that serves the latest Vite production build from `dist/index.html`.
 - `weltmeister.html` loads the editor from `lib/weltmeister/main.js`.
 - `esm-smoke.html` imports `lib/impact/ig.js` directly.
 - `esm-engine-smoke.html` imports `lib/impact/impact.js` directly.
@@ -83,9 +84,23 @@ not considered live-compatible inputs anymore.
 removing, or moving modules if you want the generated graph docs to stay in
 sync with the codebase.
 
+## Production Bake
+
+Run the sample-game production build with:
+
+```sh
+npm run bake
+```
+
+This writes the built game to `dist/`. The Node server keeps `/` pointed at the
+source `index.html`, while `/dist.html` serves the latest baked `dist/index.html`.
+Built JavaScript is served from `/dist/assets/...`, but runtime media and sound
+paths still come from the source-hosted `/media/...` tree.
+
 ## Historical Tooling
 
 The active maintenance scripts now live in `tools/`, alongside the archived
 `tools/bake.*` helpers for the retired `ig.module(...)` workflow. The bake
-helpers remain historical reference only and are not compatible with the
-current ESM `lib/` runtime.
+helpers and `tools/jsmin.php` remain historical reference only and are not
+compatible with the current ESM `lib/` runtime. Use `npm run bake` for the
+current game build instead.

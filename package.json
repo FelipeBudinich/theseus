@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node server.mjs",
     "dev": "node --watch server.mjs",
+    "bake": "vite build",
     "build:weltmeister-entity-manifest": "node tools/build-weltmeister-entity-manifest.mjs",
     "module-graph": "node tools/build-module-graph.mjs",
     "test": "node --test test/*.test.mjs",
@@ -14,5 +15,8 @@
   },
   "dependencies": {
     "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "vite": "^8.0.8"
   }
 }
