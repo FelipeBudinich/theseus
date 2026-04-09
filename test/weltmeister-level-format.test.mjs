@@ -8,10 +8,10 @@ import {
   ensureLevelFileExtension,
   getLevelFileFormat,
   parseLevelSource
-} from '../lib-esm/weltmeister/level-format.js';
+} from '../lib/weltmeister/level-format.js';
 
 test('parseLevelSource reads current ESM level modules through the embedded JSON markers', async () => {
-  const source = await fs.readFile(path.resolve('lib-esm/game/levels/title.js'), 'utf8');
+  const source = await fs.readFile(path.resolve('lib/game/levels/title.js'), 'utf8');
   const levelData = parseLevelSource(source);
 
   assert.equal(Array.isArray(levelData.entities), true);
@@ -41,12 +41,12 @@ test('buildLevelSave keeps .json paths explicit and round-trips their contents',
   };
 
   const save = buildLevelSave({
-    filePath: 'lib-esm/game/levels/editor-check.json',
+    filePath: 'lib/game/levels/editor-check.json',
     levelData,
     outputFormat: 'esm'
   });
 
-  assert.equal(save.filePath, 'lib-esm/game/levels/editor-check.json');
+  assert.equal(save.filePath, 'lib/game/levels/editor-check.json');
   assert.equal(save.format, 'json');
   assert.deepEqual(parseLevelSource(save.source), levelData);
 });
@@ -73,22 +73,22 @@ test('buildLevelSave emits native ESM module output for .js paths', () => {
   };
 
   const save = buildLevelSave({
-    filePath: 'lib-esm/game/levels/editor-check',
+    filePath: 'lib/game/levels/editor-check',
     levelData,
     outputFormat: 'esm',
     prettyPrint: false
   });
 
-  assert.equal(save.filePath, 'lib-esm/game/levels/editor-check.js');
+  assert.equal(save.filePath, 'lib/game/levels/editor-check.js');
   assert.equal(save.format, 'esm');
   assert.match(save.source, /import ig from "\.\.\/\.\.\/impact\/impact\.js";/);
-  assert.match(save.source, /registerLevel\("LevelEditorCheck", LevelEditorCheck\);/);
+  assert.match(save.source, /ig\.Game\.registerLevel\("LevelEditorCheck", LevelEditorCheck\);/);
   assert.deepEqual(parseLevelSource(save.source), levelData);
 });
 
 test('level file format helpers keep extension-based format selection explicit', () => {
-  assert.equal(getLevelFileFormat('lib-esm/game/levels/test.json', 'esm'), 'json');
-  assert.equal(getLevelFileFormat('lib-esm/game/levels/test.js', 'json'), 'esm');
-  assert.equal(ensureLevelFileExtension('lib-esm/game/levels/test', 'json'), 'lib-esm/game/levels/test.json');
-  assert.equal(ensureLevelFileExtension('lib-esm/game/levels/test', 'esm'), 'lib-esm/game/levels/test.js');
+  assert.equal(getLevelFileFormat('lib/game/levels/test.json', 'esm'), 'json');
+  assert.equal(getLevelFileFormat('lib/game/levels/test.js', 'json'), 'esm');
+  assert.equal(ensureLevelFileExtension('lib/game/levels/test', 'json'), 'lib/game/levels/test.json');
+  assert.equal(ensureLevelFileExtension('lib/game/levels/test', 'esm'), 'lib/game/levels/test.js');
 });

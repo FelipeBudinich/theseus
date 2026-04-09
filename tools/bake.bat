@@ -1,5 +1,9 @@
 @echo off
 
+:: Archived helper for the retired legacy `lib/` + `ig.module(...)` bake
+:: workflow. The current ESM runtime also lives under `lib/`, so this script is
+:: historical only and not compatible with the live tree.
+
 :: Path to impact.js and your game's main .js
 SET IMPACT_LIBRARY=lib/impact/impact.js
 SET GAME=lib/game/main.js

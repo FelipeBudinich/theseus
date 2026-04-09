@@ -1,4 +1,7 @@
 <?php
+// Archived helper for the retired legacy `lib/` + `ig.module(...)` bake
+// workflow. The current ESM runtime also lives under `lib/`, so this script is
+// historical only and not compatible with the live tree.
 if( count($argv) < 3 ) {
 	echo "Usage: bake.php <in...> <out>\n";
 	echo "e.g. bake.php lib/impact/impact.js lib/game/game.js mygame-baked.js\n";

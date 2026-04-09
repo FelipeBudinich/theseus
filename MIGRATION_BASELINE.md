@@ -15,14 +15,13 @@ The server listens on `http://127.0.0.1:3000` by default and is also reachable a
 
 ## What currently works
 
-- The repo layout is unchanged: `index.html`, `weltmeister.html`, `lib/`, `media/`, and `tools/` all stay in place.
-- `/` serves the existing `index.html`, which loads the current sample game exactly through the legacy browser script pipeline.
+- The live repo layout is centered on `lib/`, alongside the existing top-level HTML files, `media/`, and `tools/`.
+- `/` serves `index.html`, which loads the sample game directly from `lib/game/main.js`.
 - Static assets under `lib/`, `media/`, and `tools/` are served directly by Express.
-- `/weltmeister.html` loads the editor shell HTML, CSS, and JavaScript through Express without renaming or moving files.
+- `/weltmeister.html` loads the editor shell HTML, CSS, JavaScript, images, and backend routes through `lib/weltmeister/`.
 
-## What still depends on legacy JS/PHP
+## Historical leftovers
 
-- The engine and sample game still use the original legacy browser JavaScript files under `lib/impact/` and `lib/game/`.
-- Weltmeister filesystem actions still depend on the PHP endpoints in `lib/weltmeister/api/` such as `save.php`, `browse.php`, and `glob.php`.
-- The Express baseline serves files only; it does not execute PHP, so editor save/load/browse flows are not migrated in this PR.
-- Legacy tooling under `tools/` that uses PHP remains unchanged and is not part of this baseline.
+- The live `lib/` tree is now the ESM runtime; the old legacy `ig.module(...)` implementation has been retired.
+- The Express baseline serves the Node-backed Weltmeister API under `/lib/weltmeister/api/*.php`; no PHP execution is required.
+- `tools/` now mixes active maintenance scripts with archived reference utilities for the retired `ig.module(...)` bake workflow.

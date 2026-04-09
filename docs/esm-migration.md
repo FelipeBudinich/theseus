@@ -1,11 +1,12 @@
 # ESM Migration Note
 
-The native ESM migration now starts in `lib-esm/` and runs in parallel with the
-legacy `lib/` tree. Live entrypoints stay on the legacy loader until a later PR.
+The native ESM migration is now complete in the live repo layout: browser and
+editor entrypoints load only from `lib/`, and the legacy `ig.module(...)`
+runtime has been retired.
 
 ## Conversion Rule For Future Modules
 
-1. Import every dependency explicitly from `lib-esm/`.
+1. Import every dependency explicitly from `lib/`.
 2. Assign the public API back onto `ig` or a namespace created with `ig.namespace(...)`.
 3. Export the same symbol from the file so ESM callers and legacy-style global access stay aligned.
 
@@ -23,14 +24,12 @@ export { Something };
 export default Something;
 ```
 
-Use `ig.module()`, `.requires()`, and `.defines()` only in the legacy tree. New
-files in `lib-esm/` should stay native ESM from the start.
+All live engine, game, and editor files should stay native ESM from the start.
 
 ## Weltmeister Entity Manifest
 
-The future ESM Weltmeister loader path now reads generated entity metadata from
-`lib-esm/weltmeister/entity-manifest.js` instead of discovering entities through
-the legacy synchronous `glob.php` request.
+The live Weltmeister loader path reads generated entity metadata from
+`lib/weltmeister/entity-manifest.js`.
 
 When you add, remove, or rename an ESM entity module, regenerate the manifest
 with:
@@ -39,13 +38,15 @@ with:
 npm run build:weltmeister-entity-manifest
 ```
 
-This also refreshes `lib-esm/weltmeister/entity-manifest.json`, which mirrors
+This also refreshes `lib/weltmeister/entity-manifest.json`, which mirrors
 the manifest contents in a debug-friendly format.
 
 ## Weltmeister Browser Cutover
 
-`weltmeister.html` now boots from `lib-esm/weltmeister/main.js` and uses the
-native ESM port in `lib-esm/weltmeister/` while keeping the existing jQuery UI.
+`weltmeister.html` boots from `lib/weltmeister/main.js` and loads its CSS,
+jQuery bundles, API endpoints, and editor assets from the same `lib/`
+tree. The existing jQuery-driven UI is still in place; only the file layout and
+runtime pathing changed.
 
 Level format stays explicit through the target file path:
 
@@ -53,3 +54,10 @@ Level format stays explicit through the target file path:
 - saving to a `.json` path writes plain JSON
 - legacy module-wrapped `.js` levels are still readable through the embedded
   `/*JSON[*/ ... /*]JSON*/` markers
+
+## Historical Tooling
+
+The active maintenance scripts now live in `tools/`, alongside the archived
+`tools/bake.*` helpers for the retired `ig.module(...)` workflow. The bake
+helpers remain historical reference only and are not compatible with the
+current ESM `lib/` runtime.

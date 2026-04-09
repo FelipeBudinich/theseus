@@ -3,9 +3,9 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const DEFAULT_SOURCE_DIRECTORIES = ['lib-esm/game/entities'];
-const DEFAULT_MODULE_OUTPUT_PATH = 'lib-esm/weltmeister/entity-manifest.js';
-const DEFAULT_JSON_OUTPUT_PATH = 'lib-esm/weltmeister/entity-manifest.json';
+const DEFAULT_SOURCE_DIRECTORIES = ['lib/game/entities'];
+const DEFAULT_MODULE_OUTPUT_PATH = 'lib/weltmeister/entity-manifest.js';
+const DEFAULT_JSON_OUTPUT_PATH = 'lib/weltmeister/entity-manifest.json';
 
 const toPosixPath = (value) => value.split(path.sep).join('/');
 
@@ -26,11 +26,11 @@ const toDisplayName = (className) => className.replace(/^Entity/, '');
 
 const toModuleId = (filePath) =>
   filePath
-    .replace(/^lib-esm\//, '')
+    .replace(/^lib\//, '')
     .replace(/\.js$/, '')
     .replace(/\//g, '.');
 
-const toStableKey = (filePath) => filePath.replace(/^lib-esm\//, '').replace(/\.js$/, '');
+const toStableKey = (filePath) => filePath.replace(/^lib\//, '').replace(/\.js$/, '');
 
 const toImportPath = (filePath, moduleOutputPath) => {
   const relativePath = path.posix.relative(path.posix.dirname(moduleOutputPath), filePath);

@@ -3,10 +3,23 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 
-test('weltmeister.html boots the editor from the native ESM entrypoint', async () => {
+const retiredAssetPrefix = `lib${'-esm/'}`;
+
+test('weltmeister.html boots the editor entirely from lib assets', async () => {
   const html = await fs.readFile(path.resolve('weltmeister.html'), 'utf8');
 
-  assert.match(html, /<script type="module" src="lib-esm\/weltmeister\/main\.js"><\/script>/);
+  assert.match(html, /href="lib\/weltmeister\/weltmeister\.css"/);
+  assert.match(html, /src="lib\/weltmeister\/jquery-1\.7\.1\.min\.js"/);
+  assert.match(html, /src="lib\/weltmeister\/jquery-ui-1\.8\.1\.custom\.min\.js"/);
+  assert.match(html, /<script type="module" src="lib\/weltmeister\/main\.js"><\/script>/);
+  assert.doesNotMatch(
+    html,
+    new RegExp(`href="${retiredAssetPrefix}weltmeister/weltmeister\\.css"`)
+  );
+  assert.doesNotMatch(
+    html,
+    new RegExp(`src="${retiredAssetPrefix}weltmeister/jquery-1\\.7\\.1\\.min\\.js"`)
+  );
   assert.doesNotMatch(html, /src="lib\/impact\/impact\.js"/);
   assert.doesNotMatch(html, /src="lib\/weltmeister\/weltmeister\.js"/);
 });

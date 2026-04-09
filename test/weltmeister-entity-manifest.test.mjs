@@ -9,7 +9,7 @@ import {
   buildEntityManifestArtifacts,
   checkEntityManifestArtifacts,
   writeEntityManifestArtifacts
-} from '../scripts/build-weltmeister-entity-manifest.mjs';
+} from '../tools/build-weltmeister-entity-manifest.mjs';
 
 const ensureGlobal = (name, value) => {
   Object.defineProperty(globalThis, name, {
@@ -61,13 +61,13 @@ const writeProjectFile = async (projectRoot, relativePath, contents = '') => {
 test('buildEntityManifestArtifacts derives sorted entries and stable import metadata', async () => {
   const projectRoot = await makeTempProjectRoot();
 
-  await writeProjectFile(projectRoot, 'lib-esm/game/entities/zapper.js');
-  await writeProjectFile(projectRoot, 'lib-esm/game/entities/blob.js');
-  await writeProjectFile(projectRoot, 'lib-esm/game/entities/subdir/shield-wall.js');
+  await writeProjectFile(projectRoot, 'lib/game/entities/zapper.js');
+  await writeProjectFile(projectRoot, 'lib/game/entities/blob.js');
+  await writeProjectFile(projectRoot, 'lib/game/entities/subdir/shield-wall.js');
 
   const artifacts = await buildEntityManifestArtifacts({
     projectRoot,
-    sourceDirectories: ['lib-esm/game/entities']
+    sourceDirectories: ['lib/game/entities']
   });
 
   assert.deepEqual(
@@ -103,12 +103,12 @@ test('buildEntityManifestArtifacts derives sorted entries and stable import meta
 test('writeEntityManifestArtifacts is reproducible and checkEntityManifestArtifacts detects drift', async () => {
   const projectRoot = await makeTempProjectRoot();
 
-  await writeProjectFile(projectRoot, 'lib-esm/game/entities/blob.js');
-  await writeProjectFile(projectRoot, 'lib-esm/game/entities/player.js');
+  await writeProjectFile(projectRoot, 'lib/game/entities/blob.js');
+  await writeProjectFile(projectRoot, 'lib/game/entities/player.js');
 
   const firstWrite = await writeEntityManifestArtifacts({
     projectRoot,
-    sourceDirectories: ['lib-esm/game/entities']
+    sourceDirectories: ['lib/game/entities']
   });
   const firstModuleSource = await fs.readFile(
     path.join(projectRoot, firstWrite.moduleOutputPath),
@@ -117,7 +117,7 @@ test('writeEntityManifestArtifacts is reproducible and checkEntityManifestArtifa
 
   await writeEntityManifestArtifacts({
     projectRoot,
-    sourceDirectories: ['lib-esm/game/entities']
+    sourceDirectories: ['lib/game/entities']
   });
   const secondModuleSource = await fs.readFile(
     path.join(projectRoot, firstWrite.moduleOutputPath),
@@ -128,14 +128,14 @@ test('writeEntityManifestArtifacts is reproducible and checkEntityManifestArtifa
 
   const inSync = await checkEntityManifestArtifacts({
     projectRoot,
-    sourceDirectories: ['lib-esm/game/entities']
+    sourceDirectories: ['lib/game/entities']
   });
   assert.equal(inSync.matches, true);
 
   await fs.writeFile(path.join(projectRoot, firstWrite.moduleOutputPath), '// stale\n', 'utf8');
   const stale = await checkEntityManifestArtifacts({
     projectRoot,
-    sourceDirectories: ['lib-esm/game/entities']
+    sourceDirectories: ['lib/game/entities']
   });
   assert.equal(stale.matches, false);
 });
@@ -145,7 +145,7 @@ test('ESM Weltmeister entity loader consumes the manifest and registers entity c
   delete globalThis.$;
   delete globalThis.wm;
 
-  const moduleUrl = `${pathToFileURL(path.resolve('lib-esm/weltmeister/entities.js')).href}?test=${Date.now()}`;
+  const moduleUrl = `${pathToFileURL(path.resolve('lib/weltmeister/entities.js')).href}?test=${Date.now()}`;
   const {
     entityManifest,
     getLegacyEntityModuleMap,
@@ -153,12 +153,12 @@ test('ESM Weltmeister entity loader consumes the manifest and registers entity c
   } = await import(moduleUrl);
 
   assert.equal(entityManifest.length > 0, true);
-  assert.equal(entityManifest.some((entry) => entry.filePath === 'lib-esm/game/entities/blob.js'), true);
+  assert.equal(entityManifest.some((entry) => entry.filePath === 'lib/game/entities/blob.js'), true);
 
   const prepared = await prepareWeltmeisterEntityState();
-  assert.equal(prepared.entityModules['game.entities.blob'], 'lib-esm/game/entities/blob.js');
-  assert.equal(globalThis.wm.entityModules['game.entities.player'], 'lib-esm/game/entities/player.js');
-  assert.equal(getLegacyEntityModuleMap()['game.entities.levelchange'], 'lib-esm/game/entities/levelchange.js');
+  assert.equal(prepared.entityModules['game.entities.blob'], 'lib/game/entities/blob.js');
+  assert.equal(globalThis.wm.entityModules['game.entities.player'], 'lib/game/entities/player.js');
+  assert.equal(getLegacyEntityModuleMap()['game.entities.levelchange'], 'lib/game/entities/levelchange.js');
 
   const blobEntry = prepared.loadedEntries.find((entry) => entry.className === 'EntityBlob');
   assert.equal(typeof blobEntry?.entityClass, 'function');

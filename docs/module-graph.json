@@ -1,722 +1,1035 @@
 {
-  "generatedAt": "2026-04-08T14:24:42.501Z",
-  "roots": [
-    "game.main",
-    "impact.debug.debug",
-    "impact.entity-pool",
-    "weltmeister.entityLoader",
-    "weltmeister.loader",
-    "weltmeister.weltmeister"
-  ],
-  "leaves": [
-    "impact.image",
-    "impact.input",
-    "impact.map",
-    "impact.sound",
-    "impact.timer",
-    "weltmeister.config",
-    "weltmeister.entities",
-    "weltmeister.loader",
-    "weltmeister.select-file-dropdown",
-    "weltmeister.tile-select"
-  ],
-  "filesScanned": 33,
-  "modulesFound": 33,
-  "staticEdgesFound": 59,
-  "unresolvedDependencies": [
+  "duplicateDefinitions": [],
+  "dynamicImports": [
     {
-      "name": "dom.ready",
-      "requiredBy": [
-        "impact.debug.menu",
-        "impact.impact",
-        "weltmeister.weltmeister"
-      ]
+      "line": 72,
+      "expression": "expression-based import(...)",
+      "file": "lib/weltmeister/entity-manifest.js",
+      "moduleName": "weltmeister/entity-manifest"
+    },
+    {
+      "line": 34,
+      "expression": "expression-based import(...)",
+      "file": "lib/weltmeister/weltmeister.js",
+      "moduleName": "weltmeister/weltmeister"
     }
   ],
-  "duplicateDefinitions": [],
+  "filesScanned": 51,
+  "generatedAt": "2026-04-09T14:56:45.793Z",
+  "leaves": [
+    "impact/core/class",
+    "impact/core/namespace",
+    "impact/core/native-extensions",
+    "impact/core/object",
+    "impact/core/vendor-attributes",
+    "weltmeister/api/node-api",
+    "weltmeister/entity-manifest",
+    "weltmeister/level-format",
+    "weltmeister/wm"
+  ],
   "modules": [
     {
-      "definesLine": 8,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
+      "file": "lib/game/entities/blob.js",
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../../impact/impact.js"
+        }
+      ],
+      "moduleName": "game/entities/blob"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/game/entities/coin.js",
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../../impact/impact.js"
+        }
+      ],
+      "moduleName": "game/entities/coin"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/game/entities/fireball.js",
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../../impact/impact.js"
+        }
+      ],
+      "moduleName": "game/entities/fireball"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/game/entities/hurt.js",
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../../impact/impact.js"
+        }
+      ],
+      "moduleName": "game/entities/hurt"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/game/entities/levelchange.js",
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../../impact/impact.js"
+        }
+      ],
+      "moduleName": "game/entities/levelchange"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/game/entities/player.js",
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../../impact/impact.js"
+        }
+      ],
+      "moduleName": "game/entities/player"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/game/entities/trigger.js",
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../../impact/impact.js"
+        }
+      ],
+      "moduleName": "game/entities/trigger"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/game/levels/grasslands.js",
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../../impact/impact.js"
+        }
+      ],
+      "moduleName": "game/levels/grasslands"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/game/levels/snowhills.js",
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../../impact/impact.js"
+        }
+      ],
+      "moduleName": "game/levels/snowhills"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/game/levels/title.js",
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../../impact/impact.js"
+        }
+      ],
+      "moduleName": "game/levels/title"
+    },
+    {
+      "dynamicImports": [],
       "file": "lib/game/main.js",
-      "line": 1,
-      "moduleName": "game.main",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.game",
-        "impact.font"
+      "imports": [
+        {
+          "file": "lib/game/levels/grasslands.js",
+          "line": 17,
+          "moduleName": "game/levels/grasslands",
+          "specifier": "./levels/grasslands.js"
+        },
+        {
+          "file": "lib/game/levels/snowhills.js",
+          "line": 18,
+          "moduleName": "game/levels/snowhills",
+          "specifier": "./levels/snowhills.js"
+        },
+        {
+          "file": "lib/game/levels/title.js",
+          "line": 2,
+          "moduleName": "game/levels/title",
+          "specifier": "./levels/title.js"
+        },
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../impact/impact.js"
+        }
       ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "moduleName": "game/main"
     },
     {
-      "definesLine": 8,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/impact/animation.js",
-      "line": 1,
-      "moduleName": "impact.animation",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.timer",
-        "impact.image"
+      "imports": [
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "./ig.js"
+        },
+        {
+          "file": "lib/impact/image.js",
+          "line": 3,
+          "moduleName": "impact/image",
+          "specifier": "./image.js"
+        },
+        {
+          "file": "lib/impact/timer.js",
+          "line": 2,
+          "moduleName": "impact/timer",
+          "specifier": "./timer.js"
+        }
       ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "moduleName": "impact/animation"
     },
     {
-      "definesLine": 8,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/impact/background-map.js",
-      "line": 1,
-      "moduleName": "impact.background-map",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.map",
-        "impact.image"
+      "imports": [
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "./ig.js"
+        },
+        {
+          "file": "lib/impact/image.js",
+          "line": 3,
+          "moduleName": "impact/image",
+          "specifier": "./image.js"
+        },
+        {
+          "file": "lib/impact/map.js",
+          "line": 2,
+          "moduleName": "impact/map",
+          "specifier": "./map.js"
+        }
       ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "moduleName": "impact/background-map"
     },
     {
-      "definesLine": 7,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/impact/collision-map.js",
-      "line": 1,
-      "moduleName": "impact.collision-map",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.map"
+      "imports": [
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "./ig.js"
+        },
+        {
+          "file": "lib/impact/map.js",
+          "line": 2,
+          "moduleName": "impact/map",
+          "specifier": "./map.js"
+        }
       ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "moduleName": "impact/collision-map"
     },
     {
-      "definesLine": 9,
-      "dynamicRequiresExpression": null,
-      "file": "lib/impact/debug/debug.js",
-      "line": 1,
-      "moduleName": "impact.debug.debug",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.debug.entities-panel",
-        "impact.debug.maps-panel",
-        "impact.debug.graph-panel"
-      ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "dynamicImports": [],
+      "file": "lib/impact/core/class.js",
+      "imports": [],
+      "moduleName": "impact/core/class"
     },
     {
-      "definesLine": 8,
-      "dynamicRequiresExpression": null,
-      "file": "lib/impact/debug/entities-panel.js",
-      "line": 1,
-      "moduleName": "impact.debug.entities-panel",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.debug.menu",
-        "impact.entity"
-      ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "dynamicImports": [],
+      "file": "lib/impact/core/namespace.js",
+      "imports": [],
+      "moduleName": "impact/core/namespace"
     },
     {
-      "definesLine": 10,
-      "dynamicRequiresExpression": null,
-      "file": "lib/impact/debug/graph-panel.js",
-      "line": 1,
-      "moduleName": "impact.debug.graph-panel",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.debug.menu",
-        "impact.system",
-        "impact.game",
-        "impact.image"
-      ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "dynamicImports": [],
+      "file": "lib/impact/core/native-extensions.js",
+      "imports": [],
+      "moduleName": "impact/core/native-extensions"
     },
     {
-      "definesLine": 9,
-      "dynamicRequiresExpression": null,
-      "file": "lib/impact/debug/maps-panel.js",
-      "line": 1,
-      "moduleName": "impact.debug.maps-panel",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.debug.menu",
-        "impact.game",
-        "impact.background-map"
-      ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "dynamicImports": [],
+      "file": "lib/impact/core/object.js",
+      "imports": [],
+      "moduleName": "impact/core/object"
     },
     {
-      "definesLine": 8,
-      "dynamicRequiresExpression": null,
-      "file": "lib/impact/debug/menu.js",
-      "line": 1,
-      "moduleName": "impact.debug.menu",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "dom.ready",
-        "impact.system"
-      ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "dynamicImports": [],
+      "file": "lib/impact/core/vendor-attributes.js",
+      "imports": [],
+      "moduleName": "impact/core/vendor-attributes"
     },
     {
-      "definesLine": 8,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/impact/entity.js",
-      "line": 1,
-      "moduleName": "impact.entity",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.animation",
-        "impact.impact"
+      "imports": [
+        {
+          "file": "lib/impact/animation.js",
+          "line": 2,
+          "moduleName": "impact/animation",
+          "specifier": "./animation.js"
+        },
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "./ig.js"
+        }
       ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "moduleName": "impact/entity"
     },
     {
-      "definesLine": 7,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/impact/entity-pool.js",
-      "line": 1,
-      "moduleName": "impact.entity-pool",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.game"
+      "imports": [
+        {
+          "file": "lib/impact/game.js",
+          "line": 2,
+          "moduleName": "impact/game",
+          "specifier": "./game.js"
+        },
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "./ig.js"
+        }
       ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "moduleName": "impact/entity-pool"
     },
     {
-      "definesLine": 7,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/impact/font.js",
-      "line": 1,
-      "moduleName": "impact.font",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.image"
+      "imports": [
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "./ig.js"
+        },
+        {
+          "file": "lib/impact/image.js",
+          "line": 2,
+          "moduleName": "impact/image",
+          "specifier": "./image.js"
+        }
       ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "moduleName": "impact/font"
     },
     {
-      "definesLine": 10,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/impact/game.js",
-      "line": 1,
-      "moduleName": "impact.game",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.impact",
-        "impact.entity",
-        "impact.collision-map",
-        "impact.background-map"
+      "imports": [
+        {
+          "file": "lib/impact/background-map.js",
+          "line": 4,
+          "moduleName": "impact/background-map",
+          "specifier": "./background-map.js"
+        },
+        {
+          "file": "lib/impact/collision-map.js",
+          "line": 3,
+          "moduleName": "impact/collision-map",
+          "specifier": "./collision-map.js"
+        },
+        {
+          "file": "lib/impact/entity.js",
+          "line": 2,
+          "moduleName": "impact/entity",
+          "specifier": "./entity.js"
+        },
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "./ig.js"
+        }
       ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "moduleName": "impact/game"
     },
     {
-      "definesLine": 4,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
+      "file": "lib/impact/ig.js",
+      "imports": [
+        {
+          "file": "lib/impact/core/class.js",
+          "line": 2,
+          "moduleName": "impact/core/class",
+          "specifier": "./core/class.js"
+        },
+        {
+          "file": "lib/impact/core/namespace.js",
+          "line": 3,
+          "moduleName": "impact/core/namespace",
+          "specifier": "./core/namespace.js"
+        },
+        {
+          "file": "lib/impact/core/native-extensions.js",
+          "line": 1,
+          "moduleName": "impact/core/native-extensions",
+          "specifier": "./core/native-extensions.js"
+        },
+        {
+          "file": "lib/impact/core/object.js",
+          "line": 4,
+          "moduleName": "impact/core/object",
+          "specifier": "./core/object.js"
+        },
+        {
+          "file": "lib/impact/core/vendor-attributes.js",
+          "line": 5,
+          "moduleName": "impact/core/vendor-attributes",
+          "specifier": "./core/vendor-attributes.js"
+        }
+      ],
+      "moduleName": "impact/ig"
+    },
+    {
+      "dynamicImports": [],
       "file": "lib/impact/image.js",
-      "line": 1,
-      "moduleName": "impact.image",
-      "moduleNameIsStatic": true,
-      "requires": [],
-      "requiresLine": null,
-      "requiresMode": "none"
+      "imports": [
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "./ig.js"
+        }
+      ],
+      "moduleName": "impact/image"
     },
     {
-      "definesLine": 577,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/impact/impact.js",
-      "line": 567,
-      "moduleName": "impact.impact",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "dom.ready",
-        "impact.loader",
-        "impact.system",
-        "impact.input",
-        "impact.sound"
+      "imports": [
+        {
+          "file": "lib/impact/animation.js",
+          "line": 2,
+          "moduleName": "impact/animation",
+          "specifier": "./animation.js"
+        },
+        {
+          "file": "lib/impact/background-map.js",
+          "line": 3,
+          "moduleName": "impact/background-map",
+          "specifier": "./background-map.js"
+        },
+        {
+          "file": "lib/impact/collision-map.js",
+          "line": 4,
+          "moduleName": "impact/collision-map",
+          "specifier": "./collision-map.js"
+        },
+        {
+          "file": "lib/impact/entity.js",
+          "line": 5,
+          "moduleName": "impact/entity",
+          "specifier": "./entity.js"
+        },
+        {
+          "file": "lib/impact/entity-pool.js",
+          "line": 6,
+          "moduleName": "impact/entity-pool",
+          "specifier": "./entity-pool.js"
+        },
+        {
+          "file": "lib/impact/font.js",
+          "line": 7,
+          "moduleName": "impact/font",
+          "specifier": "./font.js"
+        },
+        {
+          "file": "lib/impact/game.js",
+          "line": 8,
+          "moduleName": "impact/game",
+          "specifier": "./game.js"
+        },
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "./ig.js"
+        },
+        {
+          "file": "lib/impact/image.js",
+          "line": 9,
+          "moduleName": "impact/image",
+          "specifier": "./image.js"
+        },
+        {
+          "file": "lib/impact/input.js",
+          "line": 10,
+          "moduleName": "impact/input",
+          "specifier": "./input.js"
+        },
+        {
+          "file": "lib/impact/loader.js",
+          "line": 11,
+          "moduleName": "impact/loader",
+          "specifier": "./loader.js"
+        },
+        {
+          "file": "lib/impact/map.js",
+          "line": 12,
+          "moduleName": "impact/map",
+          "specifier": "./map.js"
+        },
+        {
+          "file": "lib/impact/sound.js",
+          "line": 13,
+          "moduleName": "impact/sound",
+          "specifier": "./sound.js"
+        },
+        {
+          "file": "lib/impact/system.js",
+          "line": 14,
+          "moduleName": "impact/system",
+          "specifier": "./system.js"
+        },
+        {
+          "file": "lib/impact/timer.js",
+          "line": 15,
+          "moduleName": "impact/timer",
+          "specifier": "./timer.js"
+        }
       ],
-      "requiresLine": 570,
-      "requiresMode": "static"
+      "moduleName": "impact/impact"
     },
     {
-      "definesLine": 4,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/impact/input.js",
-      "line": 1,
-      "moduleName": "impact.input",
-      "moduleNameIsStatic": true,
-      "requires": [],
-      "requiresLine": null,
-      "requiresMode": "none"
+      "imports": [
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "./ig.js"
+        }
+      ],
+      "moduleName": "impact/input"
     },
     {
-      "definesLine": 9,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/impact/loader.js",
-      "line": 1,
-      "moduleName": "impact.loader",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.image",
-        "impact.font",
-        "impact.sound"
+      "imports": [
+        {
+          "file": "lib/impact/font.js",
+          "line": 3,
+          "moduleName": "impact/font",
+          "specifier": "./font.js"
+        },
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "./ig.js"
+        },
+        {
+          "file": "lib/impact/image.js",
+          "line": 2,
+          "moduleName": "impact/image",
+          "specifier": "./image.js"
+        },
+        {
+          "file": "lib/impact/sound.js",
+          "line": 4,
+          "moduleName": "impact/sound",
+          "specifier": "./sound.js"
+        }
       ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "moduleName": "impact/loader"
     },
     {
-      "definesLine": 4,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/impact/map.js",
-      "line": 1,
-      "moduleName": "impact.map",
-      "moduleNameIsStatic": true,
-      "requires": [],
-      "requiresLine": null,
-      "requiresMode": "none"
+      "imports": [
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "./ig.js"
+        }
+      ],
+      "moduleName": "impact/map"
     },
     {
-      "definesLine": 4,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/impact/sound.js",
-      "line": 1,
-      "moduleName": "impact.sound",
-      "moduleNameIsStatic": true,
-      "requires": [],
-      "requiresLine": null,
-      "requiresMode": "none"
+      "imports": [
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "./ig.js"
+        }
+      ],
+      "moduleName": "impact/sound"
     },
     {
-      "definesLine": 8,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/impact/system.js",
-      "line": 1,
-      "moduleName": "impact.system",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.timer",
-        "impact.image"
+      "imports": [
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "./ig.js"
+        },
+        {
+          "file": "lib/impact/image.js",
+          "line": 3,
+          "moduleName": "impact/image",
+          "specifier": "./image.js"
+        },
+        {
+          "file": "lib/impact/timer.js",
+          "line": 2,
+          "moduleName": "impact/timer",
+          "specifier": "./timer.js"
+        }
       ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "moduleName": "impact/system"
     },
     {
-      "definesLine": 4,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/impact/timer.js",
-      "line": 1,
-      "moduleName": "impact.timer",
-      "moduleNameIsStatic": true,
-      "requires": [],
-      "requiresLine": null,
-      "requiresMode": "none"
+      "imports": [
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "./ig.js"
+        }
+      ],
+      "moduleName": "impact/timer"
     },
     {
-      "definesLine": 4,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
+      "file": "lib/plugins/camera.js",
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../impact/impact.js"
+        }
+      ],
+      "moduleName": "plugins/camera"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/plugins/gamepad.js",
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../impact/impact.js"
+        }
+      ],
+      "moduleName": "plugins/gamepad"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/plugins/impact-splash-loader.js",
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../impact/impact.js"
+        }
+      ],
+      "moduleName": "plugins/impact-splash-loader"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/plugins/touch-button.js",
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../impact/impact.js"
+        }
+      ],
+      "moduleName": "plugins/touch-button"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/weltmeister/api/node-api.mjs",
+      "imports": [],
+      "moduleName": "weltmeister/api/node-api"
+    },
+    {
+      "dynamicImports": [],
       "file": "lib/weltmeister/config.js",
-      "line": 1,
-      "moduleName": "weltmeister.config",
-      "moduleNameIsStatic": true,
-      "requires": [],
-      "requiresLine": null,
-      "requiresMode": "none"
+      "imports": [
+        {
+          "file": "lib/weltmeister/wm.js",
+          "line": 1,
+          "moduleName": "weltmeister/wm",
+          "specifier": "./wm.js"
+        }
+      ],
+      "moduleName": "weltmeister/config"
     },
     {
-      "definesLine": 11,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/weltmeister/edit-entities.js",
-      "line": 1,
-      "moduleName": "weltmeister.edit-entities",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.game",
-        "impact.background-map",
-        "weltmeister.config",
-        "weltmeister.tile-select",
-        "weltmeister.entities"
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../impact/impact.js"
+        },
+        {
+          "file": "lib/weltmeister/config.js",
+          "line": 3,
+          "moduleName": "weltmeister/config",
+          "specifier": "./config.js"
+        },
+        {
+          "file": "lib/weltmeister/wm.js",
+          "line": 2,
+          "moduleName": "weltmeister/wm",
+          "specifier": "./wm.js"
+        }
       ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "moduleName": "weltmeister/edit-entities"
     },
     {
-      "definesLine": 8,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/weltmeister/edit-map.js",
-      "line": 1,
-      "moduleName": "weltmeister.edit-map",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.background-map",
-        "weltmeister.tile-select"
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../impact/impact.js"
+        },
+        {
+          "file": "lib/weltmeister/config.js",
+          "line": 3,
+          "moduleName": "weltmeister/config",
+          "specifier": "./config.js"
+        },
+        {
+          "file": "lib/weltmeister/tile-select.js",
+          "line": 4,
+          "moduleName": "weltmeister/tile-select",
+          "specifier": "./tile-select.js"
+        },
+        {
+          "file": "lib/weltmeister/wm.js",
+          "line": 2,
+          "moduleName": "weltmeister/wm",
+          "specifier": "./wm.js"
+        }
       ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "moduleName": "weltmeister/edit-map"
     },
     {
-      "definesLine": 48,
-      "dynamicRequiresExpression": "ig, moduleNames",
+      "dynamicImports": [],
       "file": "lib/weltmeister/entities.js",
-      "line": 46,
-      "moduleName": "weltmeister.entities",
-      "moduleNameIsStatic": true,
-      "requires": [],
-      "requiresLine": 47,
-      "requiresMode": "apply"
-    },
-    {
-      "definesLine": 7,
-      "dynamicRequiresExpression": null,
-      "file": "lib/weltmeister/entities.js",
-      "line": 1,
-      "moduleName": "weltmeister.entityLoader",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "weltmeister.config"
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../impact/impact.js"
+        },
+        {
+          "file": "lib/weltmeister/entity-manifest.js",
+          "line": 2,
+          "moduleName": "weltmeister/entity-manifest",
+          "specifier": "./entity-manifest.js"
+        }
       ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "moduleName": "weltmeister/entities"
     },
     {
-      "definesLine": 7,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [
+        {
+          "line": 72,
+          "expression": "expression-based import(...)"
+        }
+      ],
+      "file": "lib/weltmeister/entity-manifest.js",
+      "imports": [],
+      "moduleName": "weltmeister/entity-manifest"
+    },
+    {
+      "dynamicImports": [],
       "file": "lib/weltmeister/evented-input.js",
-      "line": 1,
-      "moduleName": "weltmeister.evented-input",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "impact.input"
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../impact/impact.js"
+        },
+        {
+          "file": "lib/weltmeister/wm.js",
+          "line": 2,
+          "moduleName": "weltmeister/wm",
+          "specifier": "./wm.js"
+        }
       ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "moduleName": "weltmeister/evented-input"
     },
     {
-      "definesLine": 1001,
-      "dynamicRequiresExpression": "ig, wm.config.plugins",
-      "file": "lib/weltmeister/weltmeister.js",
-      "line": 1001,
-      "moduleName": "weltmeister.loader",
-      "moduleNameIsStatic": true,
-      "requires": [],
-      "requiresLine": 1001,
-      "requiresMode": "apply"
+      "dynamicImports": [],
+      "file": "lib/weltmeister/level-format.js",
+      "imports": [],
+      "moduleName": "weltmeister/level-format"
     },
     {
-      "definesLine": 7,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
+      "file": "lib/weltmeister/main.js",
+      "imports": [
+        {
+          "file": "lib/weltmeister/entities.js",
+          "line": 1,
+          "moduleName": "weltmeister/entities",
+          "specifier": "./entities.js"
+        },
+        {
+          "file": "lib/weltmeister/weltmeister.js",
+          "line": 2,
+          "moduleName": "weltmeister/weltmeister",
+          "specifier": "./weltmeister.js"
+        }
+      ],
+      "moduleName": "weltmeister/main"
+    },
+    {
+      "dynamicImports": [],
       "file": "lib/weltmeister/modal-dialogs.js",
-      "line": 1,
-      "moduleName": "weltmeister.modal-dialogs",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "weltmeister.select-file-dropdown"
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../impact/impact.js"
+        },
+        {
+          "file": "lib/weltmeister/config.js",
+          "line": 3,
+          "moduleName": "weltmeister/config",
+          "specifier": "./config.js"
+        },
+        {
+          "file": "lib/weltmeister/select-file-dropdown.js",
+          "line": 4,
+          "moduleName": "weltmeister/select-file-dropdown",
+          "specifier": "./select-file-dropdown.js"
+        },
+        {
+          "file": "lib/weltmeister/wm.js",
+          "line": 2,
+          "moduleName": "weltmeister/wm",
+          "specifier": "./wm.js"
+        }
       ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "moduleName": "weltmeister/modal-dialogs"
     },
     {
-      "definesLine": 4,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/weltmeister/select-file-dropdown.js",
-      "line": 1,
-      "moduleName": "weltmeister.select-file-dropdown",
-      "moduleNameIsStatic": true,
-      "requires": [],
-      "requiresLine": null,
-      "requiresMode": "none"
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../impact/impact.js"
+        },
+        {
+          "file": "lib/weltmeister/wm.js",
+          "line": 2,
+          "moduleName": "weltmeister/wm",
+          "specifier": "./wm.js"
+        }
+      ],
+      "moduleName": "weltmeister/select-file-dropdown"
     },
     {
-      "definesLine": 4,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/weltmeister/tile-select.js",
-      "line": 1,
-      "moduleName": "weltmeister.tile-select",
-      "moduleNameIsStatic": true,
-      "requires": [],
-      "requiresLine": null,
-      "requiresMode": "none"
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../impact/impact.js"
+        },
+        {
+          "file": "lib/weltmeister/config.js",
+          "line": 3,
+          "moduleName": "weltmeister/config",
+          "specifier": "./config.js"
+        },
+        {
+          "file": "lib/weltmeister/wm.js",
+          "line": 2,
+          "moduleName": "weltmeister/wm",
+          "specifier": "./wm.js"
+        }
+      ],
+      "moduleName": "weltmeister/tile-select"
     },
     {
-      "definesLine": 7,
-      "dynamicRequiresExpression": null,
+      "dynamicImports": [],
       "file": "lib/weltmeister/undo.js",
-      "line": 1,
-      "moduleName": "weltmeister.undo",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "weltmeister.config"
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../impact/impact.js"
+        },
+        {
+          "file": "lib/weltmeister/wm.js",
+          "line": 2,
+          "moduleName": "weltmeister/wm",
+          "specifier": "./wm.js"
+        }
       ],
-      "requiresLine": 4,
-      "requiresMode": "static"
+      "moduleName": "weltmeister/undo"
     },
     {
-      "definesLine": 18,
-      "dynamicRequiresExpression": null,
-      "file": "lib/weltmeister/weltmeister.js",
-      "line": 4,
-      "moduleName": "weltmeister.weltmeister",
-      "moduleNameIsStatic": true,
-      "requires": [
-        "dom.ready",
-        "impact.game",
-        "weltmeister.evented-input",
-        "weltmeister.config",
-        "weltmeister.edit-map",
-        "weltmeister.edit-entities",
-        "weltmeister.select-file-dropdown",
-        "weltmeister.modal-dialogs",
-        "weltmeister.undo"
+      "dynamicImports": [
+        {
+          "line": 34,
+          "expression": "expression-based import(...)"
+        }
       ],
-      "requiresLine": 7,
-      "requiresMode": "static"
+      "file": "lib/weltmeister/weltmeister.js",
+      "imports": [
+        {
+          "file": "lib/impact/impact.js",
+          "line": 1,
+          "moduleName": "impact/impact",
+          "specifier": "../impact/impact.js"
+        },
+        {
+          "file": "lib/weltmeister/config.js",
+          "line": 3,
+          "moduleName": "weltmeister/config",
+          "specifier": "./config.js"
+        },
+        {
+          "file": "lib/weltmeister/level-format.js",
+          "line": 4,
+          "moduleName": "weltmeister/level-format",
+          "specifier": "./level-format.js"
+        },
+        {
+          "file": "lib/weltmeister/wm.js",
+          "line": 2,
+          "moduleName": "weltmeister/wm",
+          "specifier": "./wm.js"
+        }
+      ],
+      "moduleName": "weltmeister/weltmeister"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/weltmeister/wm.js",
+      "imports": [],
+      "moduleName": "weltmeister/wm"
     }
   ],
-  "edges": [
+  "modulesFound": 51,
+  "roots": [
+    "game/entities/blob",
+    "game/entities/coin",
+    "game/entities/fireball",
+    "game/entities/hurt",
+    "game/entities/levelchange",
+    "game/entities/player",
+    "game/entities/trigger",
+    "game/main",
+    "plugins/camera",
+    "plugins/gamepad",
+    "plugins/impact-splash-loader",
+    "plugins/touch-button",
+    "weltmeister/api/node-api",
+    "weltmeister/edit-entities",
+    "weltmeister/edit-map",
+    "weltmeister/evented-input",
+    "weltmeister/main",
+    "weltmeister/modal-dialogs",
+    "weltmeister/undo"
+  ],
+  "sourceRoot": "lib",
+  "staticEdgesFound": 97,
+  "unresolvedDependencies": [],
+  "modulesWithoutStaticImports": [
     {
-      "from": "game.main",
-      "to": "impact.font"
+      "file": "lib/impact/core/class.js",
+      "moduleName": "impact/core/class"
     },
     {
-      "from": "game.main",
-      "to": "impact.game"
+      "file": "lib/impact/core/namespace.js",
+      "moduleName": "impact/core/namespace"
     },
     {
-      "from": "impact.animation",
-      "to": "impact.image"
+      "file": "lib/impact/core/native-extensions.js",
+      "moduleName": "impact/core/native-extensions"
     },
     {
-      "from": "impact.animation",
-      "to": "impact.timer"
+      "file": "lib/impact/core/object.js",
+      "moduleName": "impact/core/object"
     },
     {
-      "from": "impact.background-map",
-      "to": "impact.image"
+      "file": "lib/impact/core/vendor-attributes.js",
+      "moduleName": "impact/core/vendor-attributes"
     },
     {
-      "from": "impact.background-map",
-      "to": "impact.map"
+      "file": "lib/weltmeister/api/node-api.mjs",
+      "moduleName": "weltmeister/api/node-api"
     },
     {
-      "from": "impact.collision-map",
-      "to": "impact.map"
+      "file": "lib/weltmeister/entity-manifest.js",
+      "moduleName": "weltmeister/entity-manifest"
     },
     {
-      "from": "impact.debug.debug",
-      "to": "impact.debug.entities-panel"
+      "file": "lib/weltmeister/level-format.js",
+      "moduleName": "weltmeister/level-format"
     },
     {
-      "from": "impact.debug.debug",
-      "to": "impact.debug.graph-panel"
-    },
-    {
-      "from": "impact.debug.debug",
-      "to": "impact.debug.maps-panel"
-    },
-    {
-      "from": "impact.debug.entities-panel",
-      "to": "impact.debug.menu"
-    },
-    {
-      "from": "impact.debug.entities-panel",
-      "to": "impact.entity"
-    },
-    {
-      "from": "impact.debug.graph-panel",
-      "to": "impact.debug.menu"
-    },
-    {
-      "from": "impact.debug.graph-panel",
-      "to": "impact.game"
-    },
-    {
-      "from": "impact.debug.graph-panel",
-      "to": "impact.image"
-    },
-    {
-      "from": "impact.debug.graph-panel",
-      "to": "impact.system"
-    },
-    {
-      "from": "impact.debug.maps-panel",
-      "to": "impact.background-map"
-    },
-    {
-      "from": "impact.debug.maps-panel",
-      "to": "impact.debug.menu"
-    },
-    {
-      "from": "impact.debug.maps-panel",
-      "to": "impact.game"
-    },
-    {
-      "from": "impact.debug.menu",
-      "to": "dom.ready"
-    },
-    {
-      "from": "impact.debug.menu",
-      "to": "impact.system"
-    },
-    {
-      "from": "impact.entity",
-      "to": "impact.animation"
-    },
-    {
-      "from": "impact.entity",
-      "to": "impact.impact"
-    },
-    {
-      "from": "impact.entity-pool",
-      "to": "impact.game"
-    },
-    {
-      "from": "impact.font",
-      "to": "impact.image"
-    },
-    {
-      "from": "impact.game",
-      "to": "impact.background-map"
-    },
-    {
-      "from": "impact.game",
-      "to": "impact.collision-map"
-    },
-    {
-      "from": "impact.game",
-      "to": "impact.entity"
-    },
-    {
-      "from": "impact.game",
-      "to": "impact.impact"
-    },
-    {
-      "from": "impact.impact",
-      "to": "dom.ready"
-    },
-    {
-      "from": "impact.impact",
-      "to": "impact.input"
-    },
-    {
-      "from": "impact.impact",
-      "to": "impact.loader"
-    },
-    {
-      "from": "impact.impact",
-      "to": "impact.sound"
-    },
-    {
-      "from": "impact.impact",
-      "to": "impact.system"
-    },
-    {
-      "from": "impact.loader",
-      "to": "impact.font"
-    },
-    {
-      "from": "impact.loader",
-      "to": "impact.image"
-    },
-    {
-      "from": "impact.loader",
-      "to": "impact.sound"
-    },
-    {
-      "from": "impact.system",
-      "to": "impact.image"
-    },
-    {
-      "from": "impact.system",
-      "to": "impact.timer"
-    },
-    {
-      "from": "weltmeister.edit-entities",
-      "to": "impact.background-map"
-    },
-    {
-      "from": "weltmeister.edit-entities",
-      "to": "impact.game"
-    },
-    {
-      "from": "weltmeister.edit-entities",
-      "to": "weltmeister.config"
-    },
-    {
-      "from": "weltmeister.edit-entities",
-      "to": "weltmeister.entities"
-    },
-    {
-      "from": "weltmeister.edit-entities",
-      "to": "weltmeister.tile-select"
-    },
-    {
-      "from": "weltmeister.edit-map",
-      "to": "impact.background-map"
-    },
-    {
-      "from": "weltmeister.edit-map",
-      "to": "weltmeister.tile-select"
-    },
-    {
-      "from": "weltmeister.entityLoader",
-      "to": "weltmeister.config"
-    },
-    {
-      "from": "weltmeister.evented-input",
-      "to": "impact.input"
-    },
-    {
-      "from": "weltmeister.modal-dialogs",
-      "to": "weltmeister.select-file-dropdown"
-    },
-    {
-      "from": "weltmeister.undo",
-      "to": "weltmeister.config"
-    },
-    {
-      "from": "weltmeister.weltmeister",
-      "to": "dom.ready"
-    },
-    {
-      "from": "weltmeister.weltmeister",
-      "to": "impact.game"
-    },
-    {
-      "from": "weltmeister.weltmeister",
-      "to": "weltmeister.config"
-    },
-    {
-      "from": "weltmeister.weltmeister",
-      "to": "weltmeister.edit-entities"
-    },
-    {
-      "from": "weltmeister.weltmeister",
-      "to": "weltmeister.edit-map"
-    },
-    {
-      "from": "weltmeister.weltmeister",
-      "to": "weltmeister.evented-input"
-    },
-    {
-      "from": "weltmeister.weltmeister",
-      "to": "weltmeister.modal-dialogs"
-    },
-    {
-      "from": "weltmeister.weltmeister",
-      "to": "weltmeister.select-file-dropdown"
-    },
-    {
-      "from": "weltmeister.weltmeister",
-      "to": "weltmeister.undo"
+      "file": "lib/weltmeister/wm.js",
+      "moduleName": "weltmeister/wm"
     }
   ]
 }

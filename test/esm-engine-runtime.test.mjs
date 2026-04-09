@@ -41,7 +41,7 @@ test('ESM engine entry exposes window.ig and ig.main', async () => {
   installBrowserLikeGlobals();
 
   const moduleUrl =
-    `${pathToFileURL(path.resolve('lib-esm/impact/impact.js')).href}?test=${Date.now()}`;
+    `${pathToFileURL(path.resolve('lib/impact/impact.js')).href}?test=${Date.now()}`;
   const engineModule = await import(moduleUrl);
 
   assert.equal(engineModule.default, globalThis.window.ig);
@@ -55,7 +55,7 @@ test('ESM engine entry resolves classes without direct ig.global lookups', async
   installBrowserLikeGlobals();
 
   const moduleUrl =
-    `${pathToFileURL(path.resolve('lib-esm/impact/impact.js')).href}?test=${Date.now()}-registry`;
+    `${pathToFileURL(path.resolve('lib/impact/impact.js')).href}?test=${Date.now()}-registry`;
   const ig = (await import(moduleUrl)).default;
 
   const EntityRegistryTest = ig.Entity.extend({});

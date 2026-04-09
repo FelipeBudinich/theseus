@@ -1,6 +1,6 @@
 {
   "sourceDirectories": [
-    "lib-esm/game/entities"
+    "lib/game/entities"
   ],
   "entities": [
     {
@@ -8,7 +8,7 @@
       "moduleId": "game.entities.blob",
       "className": "EntityBlob",
       "displayName": "Blob",
-      "filePath": "lib-esm/game/entities/blob.js",
+      "filePath": "lib/game/entities/blob.js",
       "importPath": "../game/entities/blob.js"
     },
     {
@@ -16,7 +16,7 @@
       "moduleId": "game.entities.coin",
       "className": "EntityCoin",
       "displayName": "Coin",
-      "filePath": "lib-esm/game/entities/coin.js",
+      "filePath": "lib/game/entities/coin.js",
       "importPath": "../game/entities/coin.js"
     },
     {
@@ -24,7 +24,7 @@
       "moduleId": "game.entities.fireball",
       "className": "EntityFireball",
       "displayName": "Fireball",
-      "filePath": "lib-esm/game/entities/fireball.js",
+      "filePath": "lib/game/entities/fireball.js",
       "importPath": "../game/entities/fireball.js"
     },
     {
@@ -32,7 +32,7 @@
       "moduleId": "game.entities.hurt",
       "className": "EntityHurt",
       "displayName": "Hurt",
-      "filePath": "lib-esm/game/entities/hurt.js",
+      "filePath": "lib/game/entities/hurt.js",
       "importPath": "../game/entities/hurt.js"
     },
     {
@@ -40,7 +40,7 @@
       "moduleId": "game.entities.levelchange",
       "className": "EntityLevelchange",
       "displayName": "Levelchange",
-      "filePath": "lib-esm/game/entities/levelchange.js",
+      "filePath": "lib/game/entities/levelchange.js",
       "importPath": "../game/entities/levelchange.js"
     },
     {
@@ -48,7 +48,7 @@
       "moduleId": "game.entities.player",
       "className": "EntityPlayer",
       "displayName": "Player",
-      "filePath": "lib-esm/game/entities/player.js",
+      "filePath": "lib/game/entities/player.js",
       "importPath": "../game/entities/player.js"
     },
     {
@@ -56,7 +56,7 @@
       "moduleId": "game.entities.trigger",
       "className": "EntityTrigger",
       "displayName": "Trigger",
-      "filePath": "lib-esm/game/entities/trigger.js",
+      "filePath": "lib/game/entities/trigger.js",
       "importPath": "../game/entities/trigger.js"
     }
   ]

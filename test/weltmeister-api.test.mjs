@@ -46,17 +46,17 @@ test('saveFile writes .json files relative to the configured project root', asyn
   const projectRoot = await makeTempProjectRoot();
   t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
 
-  await fs.mkdir(path.join(projectRoot, 'lib-esm/game/levels'), { recursive: true });
+  await fs.mkdir(path.join(projectRoot, 'lib/game/levels'), { recursive: true });
 
   const result = await saveFile({
     projectRoot,
-    filePath: 'lib-esm/game/levels/test-level.json',
+    filePath: 'lib/game/levels/test-level.json',
     data: '{\n  "entities": [],\n  "layer": []\n}\n'
   });
 
   assert.deepEqual(result, { error: 0 });
   assert.equal(
-    await fs.readFile(path.join(projectRoot, 'lib-esm/game/levels/test-level.json'), 'utf8'),
+    await fs.readFile(path.join(projectRoot, 'lib/game/levels/test-level.json'), 'utf8'),
     '{\n  "entities": [],\n  "layer": []\n}\n'
   );
 });

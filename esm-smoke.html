@@ -21,11 +21,11 @@
 </head>
 <body data-status="pending">
   <h1>Impact ESM Smoke Test</h1>
-  <p>This page imports <code>lib-esm/impact/ig.js</code> directly in the browser.</p>
+  <p>This page imports <code>lib/impact/ig.js</code> directly in the browser.</p>
   <pre id="status">Loading…</pre>
 
   <script type="module">
-    import ig from './lib-esm/impact/ig.js';
+    import ig from './lib/impact/ig.js';
 
     const wm = ig.namespace('wm');
     const Example = ig.Class.extend({
