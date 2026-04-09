@@ -23,5 +23,5 @@ The server listens on `http://127.0.0.1:3000` by default and is also reachable a
 ## Historical leftovers
 
 - The live `lib/` tree is now the ESM runtime; the old legacy `ig.module(...)` implementation has been retired.
-- The Express baseline serves the Node-backed Weltmeister API under `/lib/weltmeister/api/*.php`; no PHP execution is required.
+- The Express baseline serves the Node-backed Weltmeister save API at `/lib/weltmeister/api/save` and browse API at `/lib/weltmeister/api/browse`; no PHP execution is required.
 - `tools/` now mixes active maintenance scripts with archived reference utilities for the retired `ig.module(...)` bake workflow.

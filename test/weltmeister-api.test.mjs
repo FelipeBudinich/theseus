@@ -1,17 +1,16 @@
 import assert from 'node:assert/strict';
+import { once } from 'node:events';
 import fs from 'node:fs/promises';
+import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
 import {
   browseFiles,
-  getGlobPatterns,
-  getWeltmeisterUrlencodedOptions,
-  globFiles,
-  saveFile,
-  WELTMEISTER_URLENCODED_LIMIT
+  saveFile
 } from '../lib/weltmeister/api/node-api.mjs';
+import { createApp } from '../server.mjs';
 
 const makeTempProjectRoot = async () =>
   fs.mkdtemp(path.join(os.tmpdir(), 'theseus-weltmeister-api-'));
@@ -22,6 +21,65 @@ const writeProjectFile = async (projectRoot, relativePath, contents = '') => {
   await fs.writeFile(targetPath, contents, 'utf8');
   return targetPath;
 };
+
+const startTestServer = async (projectRoot, t) => {
+  const app = createApp({ projectRoot });
+  const server = app.listen(0, '127.0.0.1');
+  await once(server, 'listening');
+
+  t.after(
+    () =>
+      new Promise((resolve, reject) => {
+        server.close((error) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+          resolve();
+        });
+      })
+  );
+
+  const address = server.address();
+  const port = typeof address === 'object' && address ? address.port : 0;
+
+  return { port };
+};
+
+const requestServer = ({ method = 'GET', port, path, headers = {}, body }) =>
+  new Promise((resolve, reject) => {
+    const request = http.request(
+      {
+        host: '127.0.0.1',
+        port,
+        method,
+        path,
+        headers
+      },
+      (response) => {
+        const chunks = [];
+
+        response.on('data', (chunk) => {
+          chunks.push(chunk);
+        });
+        response.on('end', () => {
+          const text = Buffer.concat(chunks).toString('utf8');
+          resolve({
+            statusCode: response.statusCode ?? 0,
+            body: text
+          });
+        });
+      }
+    );
+
+    request.on('error', reject);
+
+    if (body) {
+      request.write(body);
+    }
+
+    request.end();
+  });
 
 test('saveFile writes .js files relative to the configured project root', async (t) => {
   const projectRoot = await makeTempProjectRoot();
@@ -99,6 +157,64 @@ test('saveFile preserves the .js/.json level suffix constraint', async (t) => {
   });
 });
 
+test('save route accepts JSON requests and returns ok on success', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  await fs.mkdir(path.join(projectRoot, 'lib/game/levels'), { recursive: true });
+
+  const { port } = await startTestServer(projectRoot, t);
+  const requestBody = JSON.stringify({
+    path: 'lib/game/levels/test-level.js',
+    data: 'export default 1;\n'
+  });
+
+  const response = await requestServer({
+    method: 'POST',
+    port,
+    path: '/lib/weltmeister/api/save',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(requestBody)
+    },
+    body: requestBody
+  });
+
+  assert.equal(response.statusCode, 200);
+  assert.deepEqual(JSON.parse(response.body), { ok: true });
+  assert.equal(
+    await fs.readFile(path.join(projectRoot, 'lib/game/levels/test-level.js'), 'utf8'),
+    'export default 1;\n'
+  );
+});
+
+test('save route returns 400 with a JSON error for unsupported file suffixes', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  const { port } = await startTestServer(projectRoot, t);
+  const requestBody = JSON.stringify({
+    path: 'lib/game/levels/not-allowed.txt',
+    data: '{}'
+  });
+
+  const response = await requestServer({
+    method: 'POST',
+    port,
+    path: '/lib/weltmeister/api/save',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(requestBody)
+    },
+    body: requestBody
+  });
+
+  assert.equal(response.statusCode, 400);
+  assert.deepEqual(JSON.parse(response.body), {
+    error: 'File must have a .js or .json suffix'
+  });
+});
+
 test('browseFiles returns parent, directory, and file lists with legacy filtering', async (t) => {
   const projectRoot = await makeTempProjectRoot();
   t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
@@ -146,39 +262,88 @@ test('browseFiles returns parent, directory, and file lists with legacy filterin
   });
 });
 
-test('globFiles expands multiple patterns relative to the project root', async (t) => {
+test('browse route returns image listings from the new browse endpoint', async (t) => {
   const projectRoot = await makeTempProjectRoot();
   t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
 
-  await writeProjectFile(projectRoot, 'lib/game/entities/player.js');
-  await writeProjectFile(projectRoot, 'lib/game/entities/enemy.js');
-  await writeProjectFile(projectRoot, 'lib/game/powerups/shield.js');
+  await writeProjectFile(projectRoot, 'media/hero.png');
+  await writeProjectFile(projectRoot, 'media/readme.txt');
+  await writeProjectFile(projectRoot, 'media/.hidden.png');
+  await writeProjectFile(projectRoot, 'media/scripts/player.js');
+  await fs.mkdir(path.join(projectRoot, 'media/backgrounds'), { recursive: true });
 
-  const files = await globFiles({
-    projectRoot,
-    patterns: ['lib/game/entities/*.js', '../lib/game/powerups/*.js']
+  const { port } = await startTestServer(projectRoot, t);
+  const response = await requestServer({
+    port,
+    path: '/lib/weltmeister/api/browse?dir=media&type=images'
   });
 
-  assert.deepEqual(files, [
-    'lib/game/entities/enemy.js',
-    'lib/game/entities/player.js',
-    'lib/game/powerups/shield.js'
-  ]);
-});
-
-test('getGlobPatterns accepts the legacy glob[] query shape', () => {
-  assert.deepEqual(
-    getGlobPatterns({
-      'glob[]': ['lib/game/entities/*.js', 'lib/game/powerups/*.js']
-    }),
-    ['lib/game/entities/*.js', 'lib/game/powerups/*.js']
-  );
-});
-
-test('save route uses a larger urlencoded parser limit for Weltmeister level payloads', () => {
-  assert.deepEqual(getWeltmeisterUrlencodedOptions(), {
-    extended: false,
-    limit: WELTMEISTER_URLENCODED_LIMIT
+  assert.equal(response.statusCode, 200);
+  assert.deepEqual(JSON.parse(response.body), {
+    parent: '',
+    dirs: ['media/backgrounds', 'media/scripts'],
+    files: ['media/hero.png']
   });
-  assert.equal(WELTMEISTER_URLENCODED_LIMIT, '10mb');
+});
+
+test('browse route returns script listings from the new browse endpoint', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  await writeProjectFile(projectRoot, 'media/scripts/player.js');
+  await writeProjectFile(projectRoot, 'media/scripts/player.json');
+
+  const { port } = await startTestServer(projectRoot, t);
+  const response = await requestServer({
+    port,
+    path: '/lib/weltmeister/api/browse?dir=media/scripts&type=scripts'
+  });
+
+  assert.equal(response.statusCode, 200);
+  assert.deepEqual(JSON.parse(response.body), {
+    parent: 'media',
+    dirs: [],
+    files: ['media/scripts/player.js', 'media/scripts/player.json']
+  });
+});
+
+test('createApp leaves glob.php unmatched so requests return 404', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  const { port } = await startTestServer(projectRoot, t);
+
+  const response = await requestServer({
+    port,
+    path: '/lib/weltmeister/api/glob.php'
+  });
+
+  assert.equal(response.statusCode, 404);
+});
+
+test('createApp leaves save.php unmatched so requests return 404', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  const { port } = await startTestServer(projectRoot, t);
+  const response = await requestServer({
+    method: 'POST',
+    port,
+    path: '/lib/weltmeister/api/save.php'
+  });
+
+  assert.equal(response.statusCode, 404);
+});
+
+test('createApp leaves browse.php unmatched so requests return 404', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  const { port } = await startTestServer(projectRoot, t);
+  const response = await requestServer({
+    port,
+    path: '/lib/weltmeister/api/browse.php?dir=media&type=images'
+  });
+
+  assert.equal(response.statusCode, 404);
 });
