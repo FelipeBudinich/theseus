@@ -126,6 +126,24 @@ test('mouse and wheel string binds initialize mouse listeners', () => {
   );
 });
 
+test('gamepad string binds initialize gamepad listeners when available', () => {
+  const { input } = createInputHarness();
+  var initGamepadCalls = 0;
+
+  input.initGamepad = function() {
+    initGamepadCalls++;
+    this.isUsingGamepad = true;
+  };
+
+  input.bind('GamepadLeft', 'left');
+
+  assert.equal(input.bindings.GamepadLeft, 'left');
+  assert.equal(initGamepadCalls, 1);
+  assert.equal(input.isUsingGamepad, true);
+  assert.equal(input.isUsingKeyboard, false);
+  assert.equal(input.isUsingMouse, false);
+});
+
 test('numeric binds are rejected', () => {
   const { input } = createInputHarness();
 
