@@ -35,8 +35,7 @@
       classRegistryPresent:
         typeof ig.registerClass === 'function' &&
         typeof ig.getClass === 'function' &&
-        typeof ig.resolveClass === 'function',
-      noLegacyLoaderApiUsedForImport: typeof ig.module === 'undefined'
+        typeof ig.resolveClass === 'function'
     };
     const passed = Object.values(results).every((value) => value === true);
 

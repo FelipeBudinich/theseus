@@ -55,8 +55,6 @@ APIs alive and overlap with old-browser compatibility.
 - `lib/impact/sound.js` still probes audio formats with `canPlayType()` and can
   use HTML audio. That is normal capability detection, not specifically
   deprecated-browser support.
-- Docs/tests mentioning "legacy" often refer to the Impact `ig.module(...)`
-  migration or Weltmeister API compatibility, not browser support.
 
 ## Suggested Cleanup Order
 

@@ -1,8 +1,7 @@
 # ESM Migration Note
 
-The native ESM migration is now complete in the live repo layout: browser and
-editor entrypoints load only from `lib/`, and the legacy `ig.module(...)`
-runtime has been retired.
+The native ESM migration is complete in the live repo layout: browser and
+editor entrypoints load from `lib/`.
 
 ## Live Entrypoints
 
@@ -16,7 +15,7 @@ runtime has been retired.
 
 1. Import every dependency explicitly from `lib/`.
 2. Assign the public API back onto `ig` or a namespace created with `ig.namespace(...)`.
-3. Export the same symbol from the file so ESM callers and legacy-style global access stay aligned.
+3. Export the same symbol from the file so ESM callers and global access stay aligned.
 
 ## Module Shape
 
@@ -35,8 +34,8 @@ export default Something;
 All live engine, game, and editor files should stay native ESM from the start.
 
 The current runtime shape keeps `ig` as the default export from the Impact
-entry modules. Browser callers import the module directly, while legacy-style
-global access still works through `window.ig`.
+entry modules. Browser callers import the module directly, and global access
+still works through `window.ig`.
 
 ## Weltmeister Entity Manifest
 
@@ -74,8 +73,7 @@ Level format stays explicit through the target file path:
 
 Current ESM level modules embed the level JSON between `/*JSON[*/` markers,
 register themselves through `ig.Game.registerLevel(...)`, and export the level
-symbol plus its resource list. Legacy `ig.module(...)`-wrapped level files are
-not considered live-compatible inputs anymore.
+symbol plus its resource list.
 
 ## Generated Project Docs
 
@@ -100,5 +98,4 @@ paths still come from the source-hosted `/media/...` tree.
 ## Build Tooling
 
 The active maintenance scripts in `tools/` are Node-based helpers for the live
-ESM project. The old `ig.module(...)` bake utilities have been removed from the
-repo; use `npm run bake` for the current game build instead.
+ESM project. Use `npm run bake` for the current game build.

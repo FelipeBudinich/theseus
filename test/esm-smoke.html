@@ -35,7 +35,7 @@
     });
     const merged = ig.merge({ nested: { keep: true } }, { nested: { add: 'ok' } });
     const results = {
-      message: 'ESM bootstrap loaded without ig.module()',
+      message: 'ESM bootstrap loaded',
       windowIgMatchesImport: window.ig === ig,
       namespaceBootstrapWorks: wm === window.wm,
       classSystemWorks: new Example().answer === 42,
