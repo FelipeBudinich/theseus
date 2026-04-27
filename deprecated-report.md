@@ -1,7 +1,7 @@
 # Deprecated Browser Support Report
 
 Generated: 2026-04-27
-Last updated: 2026-04-27 with resolved items removed
+Last updated: 2026-04-27 after removing the Chrome 49 background-map workaround
 
 ## Scope
 
@@ -19,8 +19,7 @@ and the runtime uses syntax that old browsers cannot parse. There is no explicit
 
 ## Current Summary
 
-- High-confidence deprecated-browser support still remains in the Chrome 49
-  background-map workaround.
+- No high-confidence deprecated-browser support remains from the current scan.
 - Medium-confidence compatibility residue remains in editor input handling: old
   key event fallbacks.
 - I did not find classic IE event/model support such as `attachEvent`,
@@ -29,9 +28,17 @@ and the runtime uses syntax that old browsers cannot parse. There is no explicit
 
 ## High-Confidence Findings
 
-| Priority | Location | Finding | Deprecated target | Modern direction |
-| --- | --- | --- | --- | --- |
-| P2 | `lib/impact/background-map.js:111-115` | Pre-rendered background chunks are converted from canvas to image for a documented Chrome 49 performance workaround. | Chrome 49-era rendering bug. | Re-test modern performance and remove the conversion if offscreen canvases are now acceptable. |
+None remaining.
+
+## Rendering Follow-Up
+
+- `lib/impact/background-map.js` now returns its existing off-DOM
+  `HTMLCanvasElement` chunks directly instead of converting them through
+  `toDataURL()` for a Chrome 49-era workaround. A future rendering audit could
+  consider migrating this path to the newer `OffscreenCanvas` class, but that
+  should stay separate from this cleanup because it needs checks around
+  `ig.System.scaleMode()`, Ejecta-related canvas assumptions, and any code
+  expecting DOM canvas properties.
 
 ## Input API Compatibility Residue
 
@@ -58,5 +65,5 @@ APIs alive and overlap with old-browser compatibility.
 ## Suggested Cleanup Order
 
 1. Modernize keyboard input events (`event.key`/`event.code`).
-2. Revisit the Chrome 49 background-map workaround with a modern performance
-   smoke test.
+2. Consider a separate `OffscreenCanvas` migration audit for pre-rendered
+   background chunks after confirming DOM-canvas assumptions.
