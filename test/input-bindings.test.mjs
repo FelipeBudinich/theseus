@@ -135,11 +135,36 @@ test('gamepad string binds initialize gamepad listeners when available', () => {
     this.isUsingGamepad = true;
   };
 
-  input.bind('GamepadLeft', 'left');
+  input.bind('Gamepad0Left', 'left');
 
-  assert.equal(input.bindings.GamepadLeft, 'left');
+  assert.equal(input.bindings.Gamepad0Left, 'left');
   assert.equal(initGamepadCalls, 1);
   assert.equal(input.isUsingGamepad, true);
+  assert.equal(input.isUsingKeyboard, false);
+  assert.equal(input.isUsingMouse, false);
+});
+
+test('generic gamepad binds are rejected', () => {
+  const { input } = createInputHarness();
+  var initGamepadCalls = 0;
+
+  input.initGamepad = function() {
+    initGamepadCalls++;
+    this.isUsingGamepad = true;
+  };
+
+  for (const key of ['GamepadLeft', 'GamepadFaceBottom']) {
+    assert.throws(
+      () => input.bind(key, 'action'),
+      {
+        name: 'Error',
+        message: 'Gamepad bindings must include a controller index, e.g. Gamepad0Left'
+      }
+    );
+    assert.equal(input.bindings[key], undefined);
+  }
+
+  assert.equal(initGamepadCalls, 0);
   assert.equal(input.isUsingKeyboard, false);
   assert.equal(input.isUsingMouse, false);
 });

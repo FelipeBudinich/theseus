@@ -119,12 +119,12 @@ test('gamepad plugin removes legacy public numeric constants', () => {
   assert.equal(ig[legacyOffsetName], undefined);
 });
 
-test('standard button 0 fires raw and semantic face-bottom codes', () => {
+test('standard button 0 fires indexed raw and semantic face-bottom codes', () => {
   gamepads = [createGamepad({ buttons: { 0: createButton({ pressed: true }) } })];
   const input = createInput();
 
-  input.bind('GamepadButton0', 'rawJump');
-  input.bind('GamepadFaceBottom', 'jump');
+  input.bind('Gamepad0Button0', 'rawJump');
+  input.bind('Gamepad0FaceBottom', 'jump');
   input.pollGamepad();
 
   assert.equal(input.presses.rawJump, true);
@@ -133,22 +133,42 @@ test('standard button 0 fires raw and semantic face-bottom codes', () => {
   assert.equal(input.actions.jump, true);
 });
 
-test('standard d-pad left button fires GamepadLeft alias', () => {
+test('standard button 0 uses the controller index when firing codes', () => {
+  gamepads = [
+    createGamepad({ index: 0 }),
+    createGamepad({
+      buttons: { 0: createButton({ pressed: true }) },
+      index: 1
+    })
+  ];
+  const input = createInput();
+
+  input.bind('Gamepad0FaceBottom', 'p1Jump');
+  input.bind('Gamepad1Button0', 'p2RawJump');
+  input.bind('Gamepad1FaceBottom', 'p2Jump');
+  input.pollGamepad();
+
+  assert.equal(input.presses.p1Jump, undefined);
+  assert.equal(input.presses.p2RawJump, true);
+  assert.equal(input.presses.p2Jump, true);
+});
+
+test('standard d-pad left button fires indexed left alias', () => {
   gamepads = [createGamepad({ buttons: { 14: createButton({ pressed: true }) } })];
   const input = createInput();
 
-  input.bind('GamepadLeft', 'left');
+  input.bind('Gamepad0Left', 'left');
   input.pollGamepad();
 
   assert.equal(input.presses.left, true);
   assert.equal(input.actions.left, true);
 });
 
-test('standard left stick axis fires GamepadLeft alias', () => {
+test('standard left stick axis fires indexed left alias', () => {
   gamepads = [createGamepad({ axes: [-0.75, 0, 0, 0] })];
   const input = createInput();
 
-  input.bind('GamepadLeft', 'left');
+  input.bind('Gamepad0Left', 'left');
   input.pollGamepad();
 
   assert.equal(input.presses.left, true);
@@ -159,9 +179,9 @@ test('non-standard axes fire raw fallback codes only', () => {
   gamepads = [createGamepad({ axes: [-0.75, 0.75], mapping: '' })];
   const input = createInput();
 
-  input.bind('GamepadAxis0Negative', 'leftAxis');
-  input.bind('GamepadAxis1Positive', 'downAxis');
-  input.bind('GamepadLeft', 'left');
+  input.bind('Gamepad0Axis0Negative', 'leftAxis');
+  input.bind('Gamepad0Axis1Positive', 'downAxis');
+  input.bind('Gamepad0Left', 'left');
   input.pollGamepad();
 
   assert.equal(input.presses.leftAxis, true);
@@ -174,7 +194,7 @@ test('released gamepad codes populate delayedKeyup', () => {
   gamepads = [gamepad];
   const input = createInput();
 
-  input.bind('GamepadFaceBottom', 'jump');
+  input.bind('Gamepad0FaceBottom', 'jump');
   input.pollGamepad();
   input.clearPressed();
 
