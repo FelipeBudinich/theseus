@@ -20,7 +20,7 @@ and the runtime uses syntax that old browsers cannot parse. There is no explicit
 ## Current Summary
 
 - High-confidence deprecated-browser support still remains in the Chrome 49
-  background-map workaround and the `Function.prototype.bind` polyfill.
+  background-map workaround.
 - Medium-confidence compatibility residue remains in editor input/storage: old
   wheel/key event fallbacks and cookie fallback storage.
 - I did not find classic IE event/model support such as `attachEvent`,
@@ -32,7 +32,6 @@ and the runtime uses syntax that old browsers cannot parse. There is no explicit
 | Priority | Location | Finding | Deprecated target | Modern direction |
 | --- | --- | --- | --- | --- |
 | P2 | `lib/impact/background-map.js:111-115` | Pre-rendered background chunks are converted from canvas to image for a documented Chrome 49 performance workaround. | Chrome 49-era rendering bug. | Re-test modern performance and remove the conversion if offscreen canvases are now acceptable. |
-| P2 | `lib/impact/core/native-extensions.js:73-92` | Runtime installs a `Function.prototype.bind` polyfill. | Pre-ES5 browsers, especially old IE. | Remove under an ESM/modern-browser baseline. |
 
 ## Input API Compatibility Residue
 
@@ -72,5 +71,3 @@ APIs alive and overlap with old-browser compatibility.
    whether the cookie fallback remains valuable for blocked-storage scenarios.
 2. Revisit the Chrome 49 background-map workaround with a modern performance
    smoke test.
-3. Remove the `Function.prototype.bind` polyfill under the ESM/modern-browser
-   baseline.
