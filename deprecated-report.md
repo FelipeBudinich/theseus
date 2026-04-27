@@ -1,6 +1,7 @@
 # Deprecated Browser Support Report
 
 Generated: 2026-04-27
+Last updated: 2026-04-27 after MS pointer cleanup
 
 ## Scope
 
@@ -16,29 +17,53 @@ The current app already assumes a modern baseline in practice: `index.html`,
 and the runtime uses syntax that old browsers cannot parse. There is no explicit
 `browserslist` entry or Vite `build.target` documenting that baseline.
 
-## Executive Summary
+## Status Update
 
-- High-confidence deprecated-browser support remains in the live runtime and
-  editor: MS pointer events, `msTouchAction`, `navigator.msMaxTouchPoints`,
-  generic `ms`/`moz`/`webkit`/`o` property normalization, IE image scaling
-  properties, and a Chrome 49 workaround.
+Completed in this cleanup pass:
+
+- Removed `MSPointerDown`, `MSPointerUp`, and `MSPointerMove` listeners from
+  `lib/impact/input.js` and `lib/plugins/touch-button.js`.
+- Removed `msTouchAction` writes and replaced the remaining touch-action intent
+  with the standard `touchAction` style property.
+- Removed dedicated `touchStartMS` and `touchEndMS` code from touch buttons.
+- Replaced `navigator.msMaxTouchPoints` with a modern touch/pointer policy:
+  touch events are detected with `ontouchstart`, and pointer-capable touch
+  hardware is detected with unprefixed `PointerEvent` plus
+  `navigator.maxTouchPoints`.
+- Removed obsolete `ig.ua.winPhone` and `ig.ua.iPhone4` UA branches while
+  updating the touch policy.
+- Updated the two Node browser-like test fixtures from `msMaxTouchPoints` to
+  `maxTouchPoints`.
+
+After this pass, `MSPointer`, `msTouchAction`, `msMaxTouchPoints`, `winPhone`,
+and `iPhone4` no longer appear in source or tests outside this report.
+
+## Current Summary
+
+- High-confidence deprecated-browser support still remains in generic
+  `ms`/`moz`/`webkit`/`o` property normalization, prefixed animation/audio
+  normalization, IE image scaling properties, and a Chrome 49 workaround.
 - Medium-confidence compatibility residue remains in editor input/storage and
   CSS: `Function.prototype.bind` polyfill, old wheel/key event fallbacks, cookie
   fallback storage, and old prefixed style declarations.
 - I did not find classic IE event/model support such as `attachEvent`,
   `detachEvent`, `ActiveXObject`, `XDomainRequest`, `document.all`, or IE
   conditional comments.
-- The lowest-risk first cleanup is removing MS pointer support, then narrowing
-  vendor-prefix helpers, then modernizing input/storage/CSS compatibility.
 
-## High-Confidence Findings
+## Completed Findings
+
+| Location | Former finding | Current state |
+| --- | --- | --- |
+| `lib/impact/input.js:123-129` | Canvas input registered MS pointer listeners and wrote `msTouchAction`. | Standard touch listeners remain; MS listeners were removed and `touchAction` is now used. |
+| `lib/impact/input.js:242-248` | `bindTouch()` registered MS pointer listeners. | Only standard `touchstart`/`touchend` listeners remain. |
+| `lib/plugins/touch-button.js:50-76`, `lib/plugins/touch-button.js:115-123` | Touch buttons had MS pointer handlers, MS listeners, and `document.body.style.msTouchAction`. | MS handlers/listeners were deleted; the collection now uses standard touch events and `touchAction`. |
+| `lib/impact/ig.js:80-91` | UA detection included Windows Phone, obsolete iPhone 4, and `navigator.msMaxTouchPoints`. | Windows Phone/iPhone 4 branches were removed; touch detection now uses `ontouchstart`, `PointerEvent`, and `navigator.maxTouchPoints`. |
+| `test/esm-engine-runtime.test.mjs:29`, `test/weltmeister-entity-manifest.test.mjs:35` | Browser-like fixtures set `navigator.msMaxTouchPoints`. | Fixtures now set `navigator.maxTouchPoints`. |
+
+## Remaining High-Confidence Findings
 
 | Priority | Location | Finding | Deprecated target | Modern direction |
 | --- | --- | --- | --- | --- |
-| P1 | `lib/impact/input.js:130-134` | Canvas input registers `MSPointerDown`, `MSPointerUp`, `MSPointerMove`, and writes `canvas.style.msTouchAction`. | IE10/IE11, old EdgeHTML, Windows Phone. | Remove these listeners and use the existing touch/mouse path, or migrate input to standard `pointerdown`/`pointerup`/`pointermove` plus `touch-action`. |
-| P1 | `lib/impact/input.js:252-255` | `bindTouch()` also registers `MSPointerDown` and `MSPointerUp`. | IE10/IE11 and old EdgeHTML. | Remove the MS pointer registrations. If pointer events are desired, use unprefixed `pointerdown`/`pointerup`. |
-| P1 | `lib/plugins/touch-button.js:78-96`, `lib/plugins/touch-button.js:142-145` | Touch buttons have dedicated `touchStartMS`/`touchEndMS` handlers, MS pointer listeners, and `document.body.style.msTouchAction`. | IE10/IE11, old EdgeHTML, Windows Phone. | Delete the MS-only handlers and listeners. Keep standard touch events or migrate the collection to unprefixed pointer events. |
-| P1 | `lib/impact/ig.js:80-88` | User-agent detection includes `Windows Phone`, obsolete `iPhone4`, and touch detection checks `navigator.msMaxTouchPoints`. | Windows Phone and IE/EdgeHTML touch APIs. | Remove Windows Phone and `msMaxTouchPoints`; prefer feature detection such as `navigator.maxTouchPoints`, `PointerEvent`, or the existing touch-event check. |
 | P1 | `lib/impact/core/vendor-attributes.js:4-10` | `vendorPropertyNames()` checks unprefixed plus `ms`, `moz`, `webkit`, and `o` properties for every normalized attribute. | Old IE, old Firefox, old WebKit, Opera Presto. | Remove the generic vendor prefix helper, or narrow it to a temporary local helper while deleting each prefixed consumer. |
 | P1 | `lib/impact/ig.js:25` | `requestAnimationFrame` is normalized through the generic prefix helper before use. | `msRequestAnimationFrame`, `mozRequestAnimationFrame`, `webkitRequestAnimationFrame`, `oRequestAnimationFrame`. | Use unprefixed `window.requestAnimationFrame`; keep the `setInterval` fallback only if non-browser tests still need it. |
 | P1 | `lib/impact/sound.js:517-518` | `AudioContext` is normalized through the generic prefix helper, enabling old `webkitAudioContext`-style support. | Old Safari/Chrome Web Audio implementations. | Use unprefixed `window.AudioContext` only for a modern-browser baseline. |
@@ -53,8 +78,8 @@ APIs alive and overlap with old-browser compatibility.
 
 | Priority | Location | Finding | Modern direction |
 | --- | --- | --- | --- |
-| P2 | `lib/weltmeister/evented-input.js:53-55` | Wheel direction uses `event.wheelDelta` and `event.detail`, the old `mousewheel`/`DOMMouseScroll` shape, even though the inherited listener is registered for standard `wheel`. | Use `event.deltaY`, matching `lib/impact/input.js:154-155`. |
-| P2 | `lib/impact/input.js:194-196`, `lib/impact/input.js:224-226` | Keyboard binding relies on `event.keyCode`. | Move toward `event.code` or `event.key` while preserving the existing `ig.KEY` action map. |
+| P2 | `lib/weltmeister/evented-input.js:53-55` | Wheel direction uses `event.wheelDelta` and `event.detail`, the old `mousewheel`/`DOMMouseScroll` shape, even though the inherited listener is registered for standard `wheel`. | Use `event.deltaY`, matching `lib/impact/input.js:148-149`. |
+| P2 | `lib/impact/input.js:188-190`, `lib/impact/input.js:218-220` | Keyboard binding relies on `event.keyCode`. | Move toward `event.code` or `event.key` while preserving the existing `ig.KEY` action map. |
 | P2 | `lib/weltmeister/evented-input.js:17-19`, `lib/weltmeister/evented-input.js:39-41` | Weltmeister evented input also relies on `event.keyCode`. | Same as above. |
 | P3 | `lib/weltmeister/edit-entities.js:37-40`, `lib/weltmeister/edit-entities.js:381-382`, `lib/weltmeister/weltmeister.js:179-182` | Editor keyboard handling mixes modern `event.key` with `event.which`/`event.keyCode` fallbacks. | Keep `event.key` for text commands and remove `which`/`keyCode` fallback once the input map is modernized. |
 
@@ -80,14 +105,6 @@ works in modern Chromium/Safari but is not portable.
 | P3 | `lib/weltmeister/weltmeister.css:9`, `:62`, `:168` | Uses `-webkit-font-smoothing`. | This is a non-standard rendering preference, not strictly deprecated-browser support. Keep only if the visual style depends on it. |
 | P3 | `lib/weltmeister/weltmeister.css:486-491` | Uses `::-webkit-scrollbar` pseudo-elements. | This is current vendor-specific styling, not old-browser support. Keep only if WebKit/Blink-only scrollbar styling is acceptable. |
 
-## Test Fixtures To Update During Cleanup
-
-- `test/esm-engine-runtime.test.mjs:29` sets `navigator.msMaxTouchPoints`.
-- `test/weltmeister-entity-manifest.test.mjs:35` sets `navigator.msMaxTouchPoints`.
-
-If `ig.ua.touchDevice` switches to `navigator.maxTouchPoints` or pure feature
-detection, these fixtures should be updated with the new modern shape.
-
 ## Explicit Non-Findings
 
 - No `attachEvent`, `detachEvent`, `ActiveXObject`, `XDomainRequest`,
@@ -103,10 +120,10 @@ detection, these fixtures should be updated with the new modern shape.
 
 ## Suggested Cleanup Order
 
-1. Remove MS pointer support from `lib/impact/input.js` and
+1. Done: remove MS pointer support from `lib/impact/input.js` and
    `lib/plugins/touch-button.js`.
-2. Replace `navigator.msMaxTouchPoints` with a modern touch/pointer detection
-   policy, then update the two test fixtures.
+2. Done: replace `navigator.msMaxTouchPoints` with a modern touch/pointer
+   detection policy and update the two test fixtures.
 3. Remove or narrow `vendor-attributes.js`; convert `requestAnimationFrame`,
    `AudioContext`, and canvas smoothing to unprefixed APIs.
 4. Revisit the Chrome 49 background-map workaround with a modern performance

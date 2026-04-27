@@ -26,7 +26,7 @@ const installBrowserLikeGlobals = () => {
     location: { href: 'http://localhost/' },
     readyState: 'complete'
   });
-  ensureGlobal('navigator', { msMaxTouchPoints: 0, userAgent: 'node' });
+  ensureGlobal('navigator', { maxTouchPoints: 0, userAgent: 'node' });
   ensureGlobal('screen', { availHeight: 0, availWidth: 0 });
   ensureGlobal('Image', class Image {});
   ensureGlobal('Audio', class Audio {
