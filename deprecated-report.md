@@ -1,7 +1,7 @@
 # Deprecated Browser Support Report
 
 Generated: 2026-04-27
-Last updated: 2026-04-27 after vendor-prefix cleanup
+Last updated: 2026-04-27 after Weltmeister CSS cleanup
 
 ## Scope
 
@@ -40,19 +40,23 @@ Completed so far:
   image-pixel reads, and gamepad detection to unprefixed APIs.
 - Regenerated `docs/module-graph.md` and `docs/module-graph.json` after
   removing the helper module.
+- Replaced old prefixed Weltmeister CSS with standard properties: transitions,
+  box shadows, gradient syntax, checkbox appearance, user selection, canvas
+  image rendering, and scrollbar styling now use standard declarations.
+- Removed non-standard `-webkit-font-smoothing` declarations from
+  `lib/weltmeister/weltmeister.css`.
 
 After this pass, `MSPointer`, `msTouchAction`, `msMaxTouchPoints`, `winPhone`,
 `iPhone4`, `vendor-attributes`, `setVendorAttribute`, `getVendorAttribute`,
-and `normalizeVendorAttribute` no longer appear in source or tests outside this
-report.
+`normalizeVendorAttribute`, and old prefixed Weltmeister CSS declarations no
+longer appear in source or tests outside this report.
 
 ## Current Summary
 
 - High-confidence deprecated-browser support still remains in the Chrome 49
   background-map workaround and the `Function.prototype.bind` polyfill.
-- Medium-confidence compatibility residue remains in editor input/storage and
-  CSS: old wheel/key event fallbacks, cookie fallback storage, and old prefixed
-  style declarations.
+- Medium-confidence compatibility residue remains in editor input/storage: old
+  wheel/key event fallbacks and cookie fallback storage.
 - I did not find classic IE event/model support such as `attachEvent`,
   `detachEvent`, `ActiveXObject`, `XDomainRequest`, `document.all`, or IE
   conditional comments.
@@ -72,6 +76,7 @@ report.
 | `lib/impact/sound.js:517` | WebAudio setup normalized prefixed `AudioContext`. | Uses only unprefixed `window.AudioContext`. |
 | `lib/impact/system.js:124-130` | Canvas scaling wrote prefixed smoothing/image-rendering properties and `msInterpolationMode`. | Uses `context.imageSmoothingEnabled` and standard `imageRendering = 'pixelated'`. |
 | `lib/plugins/gamepad.js:23-32` | Gamepad setup normalized prefixed `getGamepads`. | Uses only unprefixed `navigator.getGamepads`. |
+| `lib/weltmeister/weltmeister.css` | Stylesheet used old `-webkit-*`, `-moz-*`, and `-o-*` declarations for transitions, box shadows, gradients, checkbox appearance, font smoothing, canvas interpolation, user selection, and scrollbars. | Replaced with standard `transition`, `box-shadow`, `linear-gradient`, `appearance`, `user-select`, `image-rendering`, `scrollbar-color`, and `scrollbar-width`; removed `-webkit-font-smoothing`. |
 
 ## Remaining High-Confidence Findings
 
@@ -99,21 +104,6 @@ APIs alive and overlap with old-browser compatibility.
 | P3 | `lib/weltmeister/storage.js:17-49`, `lib/weltmeister/storage.js:64-76`, `lib/weltmeister/storage.js:81-94` | Last-level storage has a legacy cookie fallback and migration path when `localStorage` is missing or throws. | Modern browsers support `localStorage`, but privacy settings can still make storage throw. Decide whether "modern browsers only" should still tolerate blocked storage before removing this. |
 | P3 | `test/weltmeister-helpers.test.mjs:57` | Test coverage explicitly validates migration from the legacy cookie fallback into `localStorage`. | Update or delete this test if the cookie fallback is removed. |
 
-## CSS Compatibility Residue
-
-`lib/weltmeister/weltmeister.css` contains old prefixed CSS. Some entries are
-true deprecated-browser support; others are vendor-specific styling that still
-works in modern Chromium/Safari but is not portable.
-
-| Priority | Location | Finding | Modern direction |
-| --- | --- | --- | --- |
-| P2 | `lib/weltmeister/weltmeister.css:96`, `:167`, `:177`, `:215`, `:316`, `:454`, `:471` | Uses `-webkit-transition` without the standard `transition` counterpart. | Replace with standard `transition`; remove old prefix. |
-| P2 | `lib/weltmeister/weltmeister.css:334`, `:371` | Uses `-webkit-box-shadow` without standard `box-shadow`. | Replace with standard `box-shadow`. |
-| P2 | `lib/weltmeister/weltmeister.css:411-413` | Header gradient uses old `-webkit-gradient`, `-moz-linear-gradient`, and `-o-linear-gradient` syntax. | Replace with standard `linear-gradient(...)`. |
-| P2 | `lib/weltmeister/weltmeister.css:470` | Checkbox reset uses `-webkit-appearance: none`. | Use standard `appearance: none`; only keep the prefix if a specific current Safari target requires it. |
-| P3 | `lib/weltmeister/weltmeister.css:9`, `:62`, `:168` | Uses `-webkit-font-smoothing`. | This is a non-standard rendering preference, not strictly deprecated-browser support. Keep only if the visual style depends on it. |
-| P3 | `lib/weltmeister/weltmeister.css:486-491` | Uses `::-webkit-scrollbar` pseudo-elements. | This is current vendor-specific styling, not old-browser support. Keep only if WebKit/Blink-only scrollbar styling is acceptable. |
-
 ## Explicit Non-Findings
 
 - No `attachEvent`, `detachEvent`, `ActiveXObject`, `XDomainRequest`,
@@ -136,8 +126,8 @@ works in modern Chromium/Safari but is not portable.
 3. Done: remove `vendor-attributes.js`; convert `requestAnimationFrame`,
    `AudioContext`, canvas smoothing, image pixel reads, and gamepad detection to
    unprefixed APIs.
-4. Revisit the Chrome 49 background-map workaround with a modern performance
-   smoke test.
+4. Done: replace old prefixed Weltmeister CSS with standard properties.
 5. Modernize input events (`deltaY`, `event.key`/`event.code`) and decide
    whether the cookie fallback remains valuable for blocked-storage scenarios.
-6. Replace old prefixed Weltmeister CSS with standard properties.
+6. Revisit the Chrome 49 background-map workaround with a modern performance
+   smoke test.

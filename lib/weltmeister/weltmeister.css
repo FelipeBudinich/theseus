@@ -6,8 +6,7 @@ body {
 	margin: 0px;
 	overflow: hidden;
 	text-shadow: 0px 1px 1px rgba(0,0,0,0.5);
-	-webkit-font-smoothing: antialiased;
-	-webkit-user-select: none;
+	user-select: none;
 }
 
 h2 {
@@ -59,7 +58,6 @@ input {
 	color: #fff;
 	margin: 0;
 	font-family: sans-serif;
-	-webkit-font-smoothing: antialiased;
 	font-size: 10pt;
 	outline: none;
 	text-shadow: 0px 1px 1px rgba(0,0,0,0.5);
@@ -93,7 +91,7 @@ input.button {
 	border-top: 1px solid rgba(255,255,255,0.1);
 	border-bottom: 1px solid rgba(0,0,0,0.1);
 	cursor: pointer;
-	-webkit-transition: 0.1s linear;
+	transition: 0.1s linear;
 }
 
 input.button:hover {
@@ -129,8 +127,7 @@ input:disabled {
 }
 
 #canvas {
-	image-rendering: optimizeSpeed;
-	-webkit-interpolation-mode: nearest-neighbor;
+	image-rendering: pixelated;
 }
 
 #menu {
@@ -164,8 +161,7 @@ input:disabled {
 	font-weight: bold;
 	font-size:110%;
 	margin-left:1px;
-	-webkit-transition: 0.1s linear;
-	-webkit-font-smoothing: none;
+	transition: 0.1s linear;
 	z-index:10;
 }
 #layerButtons div.button#buttonAddLayer:hover { color:rgba(255,255,255,1);}
@@ -174,7 +170,7 @@ input:disabled {
 .layer {
 	padding: 6px 4px;
 	cursor: pointer;
-	-webkit-transition: background-color 0.1s linear;
+	transition: background-color 0.1s linear;
 	border-top: 1px solid rgba(255,255,255,0);
 	border-bottom: 1px solid rgba(255,255,255,0);
 }
@@ -212,7 +208,7 @@ input:disabled {
 	height: 10px; 
 	margin-right: 7px; 
 	margin-left: 4px; 
-	-webkit-transition: 0.1s linear;
+	transition: 0.1s linear;
 }
 
 .layer .visible.specialVis{
@@ -313,7 +309,7 @@ dl#entityDefinitionInput dd {
 	cursor: pointer;
 	border-top: 1px solid rgba(255,255,255,0);
 	border-bottom: 1px solid rgba(255,255,255,0);
-	-webkit-transition: 0.1s linear;
+	transition: 0.1s linear;
 }
 
 #entityMenu div:hover {
@@ -331,7 +327,7 @@ dl#entityDefinitionInput dd {
 	display: none;
 	position: absolute;
 	overflow: hidden;
-	-webkit-box-shadow: 0px 0px 10px rgba(0,0,0,1);
+	box-shadow: 0px 0px 10px rgba(0,0,0,1);
 	
 	max-height: 300px;
 	overflow-y: scroll;
@@ -368,7 +364,7 @@ div.modalDialogBox {
 	margin-left: -170px;
 	background-color: rgba(0,0,0,0.9);
 	border: 1px solid rgb(100,100,100);
-	-webkit-box-shadow: 0px 0px 10px rgba(0,0,0,1);
+	box-shadow: 0px 0px 10px rgba(0,0,0,1);
 	position: absolute;
 	top: 20%;
 	left: 50%;
@@ -408,9 +404,7 @@ input.modalDialogPath:focus {
 	height:47px;
 	width:100%;
 	background: #131314;
-	background: -webkit-gradient(linear, left bottom, left top, color-stop(0,#000000), color-stop(1,#2e3033));
-	background: -moz-linear-gradient(center bottom, #000000 0%, #2e3033 100%);
-	background: -o-linear-gradient(#2e3033, #000000);
+	background: linear-gradient(to top, #000000 0%, #2e3033 100%);
 }
 
 #headerMenu span.headerTitle {
@@ -451,7 +445,7 @@ input#toggleSidebar {
 	height: 47px;
 	text-indent: -99999px;
 	background: url(arrow.png) 50% -37px no-repeat;
-	-webkit-transition: 0s linear;
+	transition: 0s linear;
 	opacity: 0.25;
 	padding: 0px;
 }
@@ -467,8 +461,8 @@ input[type="checkbox"] {
 	width: 10px; 
 	height: 10px;
 	display: inline-block; 
-	-webkit-appearance: none; 
-	-webkit-transition: 0.1s linear;
+	appearance: none;
+	transition: 0.1s linear;
 }
 input[type="checkbox"] { 
 	background-color:rgba(255,255,255,0.2); 
@@ -483,9 +477,10 @@ input[type="checkbox"]:disabled {
 	background-color: rgba(255,255,255,0.1); 
 }
 
-::-webkit-scrollbar { width: 2px; }
-::-webkit-scrollbar-button:start:decrement,
-::-webkit-scrollbar-button:end:increment { display: block; height: 2px; }
-::-webkit-scrollbar-button:vertical:increment { background-color: transparent; }
-::-webkit-scrollbar-track-piece { background-color: rgba(0,0,0,0); }
-::-webkit-scrollbar-thumb:vertical { background-color: rgba(255,255,255,1); }
+#layers,
+#entityDefinitions,
+#entityMenu,
+.selectFileDialog {
+	scrollbar-color: rgba(255,255,255,1) rgba(0,0,0,0);
+	scrollbar-width: thin;
+}
