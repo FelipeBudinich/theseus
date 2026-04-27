@@ -9,8 +9,8 @@ test('weltmeister.html boots the editor entirely from lib assets', async () => {
   const html = await fs.readFile(path.resolve('weltmeister.html'), 'utf8');
 
   assert.match(html, /href="lib\/weltmeister\/weltmeister\.css"/);
-  assert.match(html, /src="lib\/weltmeister\/jquery-1\.7\.1\.min\.js"/);
-  assert.match(html, /src="lib\/weltmeister\/jquery-ui-1\.8\.1\.custom\.min\.js"/);
+  assert.doesNotMatch(html, /src="lib\/weltmeister\/jquery-1\.7\.1\.min\.js"/);
+  assert.doesNotMatch(html, /src="lib\/weltmeister\/jquery-ui-1\.8\.1\.custom\.min\.js"/);
   assert.match(html, /<script type="module" src="lib\/weltmeister\/main\.js"><\/script>/);
   assert.doesNotMatch(
     html,

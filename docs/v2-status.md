@@ -4,8 +4,8 @@
 - `/` serves the source sample game entry, while `/dist.html` serves the latest Vite bake from `dist/index.html`.
 - The retired PHP bake helpers have been removed; `npm run bake` is the current game build path.
 - The editor entry first calls `prepareWeltmeisterEntityState()` so entity modules are loaded from the generated manifest before the UI finishes booting.
-- The browser-side Weltmeister code, stylesheet, jQuery bundles, and editor image assets now all live under `lib/weltmeister/`.
-- The editor still uses the existing jQuery-driven UI, so the migration did not require a framework rewrite.
+- The browser-side Weltmeister code, stylesheet, and editor image assets now all live under `lib/weltmeister/`.
+- The editor no longer loads jQuery or jQuery UI; its UI uses first-party browser APIs.
 - The Node/Express backend is now the complete Weltmeister backend; no PHP runtime is required.
 - Weltmeister save requests now target `/lib/weltmeister/api/save`, while file browsing now uses `/lib/weltmeister/api/browse`.
 - Legacy `/lib/weltmeister/api/*.php` routes are intentionally left unmatched and return `404`.

@@ -4,7 +4,7 @@ Theseus is an HTML5 game engine port of Impact.js that keeps the classic API and
 
 More info & documentation about the original engine: http://impactjs.com/
 
-Impact was published under the [MIT Open Source License](http://opensource.org/licenses/mit-license.php). Note that Weltmeister (Impact's level editor) uses jQuery which comes with its own license.
+Impact was published under the [MIT Open Source License](http://opensource.org/licenses/mit-license.php).
 
 ## Getting started
 
@@ -26,5 +26,5 @@ Set `PORT` to use a different port or `HOST` on `server.mjs` to change the bind 
 
 - The live `lib/` tree is now the ESM runtime; the legacy `ig.module(...)` implementation has been retired.
 - `/dist.html` serves the latest Vite build from `dist/index.html` when present.
-- Weltmeister edits `lib/game/levels/` by default. Saving to a `.js` path writes a native ESM level module, while saving to a `.json` path writes plain JSON.
+- Weltmeister edits `lib/game/levels/` by default and runs without jQuery. Saving to a `.js` path writes a native ESM level module, while saving to a `.json` path writes plain JSON.
 - `npm run module-graph` regenerates `docs/module-graph.json` and `docs/module-graph.md` from the live `lib/` tree.

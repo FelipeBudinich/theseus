@@ -61,9 +61,9 @@ rewriting files.
 ## Weltmeister Browser Cutover
 
 `weltmeister.html` boots from `lib/weltmeister/main.js` and loads its CSS,
-jQuery bundles, API endpoints, and editor assets from the same `lib/`
-tree. The existing jQuery-driven UI is still in place; only the file layout and
-runtime pathing changed.
+API endpoints, and editor assets from the same `lib/` tree. The editor UI now
+uses first-party browser APIs instead of the retired bundled jQuery and jQuery
+UI scripts.
 
 Level format stays explicit through the target file path:
 
