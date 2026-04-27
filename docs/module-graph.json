@@ -8,23 +8,26 @@
       "moduleName": "weltmeister/entity-manifest"
     },
     {
-      "line": 34,
+      "line": 47,
       "expression": "expression-based import(...)",
       "file": "lib/weltmeister/weltmeister.js",
       "moduleName": "weltmeister/weltmeister"
     }
   ],
-  "filesScanned": 52,
-  "generatedAt": "2026-04-09T16:03:27.886Z",
+  "filesScanned": 55,
+  "generatedAt": "2026-04-27T16:48:02.062Z",
   "leaves": [
     "impact/core/class",
     "impact/core/namespace",
     "impact/core/native-extensions",
     "impact/core/object",
-    "impact/core/vendor-attributes",
     "weltmeister/api/node-api",
+    "weltmeister/dom-helpers",
     "weltmeister/entity-manifest",
+    "weltmeister/layer-sorter",
     "weltmeister/level-format",
+    "weltmeister/request",
+    "weltmeister/storage",
     "weltmeister/wm"
   ],
   "modules": [
@@ -297,12 +300,6 @@
     },
     {
       "dynamicImports": [],
-      "file": "lib/impact/core/vendor-attributes.js",
-      "imports": [],
-      "moduleName": "impact/core/vendor-attributes"
-    },
-    {
-      "dynamicImports": [],
       "file": "lib/impact/entity.js",
       "imports": [
         {
@@ -416,12 +413,6 @@
           "line": 4,
           "moduleName": "impact/core/object",
           "specifier": "./core/object.js"
-        },
-        {
-          "file": "lib/impact/core/vendor-attributes.js",
-          "line": 5,
-          "moduleName": "impact/core/vendor-attributes",
-          "specifier": "./core/vendor-attributes.js"
         }
       ],
       "moduleName": "impact/ig"
@@ -717,6 +708,12 @@
     },
     {
       "dynamicImports": [],
+      "file": "lib/weltmeister/dom-helpers.js",
+      "imports": [],
+      "moduleName": "weltmeister/dom-helpers"
+    },
+    {
+      "dynamicImports": [],
       "file": "lib/weltmeister/edit-entities.js",
       "imports": [
         {
@@ -730,6 +727,12 @@
           "line": 3,
           "moduleName": "weltmeister/config",
           "specifier": "./config.js"
+        },
+        {
+          "file": "lib/weltmeister/dom-helpers.js",
+          "line": 4,
+          "moduleName": "weltmeister/dom-helpers",
+          "specifier": "./dom-helpers.js"
         },
         {
           "file": "lib/weltmeister/wm.js",
@@ -757,8 +760,14 @@
           "specifier": "./config.js"
         },
         {
-          "file": "lib/weltmeister/tile-select.js",
+          "file": "lib/weltmeister/dom-helpers.js",
           "line": 4,
+          "moduleName": "weltmeister/dom-helpers",
+          "specifier": "./dom-helpers.js"
+        },
+        {
+          "file": "lib/weltmeister/tile-select.js",
+          "line": 5,
           "moduleName": "weltmeister/tile-select",
           "specifier": "./tile-select.js"
         },
@@ -822,6 +831,12 @@
     },
     {
       "dynamicImports": [],
+      "file": "lib/weltmeister/layer-sorter.js",
+      "imports": [],
+      "moduleName": "weltmeister/layer-sorter"
+    },
+    {
+      "dynamicImports": [],
       "file": "lib/weltmeister/level-format.js",
       "imports": [],
       "moduleName": "weltmeister/level-format"
@@ -862,8 +877,14 @@
           "specifier": "./config.js"
         },
         {
-          "file": "lib/weltmeister/select-file-dropdown.js",
+          "file": "lib/weltmeister/dom-helpers.js",
           "line": 4,
+          "moduleName": "weltmeister/dom-helpers",
+          "specifier": "./dom-helpers.js"
+        },
+        {
+          "file": "lib/weltmeister/select-file-dropdown.js",
+          "line": 5,
           "moduleName": "weltmeister/select-file-dropdown",
           "specifier": "./select-file-dropdown.js"
         },
@@ -878,6 +899,12 @@
     },
     {
       "dynamicImports": [],
+      "file": "lib/weltmeister/request.js",
+      "imports": [],
+      "moduleName": "weltmeister/request"
+    },
+    {
+      "dynamicImports": [],
       "file": "lib/weltmeister/select-file-dropdown.js",
       "imports": [
         {
@@ -887,6 +914,18 @@
           "specifier": "../impact/impact.js"
         },
         {
+          "file": "lib/weltmeister/dom-helpers.js",
+          "line": 3,
+          "moduleName": "weltmeister/dom-helpers",
+          "specifier": "./dom-helpers.js"
+        },
+        {
+          "file": "lib/weltmeister/request.js",
+          "line": 4,
+          "moduleName": "weltmeister/request",
+          "specifier": "./request.js"
+        },
+        {
           "file": "lib/weltmeister/wm.js",
           "line": 2,
           "moduleName": "weltmeister/wm",
@@ -894,6 +933,12 @@
         }
       ],
       "moduleName": "weltmeister/select-file-dropdown"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/weltmeister/storage.js",
+      "imports": [],
+      "moduleName": "weltmeister/storage"
     },
     {
       "dynamicImports": [],
@@ -942,7 +987,7 @@
     {
       "dynamicImports": [
         {
-          "line": 34,
+          "line": 47,
           "expression": "expression-based import(...)"
         }
       ],
@@ -961,10 +1006,34 @@
           "specifier": "./config.js"
         },
         {
-          "file": "lib/weltmeister/level-format.js",
+          "file": "lib/weltmeister/dom-helpers.js",
           "line": 4,
+          "moduleName": "weltmeister/dom-helpers",
+          "specifier": "./dom-helpers.js"
+        },
+        {
+          "file": "lib/weltmeister/layer-sorter.js",
+          "line": 18,
+          "moduleName": "weltmeister/layer-sorter",
+          "specifier": "./layer-sorter.js"
+        },
+        {
+          "file": "lib/weltmeister/level-format.js",
+          "line": 23,
           "moduleName": "weltmeister/level-format",
           "specifier": "./level-format.js"
+        },
+        {
+          "file": "lib/weltmeister/request.js",
+          "line": 27,
+          "moduleName": "weltmeister/request",
+          "specifier": "./request.js"
+        },
+        {
+          "file": "lib/weltmeister/storage.js",
+          "line": 28,
+          "moduleName": "weltmeister/storage",
+          "specifier": "./storage.js"
         },
         {
           "file": "lib/weltmeister/wm.js",
@@ -982,7 +1051,7 @@
       "moduleName": "weltmeister/wm"
     }
   ],
-  "modulesFound": 52,
+  "modulesFound": 55,
   "roots": [
     "game/entities/blob",
     "game/entities/coin",
@@ -1006,7 +1075,7 @@
     "weltmeister/undo"
   ],
   "sourceRoot": "lib",
-  "staticEdgesFound": 98,
+  "staticEdgesFound": 106,
   "unresolvedDependencies": [],
   "modulesWithoutStaticImports": [
     {
@@ -1026,20 +1095,32 @@
       "moduleName": "impact/core/object"
     },
     {
-      "file": "lib/impact/core/vendor-attributes.js",
-      "moduleName": "impact/core/vendor-attributes"
-    },
-    {
       "file": "lib/weltmeister/api/node-api.mjs",
       "moduleName": "weltmeister/api/node-api"
+    },
+    {
+      "file": "lib/weltmeister/dom-helpers.js",
+      "moduleName": "weltmeister/dom-helpers"
     },
     {
       "file": "lib/weltmeister/entity-manifest.js",
       "moduleName": "weltmeister/entity-manifest"
     },
     {
+      "file": "lib/weltmeister/layer-sorter.js",
+      "moduleName": "weltmeister/layer-sorter"
+    },
+    {
       "file": "lib/weltmeister/level-format.js",
       "moduleName": "weltmeister/level-format"
+    },
+    {
+      "file": "lib/weltmeister/request.js",
+      "moduleName": "weltmeister/request"
+    },
+    {
+      "file": "lib/weltmeister/storage.js",
+      "moduleName": "weltmeister/storage"
     },
     {
       "file": "lib/weltmeister/wm.js",

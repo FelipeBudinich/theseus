@@ -40,7 +40,7 @@
       namespaceBootstrapWorks: wm === window.wm,
       classSystemWorks: new Example().answer === 42,
       objectHelpersWork: merged.nested.keep === true && merged.nested.add === 'ok',
-      vendorHelpersPresent: typeof ig.normalizeVendorAttribute === 'function'
+      classRegistryPresent: typeof ig.registerClass === 'function'
     };
     const passed = Object.values(results).every((value) => value === true || typeof value === 'string');
 
