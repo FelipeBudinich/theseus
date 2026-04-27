@@ -21,8 +21,8 @@ and the runtime uses syntax that old browsers cannot parse. There is no explicit
 
 - High-confidence deprecated-browser support still remains in the Chrome 49
   background-map workaround.
-- Medium-confidence compatibility residue remains in editor input/storage: old
-  wheel/key event fallbacks and cookie fallback storage.
+- Medium-confidence compatibility residue remains in editor input handling: old
+  wheel/key event fallbacks.
 - I did not find classic IE event/model support such as `attachEvent`,
   `detachEvent`, `ActiveXObject`, `XDomainRequest`, `document.all`, or IE
   conditional comments.
@@ -45,13 +45,6 @@ APIs alive and overlap with old-browser compatibility.
 | P2 | `lib/weltmeister/evented-input.js:17-19`, `lib/weltmeister/evented-input.js:39-41` | Weltmeister evented input also relies on `event.keyCode`. | Same as above. |
 | P3 | `lib/weltmeister/edit-entities.js:37-40`, `lib/weltmeister/edit-entities.js:381-382`, `lib/weltmeister/weltmeister.js:179-182` | Editor keyboard handling mixes modern `event.key` with `event.which`/`event.keyCode` fallbacks. | Keep `event.key` for text commands and remove `which`/`keyCode` fallback once the input map is modernized. |
 
-## Storage Compatibility Residue
-
-| Priority | Location | Finding | Notes |
-| --- | --- | --- | --- |
-| P3 | `lib/weltmeister/storage.js:17-49`, `lib/weltmeister/storage.js:64-76`, `lib/weltmeister/storage.js:81-94` | Last-level storage has a legacy cookie fallback and migration path when `localStorage` is missing or throws. | Modern browsers support `localStorage`, but privacy settings can still make storage throw. Decide whether "modern browsers only" should still tolerate blocked storage before removing this. |
-| P3 | `test/weltmeister-helpers.test.mjs:57` | Test coverage explicitly validates migration from the legacy cookie fallback into `localStorage`. | Update or delete this test if the cookie fallback is removed. |
-
 ## Explicit Non-Findings
 
 - No `attachEvent`, `detachEvent`, `ActiveXObject`, `XDomainRequest`,
@@ -67,7 +60,6 @@ APIs alive and overlap with old-browser compatibility.
 
 ## Suggested Cleanup Order
 
-1. Modernize input events (`deltaY`, `event.key`/`event.code`) and decide
-   whether the cookie fallback remains valuable for blocked-storage scenarios.
+1. Modernize input events (`deltaY`, `event.key`/`event.code`).
 2. Revisit the Chrome 49 background-map workaround with a modern performance
    smoke test.

@@ -54,26 +54,35 @@ test('requestJson preserves Weltmeister save error response shape', async () => 
   );
 });
 
-test('last-level storage migrates the legacy cookie fallback into localStorage', () => {
+test('last-level storage reads, writes, and clears localStorage', () => {
   const storage = createStorage();
-  let cookie = `${encodeURIComponent(LAST_LEVEL_KEY)}=${encodeURIComponent('lib/game/levels/demo.js')}`;
-  const document = {
-    get cookie() {
-      return cookie;
+
+  assert.equal(getLastLevel({ storage }), null);
+
+  setLastLevel('lib/game/levels/next.js', { storage });
+  assert.equal(getLastLevel({ storage }), 'lib/game/levels/next.js');
+  assert.equal(storage.getItem(LAST_LEVEL_KEY), 'lib/game/levels/next.js');
+
+  clearLastLevel({ storage });
+  assert.equal(storage.getItem(LAST_LEVEL_KEY), null);
+});
+
+test('last-level storage quietly ignores blocked localStorage', () => {
+  const storage = {
+    getItem() {
+      throw new Error('storage blocked');
     },
-    set cookie(value) {
-      cookie = value;
+    removeItem() {
+      throw new Error('storage blocked');
+    },
+    setItem() {
+      throw new Error('storage blocked');
     }
   };
 
-  assert.equal(getLastLevel({ storage, document }), 'lib/game/levels/demo.js');
-  assert.equal(storage.getItem(LAST_LEVEL_KEY), 'lib/game/levels/demo.js');
-
-  setLastLevel('lib/game/levels/next.js', { storage, document });
-  assert.equal(storage.getItem(LAST_LEVEL_KEY), 'lib/game/levels/next.js');
-
-  clearLastLevel({ storage, document });
-  assert.equal(storage.getItem(LAST_LEVEL_KEY), null);
+  assert.equal(getLastLevel({ storage }), null);
+  assert.doesNotThrow(() => setLastLevel('lib/game/levels/next.js', { storage }));
+  assert.doesNotThrow(() => clearLastLevel({ storage }));
 });
 
 test('computeLayerOrder preserves DOM layer ordering semantics around entities', () => {
