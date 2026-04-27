@@ -1,7 +1,7 @@
 # Deprecated Browser Support Report
 
 Generated: 2026-04-27
-Last updated: 2026-04-27 after Weltmeister CSS cleanup
+Last updated: 2026-04-27 with resolved items removed
 
 ## Scope
 
@@ -17,40 +17,6 @@ The current app already assumes a modern baseline in practice: `index.html`,
 and the runtime uses syntax that old browsers cannot parse. There is no explicit
 `browserslist` entry or Vite `build.target` documenting that baseline.
 
-## Status Update
-
-Completed so far:
-
-- Removed `MSPointerDown`, `MSPointerUp`, and `MSPointerMove` listeners from
-  `lib/impact/input.js` and `lib/plugins/touch-button.js`.
-- Removed `msTouchAction` writes and replaced the remaining touch-action intent
-  with the standard `touchAction` style property.
-- Removed dedicated `touchStartMS` and `touchEndMS` code from touch buttons.
-- Replaced `navigator.msMaxTouchPoints` with a modern touch/pointer policy:
-  touch events are detected with `ontouchstart`, and pointer-capable touch
-  hardware is detected with unprefixed `PointerEvent` plus
-  `navigator.maxTouchPoints`.
-- Removed obsolete `ig.ua.winPhone` and `ig.ua.iPhone4` UA branches while
-  updating the touch policy.
-- Updated the two Node browser-like test fixtures from `msMaxTouchPoints` to
-  `maxTouchPoints`.
-- Deleted the generic `lib/impact/core/vendor-attributes.js` helper and removed
-  its attachment from `ig`.
-- Converted `requestAnimationFrame`, `AudioContext`, canvas smoothing,
-  image-pixel reads, and gamepad detection to unprefixed APIs.
-- Regenerated `docs/module-graph.md` and `docs/module-graph.json` after
-  removing the helper module.
-- Replaced old prefixed Weltmeister CSS with standard properties: transitions,
-  box shadows, gradient syntax, checkbox appearance, user selection, canvas
-  image rendering, and scrollbar styling now use standard declarations.
-- Removed non-standard `-webkit-font-smoothing` declarations from
-  `lib/weltmeister/weltmeister.css`.
-
-After this pass, `MSPointer`, `msTouchAction`, `msMaxTouchPoints`, `winPhone`,
-`iPhone4`, `vendor-attributes`, `setVendorAttribute`, `getVendorAttribute`,
-`normalizeVendorAttribute`, and old prefixed Weltmeister CSS declarations no
-longer appear in source or tests outside this report.
-
 ## Current Summary
 
 - High-confidence deprecated-browser support still remains in the Chrome 49
@@ -61,24 +27,7 @@ longer appear in source or tests outside this report.
   `detachEvent`, `ActiveXObject`, `XDomainRequest`, `document.all`, or IE
   conditional comments.
 
-## Completed Findings
-
-| Location | Former finding | Current state |
-| --- | --- | --- |
-| `lib/impact/input.js:123-129` | Canvas input registered MS pointer listeners and wrote `msTouchAction`. | Standard touch listeners remain; MS listeners were removed and `touchAction` is now used. |
-| `lib/impact/input.js:242-248` | `bindTouch()` registered MS pointer listeners. | Only standard `touchstart`/`touchend` listeners remain. |
-| `lib/plugins/touch-button.js:50-76`, `lib/plugins/touch-button.js:115-123` | Touch buttons had MS pointer handlers, MS listeners, and `document.body.style.msTouchAction`. | MS handlers/listeners were deleted; the collection now uses standard touch events and `touchAction`. |
-| `lib/impact/ig.js:80-91` | UA detection included Windows Phone, obsolete iPhone 4, and `navigator.msMaxTouchPoints`. | Windows Phone/iPhone 4 branches were removed; touch detection now uses `ontouchstart`, `PointerEvent`, and `navigator.maxTouchPoints`. |
-| `test/esm-engine-runtime.test.mjs:29`, `test/weltmeister-entity-manifest.test.mjs:35` | Browser-like fixtures set `navigator.msMaxTouchPoints`. | Fixtures now set `navigator.maxTouchPoints`. |
-| `lib/impact/core/vendor-attributes.js` | Generic vendor helper normalized `ms`, `moz`, `webkit`, and `o` property names. | File was deleted; no runtime helper is attached to `ig`. |
-| `lib/impact/ig.js:24-41` | Animation setup normalized prefixed `requestAnimationFrame`. | Uses only unprefixed `requestAnimationFrame`, with the existing interval fallback for non-browser/test environments. |
-| `lib/impact/ig.js:180-186` | Image pixel reads checked old backing-store ratios and `getImageDataHD`. | Uses unprefixed `drawImage()` plus `getImageData()` directly. |
-| `lib/impact/sound.js:517` | WebAudio setup normalized prefixed `AudioContext`. | Uses only unprefixed `window.AudioContext`. |
-| `lib/impact/system.js:124-130` | Canvas scaling wrote prefixed smoothing/image-rendering properties and `msInterpolationMode`. | Uses `context.imageSmoothingEnabled` and standard `imageRendering = 'pixelated'`. |
-| `lib/plugins/gamepad.js:23-32` | Gamepad setup normalized prefixed `getGamepads`. | Uses only unprefixed `navigator.getGamepads`. |
-| `lib/weltmeister/weltmeister.css` | Stylesheet used old `-webkit-*`, `-moz-*`, and `-o-*` declarations for transitions, box shadows, gradients, checkbox appearance, font smoothing, canvas interpolation, user selection, and scrollbars. | Replaced with standard `transition`, `box-shadow`, `linear-gradient`, `appearance`, `user-select`, `image-rendering`, `scrollbar-color`, and `scrollbar-width`; removed `-webkit-font-smoothing`. |
-
-## Remaining High-Confidence Findings
+## High-Confidence Findings
 
 | Priority | Location | Finding | Deprecated target | Modern direction |
 | --- | --- | --- | --- | --- |
@@ -119,15 +68,9 @@ APIs alive and overlap with old-browser compatibility.
 
 ## Suggested Cleanup Order
 
-1. Done: remove MS pointer support from `lib/impact/input.js` and
-   `lib/plugins/touch-button.js`.
-2. Done: replace `navigator.msMaxTouchPoints` with a modern touch/pointer
-   detection policy and update the two test fixtures.
-3. Done: remove `vendor-attributes.js`; convert `requestAnimationFrame`,
-   `AudioContext`, canvas smoothing, image pixel reads, and gamepad detection to
-   unprefixed APIs.
-4. Done: replace old prefixed Weltmeister CSS with standard properties.
-5. Modernize input events (`deltaY`, `event.key`/`event.code`) and decide
+1. Modernize input events (`deltaY`, `event.key`/`event.code`) and decide
    whether the cookie fallback remains valuable for blocked-storage scenarios.
-6. Revisit the Chrome 49 background-map workaround with a modern performance
+2. Revisit the Chrome 49 background-map workaround with a modern performance
    smoke test.
+3. Remove the `Function.prototype.bind` polyfill under the ESM/modern-browser
+   baseline.
