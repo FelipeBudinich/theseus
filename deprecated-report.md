@@ -47,9 +47,7 @@ APIs alive and overlap with old-browser compatibility.
 
 | Priority | Location | Finding | Modern direction |
 | --- | --- | --- | --- |
-| P2 | `lib/impact/input.js:188-190`, `lib/impact/input.js:218-220` | Keyboard binding relies on `event.keyCode`. | Move toward `event.code` or `event.key` while preserving the existing `ig.KEY` action map. |
-| P2 | `lib/weltmeister/evented-input.js:17-19`, `lib/weltmeister/evented-input.js:39-41` | Weltmeister evented input also relies on `event.keyCode`. | Same as above. |
-| P3 | `lib/weltmeister/edit-entities.js:37-40`, `lib/weltmeister/edit-entities.js:381-382`, `lib/weltmeister/weltmeister.js:179-182` | Editor keyboard handling mixes modern `event.key` with `event.which`/`event.keyCode` fallbacks. | Keep `event.key` for text commands and remove `which`/`keyCode` fallback once the input map is modernized. |
+| P3 | `lib/weltmeister/edit-entities.js:37-40`, `lib/weltmeister/edit-entities.js:381-382`, `lib/weltmeister/weltmeister.js:179-182` | Editor UI shortcut handling mixes modern `event.key` with `event.which`/`event.keyCode` fallbacks outside the main input binding path. | Keep `event.key` for text commands and remove the fallback once those UI shortcuts are modernized. |
 
 ## Explicit Non-Findings
 
@@ -64,6 +62,6 @@ APIs alive and overlap with old-browser compatibility.
 
 ## Suggested Cleanup Order
 
-1. Modernize keyboard input events (`event.key`/`event.code`).
+1. Remove the remaining Weltmeister UI shortcut `event.which`/`event.keyCode` fallbacks.
 2. Consider a separate `OffscreenCanvas` migration audit for pre-rendered
    background chunks after confirming DOM-canvas assumptions.
