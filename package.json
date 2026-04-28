@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.mjs",
     "dev": "node --watch server.mjs",
-    "bake": "vite build",
+    "bake": "vite build --config tools/bake/vite.config.mjs",
     "build:weltmeister-entity-manifest": "node tools/weltmeister/build-weltmeister-entity-manifest.mjs",
     "test": "node --test test/*.test.mjs",
     "test:esm-engine": "node --test test/esm-engine-runtime.test.mjs",
