@@ -9,7 +9,7 @@ import {
   buildEntityManifestArtifacts,
   checkEntityManifestArtifacts,
   writeEntityManifestArtifacts
-} from '../tools/build-weltmeister-entity-manifest.mjs';
+} from '../tools/weltmeister/build-weltmeister-entity-manifest.mjs';
 
 const ensureGlobal = (name, value) => {
   Object.defineProperty(globalThis, name, {
