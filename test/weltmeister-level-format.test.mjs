@@ -12,7 +12,7 @@ import {
 } from '../tools/weltmeister/level-format.js';
 
 test('parseLevelSource reads current ESM level modules through the embedded JSON markers', async () => {
-  const source = await fs.readFile(path.resolve('lib/game/levels/title.js'), 'utf8');
+  const source = await fs.readFile(path.resolve('public/lib/game/levels/title.js'), 'utf8');
   const levelData = parseLevelSource(source);
 
   assert.equal(Array.isArray(levelData.entities), true);

@@ -5,14 +5,14 @@ game and Weltmeister workflow.
 
 ## Runtime
 
-- The live `lib/` tree contains the ESM runtime.
-- `/` serves the source sample game entry from `index.html`.
-- `index.html` loads `lib/game/bootstrap.js`, which imports the Impact debug
+- The live `public/lib/` tree contains the ESM runtime and is served at `/lib/`.
+- `/` serves the source sample game entry from `public/index.html`.
+- `public/index.html` loads `lib/game/bootstrap.js`, which imports the Impact debug
   panel before the game entry only when the URL uses `?debug` or `?debug=true`.
 - `lib/game/bootstrap.js` then imports `lib/game/main.js`.
-- `test/esm-smoke.html` verifies the lower-level `lib/impact/ig.js` bootstrap
+- `test/esm-smoke.html` verifies the lower-level `public/lib/impact/ig.js` bootstrap
   path in a browser.
-- `test/esm-engine-smoke.html` verifies the full `lib/impact/impact.js` engine
+- `test/esm-engine-smoke.html` verifies the full `public/lib/impact/impact.js` engine
   entry, including `ig.main` and class-registry access.
 - `npm run test:esm-engine` covers the ESM engine entry and level-registry
   behavior in Node-based tests.
@@ -22,8 +22,8 @@ game and Weltmeister workflow.
 - The app runs directly from the Express static server with no development
   bundler requirement.
 - `npm run bake` is the current production game build path and writes the Vite
-  build to `dist/`.
-- `/dist.html` serves the latest baked `dist/index.html` when it exists.
+  build to `public/dist/`.
+- `/dist.html` serves the latest baked `public/dist/index.html` when it exists.
 - `/dist.html` returns `404` with a `npm run bake` hint when no baked build is
   present.
 - Built JavaScript is served from `/dist/assets/...`; runtime media and sounds
@@ -65,7 +65,7 @@ game and Weltmeister workflow.
 
 - Entity discovery on the ESM editor path comes from the generated manifest in
   `tools/weltmeister/entity-manifest.js`.
-- The manifest generator scans `lib/game/entities/**/*.js` and also writes a
+- The manifest generator scans `public/lib/game/entities/**/*.js` and also writes a
   JSON mirror to `tools/weltmeister/entity-manifest.json`.
 - Regenerate the manifest after adding, removing, or renaming entity modules
   with `npm run build:weltmeister-entity-manifest`.
@@ -73,9 +73,10 @@ game and Weltmeister workflow.
   files.
 - Level saving supports both formats. Saving to a `.js` path writes a native ESM
   level module; saving to a `.json` path writes plain JSON.
-- New levels default to `lib/game/levels/*.js` because the current editor config
-  sets `project.levelPath` to `lib/game/levels/` and `project.outputFormat` to
-  `esm`.
+- New levels default to `lib/game/levels/*.js` in the editor because the current
+  editor config sets `project.levelPath` to `lib/game/levels/` and
+  `project.outputFormat` to `esm`; the server resolves those paths under
+  `public/lib/game/levels/` on disk.
 - Current ESM level modules embed level JSON between `/*JSON[*/` markers,
   register themselves through `ig.Game.registerLevel(...)`, and export the level
   symbol plus its resource list.

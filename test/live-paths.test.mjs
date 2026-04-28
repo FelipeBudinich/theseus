@@ -30,10 +30,10 @@ test('live app and editor files no longer reference retired pre-rename paths', a
   const files = [
     'test/esm-engine-smoke.html',
     'test/esm-smoke.html',
-    'index.html',
+    'public/index.html',
     'server.mjs',
     'tools/weltmeister.html',
-    ...(await listFiles('lib')),
+    ...(await listFiles('public/lib')),
     ...(await listFiles('tools/weltmeister'))
   ];
 

@@ -201,24 +201,40 @@ test('/font-tool.html no longer resolves from the source tree', async (t) => {
   assert.equal(response.statusCode, 404);
 });
 
-test('/test/esm-smoke.html still resolves from the source tree', async (t) => {
+test('/test/esm-smoke.html is private', async (t) => {
   const distRoot = await makeTempDirectory('theseus-source-esm-smoke-');
   t.after(() => fs.rm(distRoot, { recursive: true, force: true }));
 
   const { port } = await startTestServer({ distRoot }, t);
   const response = await requestServer({ port, path: '/test/esm-smoke.html' });
 
-  assert.equal(response.statusCode, 200);
-  assert.match(response.text, /\.\.\/lib\/impact\/ig\.js/);
+  assert.equal(response.statusCode, 404);
 });
 
-test('/test/esm-engine-smoke.html still resolves from the source tree', async (t) => {
+test('/test/esm-engine-smoke.html is private', async (t) => {
   const distRoot = await makeTempDirectory('theseus-source-esm-engine-smoke-');
   t.after(() => fs.rm(distRoot, { recursive: true, force: true }));
 
   const { port } = await startTestServer({ distRoot }, t);
   const response = await requestServer({ port, path: '/test/esm-engine-smoke.html' });
 
-  assert.equal(response.statusCode, 200);
-  assert.match(response.text, /\.\.\/lib\/impact\/impact\.js/);
+  assert.equal(response.statusCode, 404);
+});
+
+test('/tools implementation files are private', async (t) => {
+  const distRoot = await makeTempDirectory('theseus-private-tools-');
+  t.after(() => fs.rm(distRoot, { recursive: true, force: true }));
+
+  const { port } = await startTestServer({ distRoot }, t);
+  const apiSource = await requestServer({
+    port,
+    path: '/tools/weltmeister/api/node-api.mjs'
+  });
+  const manifestBuilder = await requestServer({
+    port,
+    path: '/tools/weltmeister/build-weltmeister-entity-manifest.mjs'
+  });
+
+  assert.equal(apiSource.statusCode, 404);
+  assert.equal(manifestBuilder.statusCode, 404);
 });

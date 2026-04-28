@@ -68,9 +68,9 @@ const installBrowserLikeGlobals = () => {
 
 installBrowserLikeGlobals();
 
-const impactUrl = pathToFileURL(path.resolve('lib/impact/impact.js')).href;
+const impactUrl = pathToFileURL(path.resolve('public/lib/impact/impact.js')).href;
 const gamepadUrl =
-  `${pathToFileURL(path.resolve('lib/plugins/gamepad.js')).href}?gamepad-test=${Date.now()}`;
+  `${pathToFileURL(path.resolve('public/lib/plugins/gamepad.js')).href}?gamepad-test=${Date.now()}`;
 
 const ig = (await import(impactUrl)).default;
 await import(gamepadUrl);

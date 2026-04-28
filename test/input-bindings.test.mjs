@@ -40,7 +40,7 @@ const installBrowserLikeGlobals = () => {
 installBrowserLikeGlobals();
 
 const moduleUrl =
-  `${pathToFileURL(path.resolve('lib/impact/impact.js')).href}?input-test=${Date.now()}`;
+  `${pathToFileURL(path.resolve('public/lib/impact/impact.js')).href}?input-test=${Date.now()}`;
 const ig = (await import(moduleUrl)).default;
 
 const createEventTarget = () => {

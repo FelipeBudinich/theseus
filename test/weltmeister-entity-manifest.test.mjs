@@ -61,13 +61,13 @@ const writeProjectFile = async (projectRoot, relativePath, contents = '') => {
 test('buildEntityManifestArtifacts derives sorted entries and stable import metadata', async () => {
   const projectRoot = await makeTempProjectRoot();
 
-  await writeProjectFile(projectRoot, 'lib/game/entities/zapper.js');
-  await writeProjectFile(projectRoot, 'lib/game/entities/blob.js');
-  await writeProjectFile(projectRoot, 'lib/game/entities/subdir/shield-wall.js');
+  await writeProjectFile(projectRoot, 'public/lib/game/entities/zapper.js');
+  await writeProjectFile(projectRoot, 'public/lib/game/entities/blob.js');
+  await writeProjectFile(projectRoot, 'public/lib/game/entities/subdir/shield-wall.js');
 
   const artifacts = await buildEntityManifestArtifacts({
     projectRoot,
-    sourceDirectories: ['lib/game/entities']
+    sourceDirectories: ['public/lib/game/entities']
   });
 
   assert.deepEqual(
@@ -103,12 +103,12 @@ test('buildEntityManifestArtifacts derives sorted entries and stable import meta
 test('writeEntityManifestArtifacts is reproducible and checkEntityManifestArtifacts detects drift', async () => {
   const projectRoot = await makeTempProjectRoot();
 
-  await writeProjectFile(projectRoot, 'lib/game/entities/blob.js');
-  await writeProjectFile(projectRoot, 'lib/game/entities/player.js');
+  await writeProjectFile(projectRoot, 'public/lib/game/entities/blob.js');
+  await writeProjectFile(projectRoot, 'public/lib/game/entities/player.js');
 
   const firstWrite = await writeEntityManifestArtifacts({
     projectRoot,
-    sourceDirectories: ['lib/game/entities']
+    sourceDirectories: ['public/lib/game/entities']
   });
   const firstModuleSource = await fs.readFile(
     path.join(projectRoot, firstWrite.moduleOutputPath),
@@ -117,7 +117,7 @@ test('writeEntityManifestArtifacts is reproducible and checkEntityManifestArtifa
 
   await writeEntityManifestArtifacts({
     projectRoot,
-    sourceDirectories: ['lib/game/entities']
+    sourceDirectories: ['public/lib/game/entities']
   });
   const secondModuleSource = await fs.readFile(
     path.join(projectRoot, firstWrite.moduleOutputPath),
@@ -128,24 +128,41 @@ test('writeEntityManifestArtifacts is reproducible and checkEntityManifestArtifa
 
   const inSync = await checkEntityManifestArtifacts({
     projectRoot,
-    sourceDirectories: ['lib/game/entities']
+    sourceDirectories: ['public/lib/game/entities']
   });
   assert.equal(inSync.matches, true);
 
   await fs.writeFile(path.join(projectRoot, firstWrite.moduleOutputPath), '// stale\n', 'utf8');
   const stale = await checkEntityManifestArtifacts({
     projectRoot,
-    sourceDirectories: ['lib/game/entities']
+    sourceDirectories: ['public/lib/game/entities']
   });
   assert.equal(stale.matches, false);
 });
 
-test('ESM Weltmeister entity loader consumes the manifest and registers entity classes without AJAX discovery', async () => {
+test('ESM Weltmeister entity loader consumes the manifest and registers entity classes without AJAX discovery', async (t) => {
   installBrowserLikeGlobals();
   delete globalThis.$;
   delete globalThis.wm;
 
-  const moduleUrl = `${pathToFileURL(path.resolve('tools/weltmeister/entities.js')).href}?test=${Date.now()}`;
+  const moduleRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(moduleRoot, { recursive: true, force: true }));
+
+  const moduleToolRoot = path.join(moduleRoot, 'tools/weltmeister');
+  await fs.mkdir(moduleToolRoot, { recursive: true });
+  await Promise.all([
+    fs.copyFile(
+      path.resolve('tools/weltmeister/entities.js'),
+      path.join(moduleToolRoot, 'entities.js')
+    ),
+    fs.copyFile(
+      path.resolve('tools/weltmeister/entity-manifest.js'),
+      path.join(moduleToolRoot, 'entity-manifest.js')
+    )
+  ]);
+  await fs.symlink(path.resolve('public/lib'), path.join(moduleRoot, 'lib'), 'dir');
+
+  const moduleUrl = `${pathToFileURL(path.join(moduleRoot, 'tools/weltmeister/entities.js')).href}?test=${Date.now()}`;
   const {
     entityManifest,
     getLegacyEntityModuleMap,

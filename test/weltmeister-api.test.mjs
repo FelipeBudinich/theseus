@@ -29,7 +29,7 @@ const writeProjectFile = async (projectRoot, relativePath, contents = '') => {
 };
 
 const startTestServer = async (projectRoot, t) => {
-  const app = createApp({ projectRoot });
+  const app = createApp({ projectRoot, staticRoot: projectRoot });
   const server = app.listen(0, '127.0.0.1');
   await once(server, 'listening');
 

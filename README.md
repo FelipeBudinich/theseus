@@ -10,7 +10,7 @@ Impact was published under the [MIT Open Source License](http://opensource.org/l
 
 1. Run `npm install` to setup your local copy.
 2. Run `npm start` for the normal server, or `npm run dev` to restart on changes.
-3. Run `npm run bake` builds the sample game from `index.html` into `dist/`.
+3. Run `npm run bake` to build the sample game from `public/index.html` into `public/dist/`.
 
 The server listens on `http://127.0.0.1:3000` by default and is also reachable at `http://localhost:3000`.
 Set `PORT` to use a different port or `HOST` on `server.mjs` to change the bind address.
@@ -26,12 +26,12 @@ Set `PORT` to use a different port or `HOST` on `server.mjs` to change the bind 
 
 ## Changes in this port
 
-- The live `lib/` tree is the ESM runtime.
-- `index.html` uses `lib/game/bootstrap.js` so the optional Impact debug panel can patch engine classes before the game entry evaluates. The debug panel is enabled only by `?debug` or `?debug=true`.
+- The live ESM runtime lives under `public/lib/`, but browser URLs remain `/lib/...` because `public/` is the server static root.
+- `public/index.html` uses `lib/game/bootstrap.js` so the optional Impact debug panel can patch engine classes before the game entry evaluates. The debug panel is enabled only by `?debug` or `?debug=true`.
 - `ig.input.bind()` now uses string input codes instead of `ig.KEY` or `ig.GAMEPAD` constants. Keyboard bindings use `KeyboardEvent.code` values such as `ArrowLeft`, `KeyX`, and `Space`; mouse and wheel bindings use Theseus strings such as `MousePrimary`, `MouseSecondary`, `WheelUp`, and `WheelDown`.
 - Gamepad bindings are string-based logical controller slots. Use `Gamepad0Left`, `Gamepad0FaceBottom`, `Gamepad1Left`, etc.; generic gamepad names such as `GamepadLeft` are intentionally rejected.
-- `/dist.html` serves the latest Vite build from `dist/index.html` when present.
-- Weltmeister edits `lib/game/levels/` by default. Saving to a `.js` path writes a native ESM level module, while saving to a `.json` path writes plain JSON.
+- `/dist.html` serves the latest Vite build from `public/dist/index.html` when present.
+- Weltmeister still edits `lib/game/levels/` by default, and the server resolves that to `public/lib/game/levels/` on disk. Saving to a `.js` path writes a native ESM level module, while saving to a `.json` path writes plain JSON.
 
 Example input bindings:
 

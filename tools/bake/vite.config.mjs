@@ -6,19 +6,22 @@ import { createTextureAtlasPlugin } from './texture-atlas-plugin.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 const projectRoot = path.resolve(__dirname, '../..');
+const publicRoot = path.join(projectRoot, 'public');
 
 export default defineConfig({
-  root: projectRoot,
+  root: publicRoot,
   base: '/dist/',
   publicDir: false,
 
   plugins: [createTextureAtlasPlugin()],
 
   build: {
-    outDir: path.join(projectRoot, 'dist'),
+    outDir: path.join(publicRoot, 'dist'),
+    emptyOutDir: true,
     rollupOptions: {
-      input: path.join(projectRoot, 'index.html'),
-    },
-  },
+      input: path.join(publicRoot, 'index.html')
+    }
+  }
 });

@@ -37,11 +37,11 @@ const runBake = async () =>
     });
   });
 
-test('npm run bake builds the game into dist with /dist asset URLs', async () => {
+test('npm run bake builds the game into public/dist with /dist asset URLs', async () => {
   await runBake();
 
-  const distIndexPath = path.resolve('dist/index.html');
-  const distAssetsPath = path.resolve('dist/assets');
+  const distIndexPath = path.resolve('public/dist/index.html');
+  const distAssetsPath = path.resolve('public/dist/assets');
   const builtHtml = await fs.readFile(distIndexPath, 'utf8');
   const assetEntries = await fs.readdir(distAssetsPath);
 
@@ -49,6 +49,6 @@ test('npm run bake builds the game into dist with /dist asset URLs', async () =>
   assert.doesNotMatch(builtHtml, /lib\/game\/main\.js/);
   assert.ok(
     assetEntries.some((fileName) => fileName.endsWith('.js')),
-    'expected dist/assets to contain a built JavaScript bundle'
+    'expected public/dist/assets to contain a built JavaScript bundle'
   );
 });

@@ -2,7 +2,7 @@
 
 ## Summary
 
-The background-map pre-render cleanup removed the old Chrome 49 workaround that converted pre-rendered chunks through `canvas.toDataURL()` and an `Image` object before drawing. `lib/impact/background-map.js` now keeps pre-rendered chunks as off-DOM `HTMLCanvasElement` instances and draws them directly.
+The background-map pre-render cleanup removed the old Chrome 49 workaround that converted pre-rendered chunks through `canvas.toDataURL()` and an `Image` object before drawing. `public/lib/impact/background-map.js` now keeps pre-rendered chunks as off-DOM `HTMLCanvasElement` instances and draws them directly.
 
 This avoids unnecessary serialization through `toDataURL()`, avoids rehydrating canvas pixels through an image load path, and keeps the existing Impact-style canvas renderer intact. The cleanup is intentionally narrow: it modernizes the pre-render chunk storage and draw path without changing the broader canvas abstraction.
 
@@ -134,7 +134,7 @@ Verify:
 - Weltmeister still loads maps using background layers.
 - Baked/dist game still renders the same map.
 - Asset loading still completes normally.
-- No `toDataURL()` dependency remains in `lib/impact/background-map.js`.
+- No `toDataURL()` dependency remains in `public/lib/impact/background-map.js`.
 - No new async image-loading path was introduced.
 
 ## Acceptance criteria

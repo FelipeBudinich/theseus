@@ -4,7 +4,7 @@ import test from 'node:test';
 
 test('bootstrap owns debug query parsing and keeps the debug import before main', async () => {
   const bootstrapSource = await fs.readFile(
-    new URL('../lib/game/bootstrap.js', import.meta.url),
+    new URL('../public/lib/game/bootstrap.js', import.meta.url),
     'utf8'
   );
   const deletedHelperSpecifier = `./${['debug', 'query'].join('-')}.js`;

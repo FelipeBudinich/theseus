@@ -1,6 +1,6 @@
 {
   "sourceDirectories": [
-    "lib/game/entities"
+    "public/lib/game/entities"
   ],
   "entities": [
     {

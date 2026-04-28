@@ -1,16 +1,16 @@
 # ESM Migration Note
 
 The native ESM migration is complete in the live repo layout: the game runtime
-loads from `lib/`, and the browser-side editor tooling loads from
+lives under `public/lib/` and is served at `/lib/`, while browser-side editor tooling loads from
 `tools/weltmeister/`.
 
 ## Live Entrypoints
 
-- `index.html` loads the sample game from `lib/game/bootstrap.js`, which conditionally imports the Impact debug panel before the game entry.
-- `dist.html` is a server route that serves the latest Vite production build from `dist/index.html`.
+- `public/index.html` loads the sample game from `lib/game/bootstrap.js`, which conditionally imports the Impact debug panel before the game entry.
+- `dist.html` is a server route that serves the latest Vite production build from `public/dist/index.html`.
 - `tools/weltmeister.html` loads the editor from `tools/weltmeister/main.js`.
-- `test/esm-smoke.html` imports `lib/impact/ig.js` directly.
-- `test/esm-engine-smoke.html` imports `lib/impact/impact.js` directly.
+- `test/esm-smoke.html` imports `public/lib/impact/ig.js` directly.
+- `test/esm-engine-smoke.html` imports `public/lib/impact/impact.js` directly.
 
 ## Conversion Rule For Future Modules
 
@@ -62,7 +62,7 @@ npm run build:weltmeister-entity-manifest
 This also refreshes `tools/weltmeister/entity-manifest.json`, which mirrors
 the manifest contents in a debug-friendly format.
 
-The generator scans `lib/game/entities/**/*.js` by default. The underlying CLI
+The generator scans `public/lib/game/entities/**/*.js` by default. The underlying CLI
 also supports `--check` so CI or local scripts can detect drift without
 rewriting files.
 
@@ -92,8 +92,8 @@ Run the sample-game production build with:
 npm run bake
 ```
 
-This writes the built game to `dist/`. The Node server keeps `/` pointed at the
-source `index.html`, while `/dist.html` serves the latest baked `dist/index.html`.
+This writes the built game to `public/dist/`. The Node server keeps `/` pointed at the
+source `public/index.html`, while `/dist.html` serves the latest baked `public/dist/index.html`.
 Built JavaScript is served from `/dist/assets/...`, but runtime media and sound
 paths still come from the source-hosted `/media/...` tree.
 

@@ -1,7 +1,9 @@
 import express from 'express';
+
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
 import { createWeltmeisterApiRouter } from './tools/weltmeister/api/node-api.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -9,13 +11,47 @@ const __dirname = path.dirname(__filename);
 
 const createApp = ({
   projectRoot = __dirname,
-  staticRoot = __dirname,
+  staticRoot = path.join(projectRoot, 'public'),
+  toolsRoot = path.join(projectRoot, 'tools'),
   distRoot
 } = {}) => {
   const app = express();
+
   const resolvedDistRoot = distRoot ?? path.join(staticRoot, 'dist');
 
-  app.use('/tools/weltmeister/api', createWeltmeisterApiRouter({ projectRoot }));
+  app.use(
+    '/tools/weltmeister/api',
+    createWeltmeisterApiRouter({ projectRoot: staticRoot })
+  );
+
+  app.get('/tools/weltmeister.html', (_req, res) => {
+    res.sendFile(path.join(toolsRoot, 'weltmeister.html'));
+  });
+
+  app.get('/tools/font-tool.html', (_req, res) => {
+    res.sendFile(path.join(toolsRoot, 'font-tool.html'));
+  });
+
+  app.use(
+    '/tools/weltmeister',
+    (req, res, next) => {
+      if (
+        req.path.startsWith('/api/') ||
+        req.path === '/build-weltmeister-entity-manifest.mjs'
+      ) {
+        res.sendStatus(404);
+        return;
+      }
+
+      next();
+    },
+    express.static(path.join(toolsRoot, 'weltmeister'), { index: false })
+  );
+
+  app.use(
+    '/tools/font-tool',
+    express.static(path.join(toolsRoot, 'font-tool'), { index: false })
+  );
 
   app.get('/', (_req, res) => {
     res.sendFile(path.join(staticRoot, 'index.html'));
@@ -47,16 +83,16 @@ const createApp = ({
   return app;
 };
 
-const app = createApp();
-
 const startServer = ({
   host = process.env.HOST || '127.0.0.1',
   port = Number(process.env.PORT) || 3000,
   projectRoot = __dirname,
-  staticRoot = __dirname,
+  staticRoot = path.join(projectRoot, 'public'),
+  toolsRoot = path.join(projectRoot, 'tools'),
   distRoot
 } = {}) => {
-  const app = createApp({ projectRoot, staticRoot, distRoot });
+  const app = createApp({ projectRoot, staticRoot, toolsRoot, distRoot });
+
   const server = app.listen(port, host, () => {
     const address = server.address();
     const actualPort =
@@ -72,4 +108,4 @@ if (process.argv[1] === __filename) {
   startServer();
 }
 
-export { app, createApp, startServer };
+export { createApp, startServer };

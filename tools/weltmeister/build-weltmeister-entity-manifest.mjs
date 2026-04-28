@@ -3,7 +3,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const DEFAULT_SOURCE_DIRECTORIES = ['lib/game/entities'];
+const DEFAULT_SOURCE_DIRECTORIES = ['public/lib/game/entities'];
 const DEFAULT_MODULE_OUTPUT_PATH = 'tools/weltmeister/entity-manifest.js';
 const DEFAULT_JSON_OUTPUT_PATH = 'tools/weltmeister/entity-manifest.json';
 
@@ -24,16 +24,20 @@ const toClassName = (filePath) => {
 
 const toDisplayName = (className) => className.replace(/^Entity/, '');
 
+const toPublicPath = (filePath) => toPosixPath(filePath).replace(/^public\//, '');
+
 const toModuleId = (filePath) =>
-  filePath
+  toPublicPath(filePath)
     .replace(/^lib\//, '')
     .replace(/\.js$/, '')
     .replace(/\//g, '.');
 
-const toStableKey = (filePath) => filePath.replace(/^lib\//, '').replace(/\.js$/, '');
+const toStableKey = (filePath) =>
+  toPublicPath(filePath).replace(/^lib\//, '').replace(/\.js$/, '');
 
 const toImportPath = (filePath, moduleOutputPath) => {
-  const relativePath = path.posix.relative(path.posix.dirname(moduleOutputPath), filePath);
+  const publicPath = toPublicPath(filePath);
+  const relativePath = path.posix.relative(path.posix.dirname(moduleOutputPath), publicPath);
   return relativePath.startsWith('.') ? relativePath : `./${relativePath}`;
 };
 
@@ -69,7 +73,7 @@ const buildEntityManifestEntries = ({
       moduleId: toModuleId(filePath),
       className,
       displayName: toDisplayName(className),
-      filePath,
+      filePath: toPublicPath(filePath),
       importPath: toImportPath(filePath, normalizeRelativePath(moduleOutputPath))
     };
   });
