@@ -33,6 +33,11 @@ const getDefaultLevelExtension = () =>
 const getUntitledFileName = () => `untitled${getDefaultLevelExtension()}`;
 const getUntitledFilePath = () => `${config.project.levelPath}${getUntitledFileName()}`;
 
+const getLayerHotkeyIndex = function(event) {
+  var match = event.code && event.code.match(/^(?:Digit|Numpad)(\d)$/);
+  return match ? parseInt(match[1], 10) : null;
+};
+
 const resolveWeltmeisterModuleSpecifier = (moduleId) => {
   const modulePath = moduleId.replace(/\./g, '/');
 
@@ -176,26 +181,31 @@ const Weltmeister = (wm.Weltmeister = ig.Class.extend({
       return;
     }
 
-    var key =
-      event.key && event.key.match(/^\d$/)
-        ? event.key
-        : String.fromCharCode(event.which || event.keyCode);
-    if (key.match(/^\d$/)) {
-      var index = parseInt(key, 10);
-      var nameElement = qs('#layers div.layer:nth-child(' + index + ') span.name');
-      var name = nameElement ? nameElement.textContent : '';
+    var index = getLayerHotkeyIndex(event);
 
-      var layer = name == 'entities'
-        ? this.entities
-        : this.getLayerWithName(name);
+    if (index === null || index < 1) {
+      return;
+    }
 
-      if (layer) {
-        if (event.shiftKey) {
-          layer.toggleVisibility();
-        } else {
-          this.setActiveLayer(layer.name);
-        }
-      }
+    var nameElement = qs('#layers div.layer:nth-child(' + index + ') span.name');
+
+    if (!nameElement) {
+      return;
+    }
+
+    var name = nameElement.textContent;
+    var layer = name == 'entities'
+      ? this.entities
+      : this.getLayerWithName(name);
+
+    if (!layer) {
+      return;
+    }
+
+    if (event.shiftKey) {
+      layer.toggleVisibility();
+    } else {
+      this.setActiveLayer(layer.name);
     }
   },
 

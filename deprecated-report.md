@@ -20,8 +20,7 @@ and the runtime uses syntax that old browsers cannot parse. There is no explicit
 ## Current Summary
 
 - No high-confidence deprecated-browser support remains from the current scan.
-- Medium-confidence compatibility residue remains in editor input handling: old
-  key event fallbacks.
+- No medium-confidence compatibility residue remains in editor input handling.
 - I did not find classic IE event/model support such as `attachEvent`,
   `detachEvent`, `ActiveXObject`, `XDomainRequest`, `document.all`, or IE
   conditional comments.
@@ -47,7 +46,7 @@ APIs alive and overlap with old-browser compatibility.
 
 | Priority | Location | Finding | Modern direction |
 | --- | --- | --- | --- |
-| P3 | `lib/weltmeister/edit-entities.js:37-40`, `lib/weltmeister/edit-entities.js:381-382`, `lib/weltmeister/weltmeister.js:179-182` | Editor UI shortcut handling mixes modern `event.key` with `event.which`/`event.keyCode` fallbacks outside the main input binding path. | Keep `event.key` for text commands and remove the fallback once those UI shortcuts are modernized. |
+| None | - | No remaining live editor UI shortcut compatibility residue. | Continue using `KeyboardEvent.key` for text-entry commands and `KeyboardEvent.code` for editor/game-style shortcuts. |
 
 ## Explicit Non-Findings
 
@@ -62,6 +61,5 @@ APIs alive and overlap with old-browser compatibility.
 
 ## Suggested Cleanup Order
 
-1. Remove the remaining Weltmeister UI shortcut `event.which`/`event.keyCode` fallbacks.
-2. Consider a separate `OffscreenCanvas` migration audit for pre-rendered
+1. Consider a separate `OffscreenCanvas` migration audit for pre-rendered
    background chunks after confirming DOM-canvas assumptions.

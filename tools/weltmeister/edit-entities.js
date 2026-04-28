@@ -3,6 +3,10 @@ import wm from './wm.js';
 import config from './config.js';
 import { fadeOut, fadeSwap, hide, qs, show } from './dom-helpers.js';
 
+const isEnterKey = function(event) {
+  return event.key == 'Enter';
+};
+
 const EditEntities = (wm.EditEntities = ig.Class.extend({
   visible: true,
   active: true,
@@ -35,7 +39,7 @@ const EditEntities = (wm.EditEntities = ig.Class.extend({
     this.entityDefinitions.addEventListener('mouseup', this.selectEntitySetting.bind(this));
 
     qs('#entityKey').addEventListener('keydown', function(ev) {
-      if (ev.key == 'Enter' || ev.which == 13) {
+      if (isEnterKey(ev)) {
         qs('#entityValue').focus();
         ev.preventDefault();
       }
@@ -379,7 +383,7 @@ const EditEntities = (wm.EditEntities = ig.Class.extend({
   },
 
   setEntitySetting: function(ev) {
-    if (ev.key != 'Enter' && ev.which != 13) {
+    if (!isEnterKey(ev)) {
       return true;
     }
     ev.preventDefault();
