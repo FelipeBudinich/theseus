@@ -895,7 +895,7 @@ const saveRenderedAtlas = async (state) => {
     path: outputPath,
     data: state.elements.atlasCanvas.toDataURL('image/png')
   };
-  const response = await fetch('/lib/weltmeister/api/save-image', {
+  const response = await fetch('/tools/weltmeister/api/save-image', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

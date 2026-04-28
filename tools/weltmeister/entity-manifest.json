@@ -9,7 +9,7 @@
       "className": "EntityBlob",
       "displayName": "Blob",
       "filePath": "lib/game/entities/blob.js",
-      "importPath": "../game/entities/blob.js"
+      "importPath": "../../lib/game/entities/blob.js"
     },
     {
       "key": "game/entities/coin",
@@ -17,7 +17,7 @@
       "className": "EntityCoin",
       "displayName": "Coin",
       "filePath": "lib/game/entities/coin.js",
-      "importPath": "../game/entities/coin.js"
+      "importPath": "../../lib/game/entities/coin.js"
     },
     {
       "key": "game/entities/fireball",
@@ -25,7 +25,7 @@
       "className": "EntityFireball",
       "displayName": "Fireball",
       "filePath": "lib/game/entities/fireball.js",
-      "importPath": "../game/entities/fireball.js"
+      "importPath": "../../lib/game/entities/fireball.js"
     },
     {
       "key": "game/entities/hurt",
@@ -33,7 +33,7 @@
       "className": "EntityHurt",
       "displayName": "Hurt",
       "filePath": "lib/game/entities/hurt.js",
-      "importPath": "../game/entities/hurt.js"
+      "importPath": "../../lib/game/entities/hurt.js"
     },
     {
       "key": "game/entities/levelchange",
@@ -41,7 +41,7 @@
       "className": "EntityLevelchange",
       "displayName": "Levelchange",
       "filePath": "lib/game/entities/levelchange.js",
-      "importPath": "../game/entities/levelchange.js"
+      "importPath": "../../lib/game/entities/levelchange.js"
     },
     {
       "key": "game/entities/player",
@@ -49,7 +49,7 @@
       "className": "EntityPlayer",
       "displayName": "Player",
       "filePath": "lib/game/entities/player.js",
-      "importPath": "../game/entities/player.js"
+      "importPath": "../../lib/game/entities/player.js"
     },
     {
       "key": "game/entities/trigger",
@@ -57,7 +57,7 @@
       "className": "EntityTrigger",
       "displayName": "Trigger",
       "filePath": "lib/game/entities/trigger.js",
-      "importPath": "../game/entities/trigger.js"
+      "importPath": "../../lib/game/entities/trigger.js"
     }
   ]
 }

@@ -146,7 +146,26 @@ test('/weltmeister.html still resolves from the source tree', async (t) => {
   const response = await requestServer({ port, path: '/weltmeister.html' });
 
   assert.equal(response.statusCode, 200);
-  assert.match(response.text, /<script type="module" src="lib\/weltmeister\/main\.js"><\/script>/);
+  assert.match(response.text, /<script type="module" src="tools\/weltmeister\/main\.js"><\/script>/);
+});
+
+test('/tools/weltmeister assets resolve and former /lib/weltmeister assets do not', async (t) => {
+  const distRoot = await makeTempDirectory('theseus-source-weltmeister-assets-');
+  t.after(() => fs.rm(distRoot, { recursive: true, force: true }));
+
+  const { port } = await startTestServer({ distRoot }, t);
+  const toolAssetResponse = await requestServer({
+    port,
+    path: '/tools/weltmeister/main.js'
+  });
+  const formerLibAssetResponse = await requestServer({
+    port,
+    path: '/lib/weltmeister/main.js'
+  });
+
+  assert.equal(toolAssetResponse.statusCode, 200);
+  assert.match(toolAssetResponse.text, /bootWeltmeister/);
+  assert.equal(formerLibAssetResponse.statusCode, 404);
 });
 
 test('/font-tool.html resolves from the source tree and references its static assets', async (t) => {

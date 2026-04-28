@@ -2,7 +2,8 @@ import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const repoRoot = process.cwd();
-const sourceRoot = path.join(repoRoot, 'lib');
+const sourceRootNames = ['lib', 'tools/weltmeister'];
+const sourceRoots = sourceRootNames.map((sourceRoot) => path.join(repoRoot, sourceRoot));
 const docsDir = path.join(repoRoot, 'docs');
 const outputJsonPath = path.join(docsDir, 'module-graph.json');
 const outputMarkdownPath = path.join(docsDir, 'module-graph.md');
@@ -64,8 +65,10 @@ const listJavaScriptFiles = async (directory) => {
   return files.sort(compareStrings);
 };
 
-const toModuleName = (filePath) =>
-  relativeToRepo(filePath).replace(/^lib\//, '').replace(/\.(?:js|mjs)$/, '');
+const toModuleName = (filePath) => {
+  const relativePath = relativeToRepo(filePath).replace(/\.(?:js|mjs)$/, '');
+  return relativePath.replace(/^lib\//, '');
+};
 
 const resolveRelativeSpecifier = (filePath, specifier) => {
   if (!specifier.startsWith('.')) {
@@ -126,7 +129,9 @@ const readModuleRecord = async (filePath) => {
 };
 
 const buildGraph = async () => {
-  const files = await listJavaScriptFiles(sourceRoot);
+  const files = (await Promise.all(sourceRoots.map(listJavaScriptFiles)))
+    .flat()
+    .sort(compareStrings);
   const modules = await Promise.all(files.map(readModuleRecord));
   const moduleByFile = new Map(modules.map((moduleRecord) => [moduleRecord.file, moduleRecord]));
   const incomingEdges = new Map(modules.map((moduleRecord) => [moduleRecord.moduleName, new Set()]));
@@ -225,7 +230,7 @@ const buildGraph = async () => {
     modules: normalizedModules,
     modulesFound: normalizedModules.length,
     roots,
-    sourceRoot: 'lib',
+    sourceRoots: sourceRootNames,
     staticEdgesFound,
     unresolvedDependencies,
     modulesWithoutStaticImports
@@ -241,7 +246,9 @@ const toMarkdown = (graph) => {
   lines.push('');
   lines.push('## Summary');
   lines.push('');
-  lines.push(`- Source root: \`${graph.sourceRoot}/\``);
+  lines.push(
+    `- Source roots: ${graph.sourceRoots.map((sourceRoot) => `\`${sourceRoot}/\``).join(', ')}`
+  );
   lines.push(`- JS files scanned: ${graph.filesScanned}`);
   lines.push(`- Modules found: ${graph.modulesFound}`);
   lines.push(`- Static import edges: ${graph.staticEdgesFound}`);

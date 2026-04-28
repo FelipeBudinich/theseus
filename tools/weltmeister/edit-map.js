@@ -1,4 +1,4 @@
-import ig from '../impact/impact.js';
+import ig from '../../lib/impact/impact.js';
 import wm from './wm.js';
 import config from './config.js';
 import { qs } from './dom-helpers.js';

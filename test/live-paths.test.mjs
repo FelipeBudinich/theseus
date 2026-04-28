@@ -4,7 +4,7 @@ import path from 'node:path';
 import test from 'node:test';
 
 const textExtensions = new Set(['.css', '.html', '.js', '.json', '.mjs']);
-const retiredPathPrefix = `lib${'-esm/'}`;
+const retiredPathPrefixes = [`lib${'-esm/'}`, 'lib/weltmeister/'];
 
 const listFiles = async (directory) => {
   const entries = await fs.readdir(directory, { withFileTypes: true });
@@ -33,15 +33,18 @@ test('live app and editor files no longer reference retired pre-rename paths', a
     'index.html',
     'server.mjs',
     'weltmeister.html',
-    ...(await listFiles('lib'))
+    ...(await listFiles('lib')),
+    ...(await listFiles('tools/weltmeister'))
   ];
 
   for (const filePath of files) {
     const source = await fs.readFile(filePath, 'utf8');
-    assert.equal(
-      source.includes(retiredPathPrefix),
-      false,
-      `${filePath} still references retired pre-rename paths`
-    );
+    for (const retiredPathPrefix of retiredPathPrefixes) {
+      assert.equal(
+        source.includes(retiredPathPrefix),
+        false,
+        `${filePath} still references retired pre-rename path: ${retiredPathPrefix}`
+      );
+    }
   }
 });

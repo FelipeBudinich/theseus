@@ -4,8 +4,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const DEFAULT_SOURCE_DIRECTORIES = ['lib/game/entities'];
-const DEFAULT_MODULE_OUTPUT_PATH = 'lib/weltmeister/entity-manifest.js';
-const DEFAULT_JSON_OUTPUT_PATH = 'lib/weltmeister/entity-manifest.json';
+const DEFAULT_MODULE_OUTPUT_PATH = 'tools/weltmeister/entity-manifest.js';
+const DEFAULT_JSON_OUTPUT_PATH = 'tools/weltmeister/entity-manifest.json';
 
 const toPosixPath = (value) => value.split(path.sep).join('/');
 

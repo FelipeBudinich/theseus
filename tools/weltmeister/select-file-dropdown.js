@@ -1,4 +1,4 @@
-import ig from '../impact/impact.js';
+import ig from '../../lib/impact/impact.js';
 import wm from './wm.js';
 import { hide, positionBelow, resolveElement, show } from './dom-helpers.js';
 import { requestJson } from './request.js';

@@ -1,4 +1,4 @@
-import ig from '../impact/impact.js';
+import ig from '../../lib/impact/impact.js';
 import wm from './wm.js';
 import config from './config.js';
 import './evented-input.js';
@@ -40,7 +40,7 @@ const resolveWeltmeisterModuleSpecifier = (moduleId) => {
     return `./${modulePath.slice('weltmeister/'.length)}.js`;
   }
 
-  return `../${modulePath}.js`;
+  return `../../lib/${modulePath}.js`;
 };
 
 const loadConfiguredPlugins = async () =>

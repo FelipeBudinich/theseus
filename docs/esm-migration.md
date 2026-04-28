@@ -1,13 +1,14 @@
 # ESM Migration Note
 
-The native ESM migration is complete in the live repo layout: browser and
-editor entrypoints load from `lib/`.
+The native ESM migration is complete in the live repo layout: the game runtime
+loads from `lib/`, and the browser-side editor tooling loads from
+`tools/weltmeister/`.
 
 ## Live Entrypoints
 
 - `index.html` loads the sample game from `lib/game/main.js`.
 - `dist.html` is a server route that serves the latest Vite production build from `dist/index.html`.
-- `weltmeister.html` loads the editor from `lib/weltmeister/main.js`.
+- `weltmeister.html` loads the editor from `tools/weltmeister/main.js`.
 - `test/esm-smoke.html` imports `lib/impact/ig.js` directly.
 - `test/esm-engine-smoke.html` imports `lib/impact/impact.js` directly.
 
@@ -40,7 +41,7 @@ still works through `window.ig`.
 ## Weltmeister Entity Manifest
 
 The live Weltmeister loader path reads generated entity metadata from
-`lib/weltmeister/entity-manifest.js`, then `prepareWeltmeisterEntityState()`
+`tools/weltmeister/entity-manifest.js`, then `prepareWeltmeisterEntityState()`
 loads those modules before `bootWeltmeister()` runs.
 
 When you add, remove, or rename an ESM entity module, regenerate the manifest
@@ -50,7 +51,7 @@ with:
 npm run build:weltmeister-entity-manifest
 ```
 
-This also refreshes `lib/weltmeister/entity-manifest.json`, which mirrors
+This also refreshes `tools/weltmeister/entity-manifest.json`, which mirrors
 the manifest contents in a debug-friendly format.
 
 The generator scans `lib/game/entities/**/*.js` by default. The underlying CLI
@@ -59,8 +60,8 @@ rewriting files.
 
 ## Weltmeister Browser Cutover
 
-`weltmeister.html` boots from `lib/weltmeister/main.js` and loads its CSS,
-API endpoints, and editor assets from the same `lib/` tree. The editor UI now
+`weltmeister.html` boots from `tools/weltmeister/main.js` and loads its CSS,
+API endpoints, and editor assets from `tools/weltmeister/`. The editor UI now
 uses first-party browser APIs instead of the retired bundled jQuery and jQuery
 UI scripts.
 
@@ -68,7 +69,7 @@ Level format stays explicit through the target file path:
 
 - saving to a `.js` path writes a native ESM level module
 - saving to a `.json` path writes plain JSON
-- new untitled levels default to `.js` because `lib/weltmeister/config.js`
+- new untitled levels default to `.js` because `tools/weltmeister/config.js`
   currently sets `project.outputFormat` to `esm`
 
 Current ESM level modules embed the level JSON between `/*JSON[*/` markers,
@@ -77,10 +78,10 @@ symbol plus its resource list.
 
 ## Generated Project Docs
 
-`npm run module-graph` scans the live `lib/` tree and regenerates
-`docs/module-graph.json` plus `docs/module-graph.md`. Use it after adding,
-removing, or moving modules if you want the generated graph docs to stay in
-sync with the codebase.
+`npm run module-graph` scans the live `lib/` tree plus `tools/weltmeister/`
+and regenerates `docs/module-graph.json` plus `docs/module-graph.md`. Use it
+after adding, removing, or moving modules if you want the generated graph docs
+to stay in sync with the codebase.
 
 ## Production Bake
 

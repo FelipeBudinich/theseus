@@ -10,7 +10,7 @@ import {
   browseFiles,
   saveImageFile,
   saveFile
-} from '../lib/weltmeister/api/node-api.mjs';
+} from '../tools/weltmeister/api/node-api.mjs';
 import { createApp } from '../server.mjs';
 
 const ONE_BY_ONE_PNG_BASE64 =
@@ -279,7 +279,7 @@ test('save route accepts JSON requests and returns ok on success', async (t) => 
   const response = await requestServer({
     method: 'POST',
     port,
-    path: '/lib/weltmeister/api/save',
+    path: '/tools/weltmeister/api/save',
     headers: {
       'Content-Type': 'application/json',
       'Content-Length': Buffer.byteLength(requestBody)
@@ -308,7 +308,7 @@ test('save route returns 400 with a JSON error for unsupported file suffixes', a
   const response = await requestServer({
     method: 'POST',
     port,
-    path: '/lib/weltmeister/api/save',
+    path: '/tools/weltmeister/api/save',
     headers: {
       'Content-Type': 'application/json',
       'Content-Length': Buffer.byteLength(requestBody)
@@ -335,7 +335,7 @@ test('save-image route accepts JSON requests and returns ok with the written pat
   const response = await requestServer({
     method: 'POST',
     port,
-    path: '/lib/weltmeister/api/save-image',
+    path: '/tools/weltmeister/api/save-image',
     headers: {
       'Content-Type': 'application/json',
       'Content-Length': Buffer.byteLength(requestBody)
@@ -367,7 +367,7 @@ test('save-image route returns 400 with a JSON error for invalid PNG payloads', 
   const response = await requestServer({
     method: 'POST',
     port,
-    path: '/lib/weltmeister/api/save-image',
+    path: '/tools/weltmeister/api/save-image',
     headers: {
       'Content-Type': 'application/json',
       'Content-Length': Buffer.byteLength(requestBody)
@@ -441,7 +441,7 @@ test('browse route returns image listings from the new browse endpoint', async (
   const { port } = await startTestServer(projectRoot, t);
   const response = await requestServer({
     port,
-    path: '/lib/weltmeister/api/browse?dir=media&type=images'
+    path: '/tools/weltmeister/api/browse?dir=media&type=images'
   });
 
   assert.equal(response.statusCode, 200);
@@ -462,7 +462,7 @@ test('browse route returns script listings from the new browse endpoint', async 
   const { port } = await startTestServer(projectRoot, t);
   const response = await requestServer({
     port,
-    path: '/lib/weltmeister/api/browse?dir=media/scripts&type=scripts'
+    path: '/tools/weltmeister/api/browse?dir=media/scripts&type=scripts'
   });
 
   assert.equal(response.statusCode, 200);
@@ -473,6 +473,31 @@ test('browse route returns script listings from the new browse endpoint', async 
   });
 });
 
+test('createApp leaves former lib Weltmeister API routes unmatched', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  const { port } = await startTestServer(projectRoot, t);
+  const browseResponse = await requestServer({
+    port,
+    path: '/lib/weltmeister/api/browse?dir=media&type=images'
+  });
+  const saveResponse = await requestServer({
+    method: 'POST',
+    port,
+    path: '/lib/weltmeister/api/save'
+  });
+  const saveImageResponse = await requestServer({
+    method: 'POST',
+    port,
+    path: '/lib/weltmeister/api/save-image'
+  });
+
+  assert.equal(browseResponse.statusCode, 404);
+  assert.equal(saveResponse.statusCode, 404);
+  assert.equal(saveImageResponse.statusCode, 404);
+});
+
 test('createApp leaves glob.php unmatched so requests return 404', async (t) => {
   const projectRoot = await makeTempProjectRoot();
   t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
@@ -481,7 +506,7 @@ test('createApp leaves glob.php unmatched so requests return 404', async (t) => 
 
   const response = await requestServer({
     port,
-    path: '/lib/weltmeister/api/glob.php'
+    path: '/tools/weltmeister/api/glob.php'
   });
 
   assert.equal(response.statusCode, 404);
@@ -495,7 +520,7 @@ test('createApp leaves save.php unmatched so requests return 404', async (t) => 
   const response = await requestServer({
     method: 'POST',
     port,
-    path: '/lib/weltmeister/api/save.php'
+    path: '/tools/weltmeister/api/save.php'
   });
 
   assert.equal(response.statusCode, 404);
@@ -508,7 +533,7 @@ test('createApp leaves browse.php unmatched so requests return 404', async (t) =
   const { port } = await startTestServer(projectRoot, t);
   const response = await requestServer({
     port,
-    path: '/lib/weltmeister/api/browse.php?dir=media&type=images'
+    path: '/tools/weltmeister/api/browse.php?dir=media&type=images'
   });
 
   assert.equal(response.statusCode, 404);

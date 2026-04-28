@@ -11,7 +11,7 @@ const entityManifest = Object.freeze(
       className: "EntityBlob",
       displayName: "Blob",
       filePath: "lib/game/entities/blob.js",
-      importPath: "../game/entities/blob.js"
+      importPath: "../../lib/game/entities/blob.js"
     },
     {
       key: "game/entities/coin",
@@ -19,7 +19,7 @@ const entityManifest = Object.freeze(
       className: "EntityCoin",
       displayName: "Coin",
       filePath: "lib/game/entities/coin.js",
-      importPath: "../game/entities/coin.js"
+      importPath: "../../lib/game/entities/coin.js"
     },
     {
       key: "game/entities/fireball",
@@ -27,7 +27,7 @@ const entityManifest = Object.freeze(
       className: "EntityFireball",
       displayName: "Fireball",
       filePath: "lib/game/entities/fireball.js",
-      importPath: "../game/entities/fireball.js"
+      importPath: "../../lib/game/entities/fireball.js"
     },
     {
       key: "game/entities/hurt",
@@ -35,7 +35,7 @@ const entityManifest = Object.freeze(
       className: "EntityHurt",
       displayName: "Hurt",
       filePath: "lib/game/entities/hurt.js",
-      importPath: "../game/entities/hurt.js"
+      importPath: "../../lib/game/entities/hurt.js"
     },
     {
       key: "game/entities/levelchange",
@@ -43,7 +43,7 @@ const entityManifest = Object.freeze(
       className: "EntityLevelchange",
       displayName: "Levelchange",
       filePath: "lib/game/entities/levelchange.js",
-      importPath: "../game/entities/levelchange.js"
+      importPath: "../../lib/game/entities/levelchange.js"
     },
     {
       key: "game/entities/player",
@@ -51,7 +51,7 @@ const entityManifest = Object.freeze(
       className: "EntityPlayer",
       displayName: "Player",
       filePath: "lib/game/entities/player.js",
-      importPath: "../game/entities/player.js"
+      importPath: "../../lib/game/entities/player.js"
     },
     {
       key: "game/entities/trigger",
@@ -59,7 +59,7 @@ const entityManifest = Object.freeze(
       className: "EntityTrigger",
       displayName: "Trigger",
       filePath: "lib/game/entities/trigger.js",
-      importPath: "../game/entities/trigger.js"
+      importPath: "../../lib/game/entities/trigger.js"
     }
   ]
 );

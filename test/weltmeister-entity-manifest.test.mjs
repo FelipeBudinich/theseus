@@ -82,19 +82,19 @@ test('buildEntityManifestArtifacts derives sorted entries and stable import meta
         key: 'game/entities/blob',
         moduleId: 'game.entities.blob',
         className: 'EntityBlob',
-        importPath: '../game/entities/blob.js'
+        importPath: '../../lib/game/entities/blob.js'
       },
       {
         key: 'game/entities/subdir/shield-wall',
         moduleId: 'game.entities.subdir.shield-wall',
         className: 'EntityShieldWall',
-        importPath: '../game/entities/subdir/shield-wall.js'
+        importPath: '../../lib/game/entities/subdir/shield-wall.js'
       },
       {
         key: 'game/entities/zapper',
         moduleId: 'game.entities.zapper',
         className: 'EntityZapper',
-        importPath: '../game/entities/zapper.js'
+        importPath: '../../lib/game/entities/zapper.js'
       }
     ]
   );
@@ -145,7 +145,7 @@ test('ESM Weltmeister entity loader consumes the manifest and registers entity c
   delete globalThis.$;
   delete globalThis.wm;
 
-  const moduleUrl = `${pathToFileURL(path.resolve('lib/weltmeister/entities.js')).href}?test=${Date.now()}`;
+  const moduleUrl = `${pathToFileURL(path.resolve('tools/weltmeister/entities.js')).href}?test=${Date.now()}`;
   const {
     entityManifest,
     getLegacyEntityModuleMap,

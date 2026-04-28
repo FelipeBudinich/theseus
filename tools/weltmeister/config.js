@@ -82,13 +82,13 @@ const config = (wm.config ??= {
   },
 
   collisionTiles: {
-    path: 'lib/weltmeister/collisiontiles-64.png',
+    path: '/tools/weltmeister/collisiontiles-64.png',
     tilesize: 64
   },
 
   api: {
-    save: 'lib/weltmeister/api/save',
-    browse: 'lib/weltmeister/api/browse'
+    save: '/tools/weltmeister/api/save',
+    browse: '/tools/weltmeister/api/browse'
   }
 });
 

@@ -1,14 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { computeLayerOrder } from '../lib/weltmeister/layer-sorter.js';
-import { requestJson } from '../lib/weltmeister/request.js';
+import { computeLayerOrder } from '../tools/weltmeister/layer-sorter.js';
+import { requestJson } from '../tools/weltmeister/request.js';
 import {
   LAST_LEVEL_KEY,
   clearLastLevel,
   getLastLevel,
   setLastLevel
-} from '../lib/weltmeister/storage.js';
+} from '../tools/weltmeister/storage.js';
 
 const createResponse = ({ ok, status = 200, statusText = 'OK', body = null }) => ({
   ok,

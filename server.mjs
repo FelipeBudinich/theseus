@@ -2,7 +2,7 @@ import express from 'express';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createWeltmeisterApiRouter } from './lib/weltmeister/api/node-api.mjs';
+import { createWeltmeisterApiRouter } from './tools/weltmeister/api/node-api.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,7 +15,7 @@ const createApp = ({
   const app = express();
   const resolvedDistRoot = distRoot ?? path.join(staticRoot, 'dist');
 
-  app.use('/lib/weltmeister/api', createWeltmeisterApiRouter({ projectRoot }));
+  app.use('/tools/weltmeister/api', createWeltmeisterApiRouter({ projectRoot }));
 
   app.get('/', (_req, res) => {
     res.sendFile(path.join(staticRoot, 'index.html'));
