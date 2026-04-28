@@ -13,7 +13,7 @@ Search themes included IE/MS APIs, old vendor prefixes, browser UA sniffing,
 polyfills, old input event fallbacks, and explicit browser workarounds.
 
 The current app already assumes a modern baseline in practice: `index.html`,
-`weltmeister.html`, and the smoke tests load ESM with `<script type="module">`,
+`tools/weltmeister.html`, and the smoke tests load ESM with `<script type="module">`,
 and the runtime uses syntax that old browsers cannot parse. There is no explicit
 `browserslist` entry or Vite `build.target` documenting that baseline.
 

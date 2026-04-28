@@ -32,7 +32,7 @@ test('live app and editor files no longer reference retired pre-rename paths', a
     'test/esm-smoke.html',
     'index.html',
     'server.mjs',
-    'weltmeister.html',
+    'tools/weltmeister.html',
     ...(await listFiles('lib')),
     ...(await listFiles('tools/weltmeister'))
   ];

@@ -24,7 +24,7 @@
 
 - `/lib/weltmeister/*` is intentionally not served by the Node app and returns `404`.
 - `/tools/weltmeister/api/glob.php`, `/tools/weltmeister/api/save.php`, and `/tools/weltmeister/api/browse.php` are intentionally not served by the Node app and currently return `404`.
-- `weltmeister.html` now boots from `tools/weltmeister/main.js`; no PHP runtime is required for the editor anymore.
+- `tools/weltmeister.html` now boots from `tools/weltmeister/main.js`; no PHP runtime is required for the editor anymore.
 
 ## Source And Baked Game Routes
 

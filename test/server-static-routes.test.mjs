@@ -138,15 +138,25 @@ test('/media assets still resolve from the source tree', async (t) => {
   assert.ok(response.body.length > 0, 'expected media asset response to include file contents');
 });
 
-test('/weltmeister.html still resolves from the source tree', async (t) => {
+test('/tools/weltmeister.html resolves from the source tree', async (t) => {
   const distRoot = await makeTempDirectory('theseus-source-weltmeister-');
+  t.after(() => fs.rm(distRoot, { recursive: true, force: true }));
+
+  const { port } = await startTestServer({ distRoot }, t);
+  const response = await requestServer({ port, path: '/tools/weltmeister.html' });
+
+  assert.equal(response.statusCode, 200);
+  assert.match(response.text, /<script type="module" src="\/tools\/weltmeister\/main\.js"><\/script>/);
+});
+
+test('/weltmeister.html no longer resolves from the source tree', async (t) => {
+  const distRoot = await makeTempDirectory('theseus-retired-root-weltmeister-');
   t.after(() => fs.rm(distRoot, { recursive: true, force: true }));
 
   const { port } = await startTestServer({ distRoot }, t);
   const response = await requestServer({ port, path: '/weltmeister.html' });
 
-  assert.equal(response.statusCode, 200);
-  assert.match(response.text, /<script type="module" src="tools\/weltmeister\/main\.js"><\/script>/);
+  assert.equal(response.statusCode, 404);
 });
 
 test('/tools/weltmeister assets resolve and former /lib/weltmeister assets do not', async (t) => {

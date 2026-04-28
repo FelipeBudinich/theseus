@@ -8,7 +8,7 @@ loads from `lib/`, and the browser-side editor tooling loads from
 
 - `index.html` loads the sample game from `lib/game/bootstrap.js`, which conditionally imports the Impact debug panel before the game entry.
 - `dist.html` is a server route that serves the latest Vite production build from `dist/index.html`.
-- `weltmeister.html` loads the editor from `tools/weltmeister/main.js`.
+- `tools/weltmeister.html` loads the editor from `tools/weltmeister/main.js`.
 - `test/esm-smoke.html` imports `lib/impact/ig.js` directly.
 - `test/esm-engine-smoke.html` imports `lib/impact/impact.js` directly.
 
@@ -68,7 +68,7 @@ rewriting files.
 
 ## Weltmeister Browser Cutover
 
-`weltmeister.html` boots from `tools/weltmeister/main.js` and loads its CSS,
+`tools/weltmeister.html` boots from `tools/weltmeister/main.js` and loads its CSS,
 API endpoints, and editor assets from `tools/weltmeister/`. The editor UI now
 uses first-party browser APIs instead of the retired bundled jQuery and jQuery
 UI scripts.
