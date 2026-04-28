@@ -18,6 +18,50 @@ const writeFile = async (rootPath, relativePath, contents) => {
   return targetPath;
 };
 
+const makeDocsStaticRoot = async (t) => {
+  const staticRoot = await makeTempDirectory('theseus-docs-static-');
+  t.after(() => fs.rm(staticRoot, { recursive: true, force: true }));
+
+  await writeFile(staticRoot, 'index.html', [
+    '<!doctype html>',
+    '<html>',
+    '<body>',
+    '  <script type="module" src="lib/game/bootstrap.js"></script>',
+    '</body>',
+    '</html>'
+  ].join('\n'));
+  await writeFile(staticRoot, 'docs/status.md', [
+    '# Status',
+    '',
+    'Plain docs body.',
+    '',
+    '```js',
+    'const answer = 42;',
+    '```'
+  ].join('\n'));
+  await writeFile(staticRoot, 'docs/api-guide.md', [
+    'title: API Guide',
+    'date: 2026.04.27 12:00',
+    'tags: guide, reference',
+    '',
+    '---',
+    '',
+    '## Guide Body',
+    '',
+    'Tagged content.'
+  ].join('\n'));
+  await writeFile(staticRoot, 'docs/hidden.md', [
+    'title: Hidden',
+    'active: false',
+    '',
+    '---',
+    '',
+    'This doc should not be listed.'
+  ].join('\n'));
+
+  return staticRoot;
+};
+
 const startTestServer = async ({ projectRoot, staticRoot, distRoot } = {}, t) => {
   const app = createApp({ projectRoot, staticRoot, distRoot });
   const server = app.listen(0, '127.0.0.1');
@@ -126,6 +170,89 @@ test('/dist.html returns 404 with a bake hint when no build exists', async (t) =
 
   assert.equal(response.statusCode, 404);
   assert.match(response.text, /npm run bake/);
+});
+
+test('/docs.html lists markdown docs and /docs redirects to it', async (t) => {
+  const staticRoot = await makeDocsStaticRoot(t);
+  const { port } = await startTestServer({ staticRoot }, t);
+  const redirectResponse = await requestServer({ port, path: '/docs' });
+  const listResponse = await requestServer({ port, path: '/docs.html' });
+
+  assert.equal(redirectResponse.statusCode, 301);
+  assert.equal(redirectResponse.headers.location, '/docs.html');
+  assert.equal(listResponse.statusCode, 200);
+  assert.match(listResponse.text, /<h1>Docs<\/h1>/);
+  assert.match(listResponse.text, /2 matching docs\./);
+  assert.match(listResponse.text, /href="\/docs\/api-guide">API Guide<\/a>/);
+  assert.match(listResponse.text, /href="\/docs\/status">Status<\/a>/);
+  assert.doesNotMatch(listResponse.text, /Hidden/);
+});
+
+test('/docs/:keyword renders markdown docs and derives titles from h1 headings', async (t) => {
+  const staticRoot = await makeDocsStaticRoot(t);
+  const { port } = await startTestServer({ staticRoot }, t);
+  const response = await requestServer({ port, path: '/docs/status' });
+  const renderedTitleCount = response.text.match(/<h1>Status<\/h1>/g)?.length ?? 0;
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(renderedTitleCount, 1);
+  assert.match(response.text, /<title>Status<\/title>/);
+  assert.match(response.text, /<p>Plain docs body\.<\/p>/);
+  assert.match(response.text, /<code class="hljs language-js">/);
+});
+
+test('/docs/tag/:tag lists tagged docs only', async (t) => {
+  const staticRoot = await makeDocsStaticRoot(t);
+  const { port } = await startTestServer({ staticRoot }, t);
+  const response = await requestServer({ port, path: '/docs/tag/guide' });
+
+  assert.equal(response.statusCode, 200);
+  assert.match(response.text, /Docs tagged &quot;guide&quot;/);
+  assert.match(response.text, /1 matching doc\./);
+  assert.match(response.text, /href="\/docs\/api-guide">API Guide<\/a>/);
+  assert.doesNotMatch(response.text, /Status/);
+});
+
+test('/docs.json and /json expose docs-scoped metadata', async (t) => {
+  const staticRoot = await makeDocsStaticRoot(t);
+  const { port } = await startTestServer({ staticRoot }, t);
+  const docsJsonResponse = await requestServer({
+    port,
+    path: '/docs.json?fields=keyword,title,tags&sort=keyword&order=asc'
+  });
+  const jsonAliasResponse = await requestServer({
+    port,
+    path: '/json?path=public/docs&fields=keyword,title,tags&tags=guide'
+  });
+  const badDocsJsonResponse = await requestServer({ port, path: '/docs.json?path=vault' });
+  const badJsonAliasResponse = await requestServer({ port, path: '/json?path=vault' });
+
+  assert.equal(docsJsonResponse.statusCode, 200);
+  assert.deepEqual(
+    JSON.parse(docsJsonResponse.text).notes,
+    [
+      { keyword: 'api-guide', title: 'API Guide', tags: ['guide', 'reference'] },
+      { keyword: 'status', title: 'Status', tags: [] }
+    ]
+  );
+
+  assert.equal(jsonAliasResponse.statusCode, 200);
+  assert.deepEqual(
+    JSON.parse(jsonAliasResponse.text).notes,
+    [{ keyword: 'api-guide', title: 'API Guide', tags: ['guide', 'reference'] }]
+  );
+
+  assert.equal(badDocsJsonResponse.statusCode, 400);
+  assert.equal(badJsonAliasResponse.statusCode, 400);
+});
+
+test('/docs/*.md still resolves as raw static markdown', async (t) => {
+  const staticRoot = await makeDocsStaticRoot(t);
+  const { port } = await startTestServer({ staticRoot }, t);
+  const response = await requestServer({ port, path: '/docs/status.md' });
+
+  assert.equal(response.statusCode, 200);
+  assert.match(response.text, /^# Status/);
 });
 
 test('/media assets still resolve from the source tree', async (t) => {

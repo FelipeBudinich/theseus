@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { createDocsRouter } from './docs-cms.mjs';
 import { createWeltmeisterApiRouter } from './tools/weltmeister/api/node-api.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,7 +14,8 @@ const createApp = ({
   projectRoot = __dirname,
   staticRoot = path.join(projectRoot, 'public'),
   toolsRoot = path.join(projectRoot, 'tools'),
-  distRoot
+  distRoot,
+  nodeModulesRoot = path.join(projectRoot, 'node_modules')
 } = {}) => {
   const app = express();
 
@@ -53,6 +55,11 @@ const createApp = ({
     express.static(path.join(toolsRoot, 'font-tool'), { index: false })
   );
 
+  app.use(
+    '/hljs',
+    express.static(path.join(nodeModulesRoot, 'highlight.js/styles'), { index: false })
+  );
+
   app.get('/', (_req, res) => {
     res.sendFile(path.join(staticRoot, 'index.html'));
   });
@@ -78,6 +85,8 @@ const createApp = ({
 
   app.use('/dist', express.static(resolvedDistRoot, { index: false }));
 
+  app.use(createDocsRouter({ docsRoot: path.join(staticRoot, 'docs') }));
+
   app.use(express.static(staticRoot, { index: false }));
 
   return app;
@@ -89,9 +98,10 @@ const startServer = ({
   projectRoot = __dirname,
   staticRoot = path.join(projectRoot, 'public'),
   toolsRoot = path.join(projectRoot, 'tools'),
-  distRoot
+  distRoot,
+  nodeModulesRoot = path.join(projectRoot, 'node_modules')
 } = {}) => {
-  const app = createApp({ projectRoot, staticRoot, toolsRoot, distRoot });
+  const app = createApp({ projectRoot, staticRoot, toolsRoot, distRoot, nodeModulesRoot });
 
   const server = app.listen(port, host, () => {
     const address = server.address();
