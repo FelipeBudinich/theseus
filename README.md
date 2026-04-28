@@ -25,6 +25,21 @@ Set `PORT` to use a different port or `HOST` on `server.mjs` to change the bind 
 ## Changes in this port
 
 - The live `lib/` tree is the ESM runtime.
+- `ig.input.bind()` now uses string input codes instead of `ig.KEY` or `ig.GAMEPAD` constants. Keyboard bindings use `KeyboardEvent.code` values such as `ArrowLeft`, `KeyX`, and `Space`; mouse and wheel bindings use Theseus strings such as `MousePrimary`, `MouseSecondary`, `WheelUp`, and `WheelDown`.
+- Gamepad bindings are string-based logical controller slots. Use `Gamepad0Left`, `Gamepad0FaceBottom`, `Gamepad1Left`, etc.; generic gamepad names such as `GamepadLeft` are intentionally rejected.
 - `/dist.html` serves the latest Vite build from `dist/index.html` when present.
 - Weltmeister edits `lib/game/levels/` by default. Saving to a `.js` path writes a native ESM level module, while saving to a `.json` path writes plain JSON.
 - `npm run module-graph` regenerates `docs/module-graph.json` and `docs/module-graph.md` from the live `lib/` tree.
+
+Example input bindings:
+
+```js
+ig.input.bind('ArrowLeft', 'left');
+ig.input.bind('KeyX', 'jump');
+ig.input.bind('MousePrimary', 'shoot');
+ig.input.bind('WheelUp', 'zoomIn');
+
+ig.input.bind('Gamepad0Left', 'left');
+ig.input.bind('Gamepad0FaceBottom', 'jump');
+ig.input.bind('Gamepad1Left', 'p2-left');
+```
