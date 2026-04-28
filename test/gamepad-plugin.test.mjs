@@ -84,6 +84,7 @@ const createGamepad = ({
   axes = [],
   buttons = {},
   connected = true,
+  id = 'Test Gamepad',
   index = 0,
   mapping = 'standard'
 } = {}) => {
@@ -100,6 +101,7 @@ const createGamepad = ({
     axes: gamepadAxes,
     buttons: gamepadButtons,
     connected,
+    id,
     index,
     mapping
   };
@@ -119,8 +121,27 @@ test('gamepad plugin removes legacy public numeric constants', () => {
   assert.equal(ig[legacyOffsetName], undefined);
 });
 
-test('standard button 0 fires indexed raw and semantic face-bottom codes', () => {
-  gamepads = [createGamepad({ buttons: { 0: createButton({ pressed: true }) } })];
+test('browser indices auto-assign to logical slots in connection order', () => {
+  gamepads = [
+    createGamepad({ index: 3 }),
+    createGamepad({ index: 0 })
+  ];
+  const input = createInput();
+
+  input.bind('Gamepad0Left', 'p1Left');
+  input.bind('Gamepad1Left', 'p2Left');
+
+  assert.equal(input.gamepadIndexToSlot[3], 0);
+  assert.equal(input.gamepadIndexToSlot[0], 1);
+  assert.equal(input.gamepadSlots[0].index, 3);
+  assert.equal(input.gamepadSlots[1].index, 0);
+});
+
+test('standard button 0 fires logical-slot raw and semantic face-bottom codes', () => {
+  gamepads = [createGamepad({
+    buttons: { 0: createButton({ pressed: true }) },
+    index: 3
+  })];
   const input = createInput();
 
   input.bind('Gamepad0Button0', 'rawJump');
@@ -133,12 +154,12 @@ test('standard button 0 fires indexed raw and semantic face-bottom codes', () =>
   assert.equal(input.actions.jump, true);
 });
 
-test('standard button 0 uses the controller index when firing codes', () => {
+test('standard button 0 uses the logical slot when firing codes', () => {
   gamepads = [
-    createGamepad({ index: 0 }),
+    createGamepad({ index: 3 }),
     createGamepad({
       buttons: { 0: createButton({ pressed: true }) },
-      index: 1
+      index: 0
     })
   ];
   const input = createInput();
@@ -153,8 +174,11 @@ test('standard button 0 uses the controller index when firing codes', () => {
   assert.equal(input.presses.p2Jump, true);
 });
 
-test('standard d-pad left button fires indexed left alias', () => {
-  gamepads = [createGamepad({ buttons: { 14: createButton({ pressed: true }) } })];
+test('standard d-pad left button fires logical-slot left alias', () => {
+  gamepads = [createGamepad({
+    buttons: { 14: createButton({ pressed: true }) },
+    index: 3
+  })];
   const input = createInput();
 
   input.bind('Gamepad0Left', 'left');
@@ -164,8 +188,8 @@ test('standard d-pad left button fires indexed left alias', () => {
   assert.equal(input.actions.left, true);
 });
 
-test('standard left stick axis fires indexed left alias', () => {
-  gamepads = [createGamepad({ axes: [-0.75, 0, 0, 0] })];
+test('standard left stick axis fires logical-slot left alias', () => {
+  gamepads = [createGamepad({ axes: [-0.75, 0, 0, 0], index: 3 })];
   const input = createInput();
 
   input.bind('Gamepad0Left', 'left');
@@ -176,7 +200,7 @@ test('standard left stick axis fires indexed left alias', () => {
 });
 
 test('non-standard axes fire raw fallback codes only', () => {
-  gamepads = [createGamepad({ axes: [-0.75, 0.75], mapping: '' })];
+  gamepads = [createGamepad({ axes: [-0.75, 0.75], index: 3, mapping: '' })];
   const input = createInput();
 
   input.bind('Gamepad0Axis0Negative', 'leftAxis');
@@ -189,8 +213,11 @@ test('non-standard axes fire raw fallback codes only', () => {
   assert.equal(input.presses.left, undefined);
 });
 
-test('released gamepad codes populate delayedKeyup', () => {
-  const gamepad = createGamepad({ buttons: { 0: createButton({ pressed: true }) } });
+test('disconnection releases active slot actions', () => {
+  const gamepad = createGamepad({
+    buttons: { 0: createButton({ pressed: true }) },
+    index: 3
+  });
   gamepads = [gamepad];
   const input = createInput();
 
@@ -198,8 +225,97 @@ test('released gamepad codes populate delayedKeyup', () => {
   input.pollGamepad();
   input.clearPressed();
 
-  gamepad.buttons[0] = createButton();
+  gamepads = [];
   input.pollGamepad();
 
   assert.equal(input.delayedKeyup.jump, true);
+  assert.equal(input.gamepadSlots[0].connected, false);
+  assert.equal(input.gamepadIndexToSlot[3], undefined);
+});
+
+test('same-signature reconnect reclaims the preserved logical slot', () => {
+  gamepads = [createGamepad({ index: 3 })];
+  const input = createInput();
+
+  input.bind('Gamepad0Left', 'left');
+  assert.equal(input.gamepadIndexToSlot[3], 0);
+
+  gamepads = [];
+  input.pollGamepad();
+  assert.equal(input.gamepadSlots[0].connected, false);
+  assert.equal(input.gamepadIndexToSlot[3], undefined);
+
+  gamepads = [createGamepad({ index: 0 })];
+  input.pollGamepad();
+
+  assert.equal(input.gamepadIndexToSlot[0], 0);
+  assert.equal(input.gamepadSlots[0].index, 0);
+  assert.equal(input.gamepadSlots[0].connected, true);
+});
+
+test('manual join assigns a requested slot on join-button rising edge', () => {
+  const gamepad = createGamepad({ index: 3 });
+  gamepads = [gamepad];
+  const input = createInput();
+  input.gamepadAutoAssign = false;
+  let joinedSlot = null;
+
+  input.bind('Gamepad0FaceBottom', 'jump');
+  input.onGamepadSlotJoined = (slot) => {
+    joinedSlot = slot;
+  };
+
+  assert.equal(input.requestGamepadJoin(0), true);
+  input.pollGamepad();
+  assert.equal(input.gamepadSlots[0], undefined);
+
+  gamepad.buttons[0] = createButton({ pressed: true });
+  input.pollGamepad();
+
+  assert.equal(joinedSlot, 0);
+  assert.equal(input.gamepadIndexToSlot[3], 0);
+  assert.equal(input.gamepadSlots[0].joined, true);
+  assert.equal(input.presses.jump, undefined);
+});
+
+test('joined gamepads ignore gameplay input until released once', () => {
+  const gamepad = createGamepad({ index: 3 });
+  gamepads = [gamepad];
+  const input = createInput();
+  input.gamepadAutoAssign = false;
+
+  input.bind('Gamepad0FaceBottom', 'jump');
+  input.requestGamepadJoin(0);
+
+  gamepad.buttons[0] = createButton({ pressed: true });
+  input.pollGamepad();
+  input.pollGamepad();
+  assert.equal(input.presses.jump, undefined);
+
+  gamepad.buttons[0] = createButton();
+  input.pollGamepad();
+  assert.equal(input.gamepadSlots[0].ignoreUntilReleased, false);
+
+  gamepad.buttons[0] = createButton({ pressed: true });
+  input.pollGamepad();
+  assert.equal(input.presses.jump, true);
+});
+
+test('forgetGamepadSlot releases active inputs and removes slot state', () => {
+  const gamepad = createGamepad({
+    buttons: { 0: createButton({ pressed: true }) },
+    index: 3
+  });
+  gamepads = [gamepad];
+  const input = createInput();
+
+  input.bind('Gamepad0FaceBottom', 'jump');
+  input.pollGamepad();
+  input.clearPressed();
+
+  input.forgetGamepadSlot(0);
+
+  assert.equal(input.delayedKeyup.jump, true);
+  assert.equal(input.gamepadSlots[0], undefined);
+  assert.equal(input.gamepadIndexToSlot[3], undefined);
 });

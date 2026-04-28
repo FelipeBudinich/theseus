@@ -158,13 +158,28 @@ test('generic gamepad binds are rejected', () => {
       () => input.bind(key, 'action'),
       {
         name: 'Error',
-        message: 'Gamepad bindings must include a controller index, e.g. Gamepad0Left'
+        message: 'Gamepad bindings must include a controller slot, e.g. Gamepad0Left'
       }
     );
     assert.equal(input.bindings[key], undefined);
   }
 
   assert.equal(initGamepadCalls, 0);
+  assert.equal(input.isUsingKeyboard, false);
+  assert.equal(input.isUsingMouse, false);
+});
+
+test('indexed gamepad binds require the gamepad plugin', () => {
+  const { input } = createInputHarness();
+
+  assert.throws(
+    () => input.bind('Gamepad0Left', 'left'),
+    {
+      name: 'Error',
+      message: 'Gamepad plugin is not loaded'
+    }
+  );
+  assert.equal(input.bindings.Gamepad0Left, undefined);
   assert.equal(input.isUsingKeyboard, false);
   assert.equal(input.isUsingMouse, false);
 });
