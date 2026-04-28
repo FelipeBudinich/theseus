@@ -18,13 +18,16 @@ Set `PORT` to use a different port or `HOST` on `server.mjs` to change the bind 
 ## Useful URLs
 
 - Sample game: `http://localhost:3000/`
+- Sample game with Impact debug panel: `http://localhost:3000/?debug` or `http://localhost:3000/?debug=true`
 - Latest baked game: `http://localhost:3000/dist.html`
+- Latest baked game with Impact debug panel: `http://localhost:3000/dist.html?debug`
 - Weltmeister shell: `http://localhost:3000/weltmeister.html` loads the editor shell from `tools/weltmeister/main.js`, which prepares entity metadata from the generated manifest before booting the editor.
 - Font atlas tool: `http://localhost:3000/font-tool.html` generates `ig.Font`-compatible PNG atlases from local or fallback CSS fonts, validates the metric row, and saves the result into `media/`.
 
 ## Changes in this port
 
 - The live `lib/` tree is the ESM runtime.
+- `index.html` uses `lib/game/bootstrap.js` so the optional Impact debug panel can patch engine classes before the game entry evaluates. The debug panel is enabled only by `?debug` or `?debug=true`.
 - `ig.input.bind()` now uses string input codes instead of `ig.KEY` or `ig.GAMEPAD` constants. Keyboard bindings use `KeyboardEvent.code` values such as `ArrowLeft`, `KeyX`, and `Space`; mouse and wheel bindings use Theseus strings such as `MousePrimary`, `MouseSecondary`, `WheelUp`, and `WheelDown`.
 - Gamepad bindings are string-based logical controller slots. Use `Gamepad0Left`, `Gamepad0FaceBottom`, `Gamepad1Left`, etc.; generic gamepad names such as `GamepadLeft` are intentionally rejected.
 - `/dist.html` serves the latest Vite build from `dist/index.html` when present.

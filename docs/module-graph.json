@@ -2,6 +2,18 @@
   "duplicateDefinitions": [],
   "dynamicImports": [
     {
+      "line": 6,
+      "expression": "expression-based import(...)",
+      "file": "lib/game/bootstrap.js",
+      "moduleName": "game/bootstrap"
+    },
+    {
+      "line": 9,
+      "expression": "expression-based import(...)",
+      "file": "lib/game/bootstrap.js",
+      "moduleName": "game/bootstrap"
+    },
+    {
       "line": 72,
       "expression": "expression-based import(...)",
       "file": "tools/weltmeister/entity-manifest.js",
@@ -14,9 +26,10 @@
       "moduleName": "tools/weltmeister/weltmeister"
     }
   ],
-  "filesScanned": 55,
-  "generatedAt": "2026-04-28T01:21:50.879Z",
+  "filesScanned": 62,
+  "generatedAt": "2026-04-28T02:09:02.571Z",
   "leaves": [
+    "game/debug-query",
     "impact/core/class",
     "impact/core/namespace",
     "impact/core/native-extensions",
@@ -31,6 +44,34 @@
     "tools/weltmeister/wm"
   ],
   "modules": [
+    {
+      "dynamicImports": [
+        {
+          "line": 6,
+          "expression": "expression-based import(...)"
+        },
+        {
+          "line": 9,
+          "expression": "expression-based import(...)"
+        }
+      ],
+      "file": "lib/game/bootstrap.js",
+      "imports": [
+        {
+          "file": "lib/game/debug-query.js",
+          "line": 1,
+          "moduleName": "game/debug-query",
+          "specifier": "./debug-query.js"
+        }
+      ],
+      "moduleName": "game/bootstrap"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/game/debug-query.js",
+      "imports": [],
+      "moduleName": "game/debug-query"
+    },
     {
       "dynamicImports": [],
       "file": "lib/game/entities/blob.js",
@@ -297,6 +338,143 @@
       "file": "lib/impact/core/object.js",
       "imports": [],
       "moduleName": "impact/core/object"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/impact/debug/debug.js",
+      "imports": [
+        {
+          "file": "lib/impact/debug/entities-panel.js",
+          "line": 1,
+          "moduleName": "impact/debug/entities-panel",
+          "specifier": "./entities-panel.js"
+        },
+        {
+          "file": "lib/impact/debug/graph-panel.js",
+          "line": 3,
+          "moduleName": "impact/debug/graph-panel",
+          "specifier": "./graph-panel.js"
+        },
+        {
+          "file": "lib/impact/debug/maps-panel.js",
+          "line": 2,
+          "moduleName": "impact/debug/maps-panel",
+          "specifier": "./maps-panel.js"
+        }
+      ],
+      "moduleName": "impact/debug/debug"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/impact/debug/entities-panel.js",
+      "imports": [
+        {
+          "file": "lib/impact/debug/menu.js",
+          "line": 3,
+          "moduleName": "impact/debug/menu",
+          "specifier": "./menu.js"
+        },
+        {
+          "file": "lib/impact/entity.js",
+          "line": 2,
+          "moduleName": "impact/entity",
+          "specifier": "../entity.js"
+        },
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "../ig.js"
+        }
+      ],
+      "moduleName": "impact/debug/entities-panel"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/impact/debug/graph-panel.js",
+      "imports": [
+        {
+          "file": "lib/impact/debug/menu.js",
+          "line": 4,
+          "moduleName": "impact/debug/menu",
+          "specifier": "./menu.js"
+        },
+        {
+          "file": "lib/impact/game.js",
+          "line": 2,
+          "moduleName": "impact/game",
+          "specifier": "../game.js"
+        },
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "../ig.js"
+        },
+        {
+          "file": "lib/impact/system.js",
+          "line": 3,
+          "moduleName": "impact/system",
+          "specifier": "../system.js"
+        }
+      ],
+      "moduleName": "impact/debug/graph-panel"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/impact/debug/maps-panel.js",
+      "imports": [
+        {
+          "file": "lib/impact/background-map.js",
+          "line": 2,
+          "moduleName": "impact/background-map",
+          "specifier": "../background-map.js"
+        },
+        {
+          "file": "lib/impact/debug/menu.js",
+          "line": 4,
+          "moduleName": "impact/debug/menu",
+          "specifier": "./menu.js"
+        },
+        {
+          "file": "lib/impact/game.js",
+          "line": 3,
+          "moduleName": "impact/game",
+          "specifier": "../game.js"
+        },
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "../ig.js"
+        }
+      ],
+      "moduleName": "impact/debug/maps-panel"
+    },
+    {
+      "dynamicImports": [],
+      "file": "lib/impact/debug/menu.js",
+      "imports": [
+        {
+          "file": "lib/impact/ig.js",
+          "line": 1,
+          "moduleName": "impact/ig",
+          "specifier": "../ig.js"
+        },
+        {
+          "file": "lib/impact/image.js",
+          "line": 3,
+          "moduleName": "impact/image",
+          "specifier": "../image.js"
+        },
+        {
+          "file": "lib/impact/system.js",
+          "line": 2,
+          "moduleName": "impact/system",
+          "specifier": "../system.js"
+        }
+      ],
+      "moduleName": "impact/debug/menu"
     },
     {
       "dynamicImports": [],
@@ -1051,8 +1229,9 @@
       "moduleName": "tools/weltmeister/wm"
     }
   ],
-  "modulesFound": 55,
+  "modulesFound": 62,
   "roots": [
+    "game/bootstrap",
     "game/entities/blob",
     "game/entities/coin",
     "game/entities/fireball",
@@ -1062,6 +1241,7 @@
     "game/entities/trigger",
     "game/levels/snowhills2",
     "game/main",
+    "impact/debug/debug",
     "plugins/camera",
     "plugins/gamepad",
     "plugins/impact-splash-loader",
@@ -1078,9 +1258,13 @@
     "lib",
     "tools/weltmeister"
   ],
-  "staticEdgesFound": 106,
+  "staticEdgesFound": 124,
   "unresolvedDependencies": [],
   "modulesWithoutStaticImports": [
+    {
+      "file": "lib/game/debug-query.js",
+      "moduleName": "game/debug-query"
+    },
     {
       "file": "lib/impact/core/class.js",
       "moduleName": "impact/core/class"

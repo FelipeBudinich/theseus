@@ -6,7 +6,7 @@ loads from `lib/`, and the browser-side editor tooling loads from
 
 ## Live Entrypoints
 
-- `index.html` loads the sample game from `lib/game/main.js`.
+- `index.html` loads the sample game from `lib/game/bootstrap.js`, which conditionally imports the Impact debug panel before the game entry.
 - `dist.html` is a server route that serves the latest Vite production build from `dist/index.html`.
 - `weltmeister.html` loads the editor from `tools/weltmeister/main.js`.
 - `test/esm-smoke.html` imports `lib/impact/ig.js` directly.
@@ -37,6 +37,14 @@ All live engine, game, and editor files should stay native ESM from the start.
 The current runtime shape keeps `ig` as the default export from the Impact
 entry modules. Browser callers import the module directly, and global access
 still works through `window.ig`.
+
+## Optional Debug Panel
+
+The sample page supports an ESM port of Impact's debug panel through
+`lib/game/bootstrap.js`. The bootstrap loads `lib/impact/debug/debug.js` before
+`lib/game/main.js` only when the URL uses `?debug` or `?debug=true`; values such
+as `?debug=false`, `?debug=0`, and unrelated keys such as `?debugger` keep the
+normal game path.
 
 ## Weltmeister Entity Manifest
 
