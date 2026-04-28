@@ -22,7 +22,7 @@ Set `PORT` to use a different port or `HOST` on `server.mjs` to change the bind 
 - Latest baked game: `http://localhost:3000/dist.html`
 - Latest baked game with Impact debug panel: `http://localhost:3000/dist.html?debug`
 - Weltmeister shell: `http://localhost:3000/tools/weltmeister.html` loads the editor shell from `tools/weltmeister/main.js`, which prepares entity metadata from the generated manifest before booting the editor.
-- Font atlas tool: `http://localhost:3000/font-tool.html` generates `ig.Font`-compatible PNG atlases from local or fallback CSS fonts, validates the metric row, and saves the result into `media/`.
+- Font atlas tool: `http://localhost:3000/tools/font-tool.html` generates `ig.Font`-compatible PNG atlases from local or fallback CSS fonts, validates the metric row, and saves the result into `media/`. The old `/font-tool.html` URL redirects to `/tools/font-tool.html`.
 
 ## Changes in this port
 

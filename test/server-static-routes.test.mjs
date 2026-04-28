@@ -63,6 +63,7 @@ const requestServer = ({ method = 'GET', port, path: requestPath, headers = {}, 
           const responseBody = Buffer.concat(chunks);
           resolve({
             statusCode: response.statusCode ?? 0,
+            headers: response.headers,
             body: responseBody,
             text: responseBody.toString('utf8')
           });
@@ -178,16 +179,27 @@ test('/tools/weltmeister assets resolve and former /lib/weltmeister assets do no
   assert.equal(formerLibAssetResponse.statusCode, 404);
 });
 
-test('/font-tool.html resolves from the source tree and references its static assets', async (t) => {
+test('/tools/font-tool.html resolves from the source tree and references its static assets', async (t) => {
   const distRoot = await makeTempDirectory('theseus-source-font-tool-');
+  t.after(() => fs.rm(distRoot, { recursive: true, force: true }));
+
+  const { port } = await startTestServer({ distRoot }, t);
+  const response = await requestServer({ port, path: '/tools/font-tool.html' });
+
+  assert.equal(response.statusCode, 200);
+  assert.match(response.text, /href="\/tools\/font-tool\.css"/);
+  assert.match(response.text, /src="\/tools\/font-tool\.js"/);
+});
+
+test('/font-tool.html permanently redirects to the tool URL', async (t) => {
+  const distRoot = await makeTempDirectory('theseus-font-tool-redirect-');
   t.after(() => fs.rm(distRoot, { recursive: true, force: true }));
 
   const { port } = await startTestServer({ distRoot }, t);
   const response = await requestServer({ port, path: '/font-tool.html' });
 
-  assert.equal(response.statusCode, 200);
-  assert.match(response.text, /href="\/tools\/font-tool\.css"/);
-  assert.match(response.text, /src="\/tools\/font-tool\.js"/);
+  assert.equal(response.statusCode, 308);
+  assert.equal(response.headers.location, '/tools/font-tool.html');
 });
 
 test('/test/esm-smoke.html still resolves from the source tree', async (t) => {
