@@ -7,7 +7,6 @@
     "dev": "node --watch server.mjs",
     "bake": "vite build",
     "build:weltmeister-entity-manifest": "node tools/build-weltmeister-entity-manifest.mjs",
-    "module-graph": "node tools/build-module-graph.mjs",
     "test": "node --test test/*.test.mjs",
     "test:esm-engine": "node --test test/esm-engine-runtime.test.mjs",
     "test:weltmeister-api": "node --test test/weltmeister-api.test.mjs",

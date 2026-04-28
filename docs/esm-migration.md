@@ -84,13 +84,6 @@ Current ESM level modules embed the level JSON between `/*JSON[*/` markers,
 register themselves through `ig.Game.registerLevel(...)`, and export the level
 symbol plus its resource list.
 
-## Generated Project Docs
-
-`npm run module-graph` scans the live `lib/` tree plus `tools/weltmeister/`
-and regenerates `docs/module-graph.json` plus `docs/module-graph.md`. Use it
-after adding, removing, or moving modules if you want the generated graph docs
-to stay in sync with the codebase.
-
 ## Production Bake
 
 Run the sample-game production build with:
