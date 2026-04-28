@@ -9,7 +9,7 @@ import {
   parseMetricAlphaRow,
   slugifyFontName,
   validateAtlasMetrics
-} from '../tools/font-tool.js';
+} from '../tools/font-tool/font-tool.js';
 
 test('getExpectedGlyphCount returns the contiguous range size', () => {
   assert.equal(getExpectedGlyphCount(32, 126), 95);

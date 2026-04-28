@@ -187,8 +187,8 @@ test('/tools/font-tool.html resolves from the source tree and references its sta
   const response = await requestServer({ port, path: '/tools/font-tool.html' });
 
   assert.equal(response.statusCode, 200);
-  assert.match(response.text, /href="\/tools\/font-tool\.css"/);
-  assert.match(response.text, /src="\/tools\/font-tool\.js"/);
+  assert.match(response.text, /href="\/tools\/font-tool\/font-tool\.css"/);
+  assert.match(response.text, /src="\/tools\/font-tool\/font-tool\.js"/);
 });
 
 test('/font-tool.html permanently redirects to the tool URL', async (t) => {
