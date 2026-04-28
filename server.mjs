@@ -42,10 +42,6 @@ const createApp = ({
 
   app.use('/dist', express.static(resolvedDistRoot, { index: false }));
 
-  app.get('/font-tool.html', (_req, res) => {
-    res.redirect(308, '/tools/font-tool.html');
-  });
-
   app.use(express.static(staticRoot, { index: false }));
 
   return app;

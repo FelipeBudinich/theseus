@@ -191,15 +191,14 @@ test('/tools/font-tool.html resolves from the source tree and references its sta
   assert.match(response.text, /src="\/tools\/font-tool\/font-tool\.js"/);
 });
 
-test('/font-tool.html permanently redirects to the tool URL', async (t) => {
-  const distRoot = await makeTempDirectory('theseus-font-tool-redirect-');
+test('/font-tool.html no longer resolves from the source tree', async (t) => {
+  const distRoot = await makeTempDirectory('theseus-retired-font-tool-');
   t.after(() => fs.rm(distRoot, { recursive: true, force: true }));
 
   const { port } = await startTestServer({ distRoot }, t);
   const response = await requestServer({ port, path: '/font-tool.html' });
 
-  assert.equal(response.statusCode, 308);
-  assert.equal(response.headers.location, '/tools/font-tool.html');
+  assert.equal(response.statusCode, 404);
 });
 
 test('/test/esm-smoke.html still resolves from the source tree', async (t) => {

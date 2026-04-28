@@ -1,13 +1,11 @@
 # Status
 
 Theseus is currently a native ESM + Node/Express port of the Impact.js sample
-game and Weltmeister workflow. The old split between V1 and V2 status notes has
-been retired; this document describes the live behavior.
+game and Weltmeister workflow.
 
 ## Runtime
 
-- The live `lib/` tree contains the ESM runtime. There is no separate `lib-esm/`
-  runtime path.
+- The live `lib/` tree contains the ESM runtime.
 - `/` serves the source sample game entry from `index.html`.
 - `index.html` loads `lib/game/bootstrap.js`, which imports the Impact debug
   panel before the game entry only when the URL uses `?debug` or `?debug=true`.
@@ -85,6 +83,5 @@ been retired; this document describes the live behavior.
 ## Tools
 
 - `/tools/font-tool.html` serves the font atlas tool from the source tree.
-- `/font-tool.html` permanently redirects to `/tools/font-tool.html`.
 - The font atlas tool writes `ig.Font`-compatible PNG atlases into `media/`
   through `/tools/weltmeister/api/save-image`.
