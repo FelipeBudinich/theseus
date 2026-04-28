@@ -2,13 +2,13 @@
   "duplicateDefinitions": [],
   "dynamicImports": [
     {
-      "line": 6,
+      "line": 13,
       "expression": "expression-based import(...)",
       "file": "lib/game/bootstrap.js",
       "moduleName": "game/bootstrap"
     },
     {
-      "line": 9,
+      "line": 16,
       "expression": "expression-based import(...)",
       "file": "lib/game/bootstrap.js",
       "moduleName": "game/bootstrap"
@@ -26,10 +26,10 @@
       "moduleName": "tools/weltmeister/weltmeister"
     }
   ],
-  "filesScanned": 62,
-  "generatedAt": "2026-04-28T02:09:02.571Z",
+  "filesScanned": 61,
+  "generatedAt": "2026-04-28T03:16:41.158Z",
   "leaves": [
-    "game/debug-query",
+    "game/bootstrap",
     "impact/core/class",
     "impact/core/namespace",
     "impact/core/native-extensions",
@@ -47,30 +47,17 @@
     {
       "dynamicImports": [
         {
-          "line": 6,
+          "line": 13,
           "expression": "expression-based import(...)"
         },
         {
-          "line": 9,
+          "line": 16,
           "expression": "expression-based import(...)"
         }
       ],
       "file": "lib/game/bootstrap.js",
-      "imports": [
-        {
-          "file": "lib/game/debug-query.js",
-          "line": 1,
-          "moduleName": "game/debug-query",
-          "specifier": "./debug-query.js"
-        }
-      ],
-      "moduleName": "game/bootstrap"
-    },
-    {
-      "dynamicImports": [],
-      "file": "lib/game/debug-query.js",
       "imports": [],
-      "moduleName": "game/debug-query"
+      "moduleName": "game/bootstrap"
     },
     {
       "dynamicImports": [],
@@ -1229,7 +1216,7 @@
       "moduleName": "tools/weltmeister/wm"
     }
   ],
-  "modulesFound": 62,
+  "modulesFound": 61,
   "roots": [
     "game/bootstrap",
     "game/entities/blob",
@@ -1258,12 +1245,12 @@
     "lib",
     "tools/weltmeister"
   ],
-  "staticEdgesFound": 124,
+  "staticEdgesFound": 123,
   "unresolvedDependencies": [],
   "modulesWithoutStaticImports": [
     {
-      "file": "lib/game/debug-query.js",
-      "moduleName": "game/debug-query"
+      "file": "lib/game/bootstrap.js",
+      "moduleName": "game/bootstrap"
     },
     {
       "file": "lib/impact/core/class.js",
