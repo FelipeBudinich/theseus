@@ -7,9 +7,9 @@ game and Weltmeister workflow.
 
 - The live `public/lib/` tree contains the ESM runtime and is served at `/lib/`.
 - `/` serves the source sample game entry from `public/index.html`.
-- `public/index.html` loads `lib/game/bootstrap.js`, which imports the Impact debug
-  panel before the game entry only when the URL uses `?debug` or `?debug=true`.
-- `lib/game/bootstrap.js` then imports `lib/game/main.js`.
+- `public/index.html` loads `lib/game/main.js` directly; the engine imports the
+  Impact debug panel before exposing `ig.main` only when the URL uses `?debug`
+  or `?debug=true`.
 - `test/esm-smoke.html` verifies the lower-level `public/lib/impact/ig.js` bootstrap
   path in a browser.
 - `test/esm-engine-smoke.html` verifies the full `public/lib/impact/impact.js` engine

@@ -252,6 +252,34 @@ const existingIg =
 
 const ig = existingIg;
 
+const debugValueEnablesDebug = (value) => value === '' || value === 'true';
+
+const hasDebugQuery = () => {
+  const search =
+    globalScope.location?.search ||
+    globalScope.document?.location?.search ||
+    '';
+
+  const debugValues = new URLSearchParams(search).getAll('debug');
+
+  return (
+    debugValues.length > 0 &&
+    debugValues.every((value) => debugValueEnablesDebug(value))
+  );
+};
+
+const loadDebugFromUrl = () => {
+  if (ig.debugReady) {
+    return ig.debugReady;
+  }
+
+  ig.debugReady = hasDebugQuery()
+    ? import('./debug/debug.js').then(() => ig.debug ?? null)
+    : Promise.resolve(null);
+
+  return ig.debugReady;
+};
+
 const configureAnimationHelpers = () => {
   if (ig._animationConfigured) {
     return;
@@ -447,5 +475,7 @@ installClassSystem(ig);
 
 globalScope.ig = ig;
 bootEnvironment();
+
+ig.debugReady = loadDebugFromUrl();
 
 export default ig;

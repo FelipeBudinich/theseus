@@ -26,7 +26,7 @@ const makeDocsStaticRoot = async (t) => {
     '<!doctype html>',
     '<html>',
     '<body>',
-    '  <script type="module" src="lib/game/bootstrap.js"></script>',
+    '  <script type="module" src="lib/game/main.js"></script>',
     '</body>',
     '</html>'
   ].join('\n'));
@@ -129,7 +129,7 @@ test('/ serves the source game entry', async (t) => {
   const response = await requestServer({ port, path: '/' });
 
   assert.equal(response.statusCode, 200);
-  assert.match(response.text, /<script type="module" src="lib\/game\/bootstrap\.js"><\/script>/);
+  assert.match(response.text, /<script type="module" src="lib\/game\/main\.js"><\/script>/);
 });
 
 test('/dist.html serves the baked build when dist/index.html exists', async (t) => {

@@ -14,6 +14,8 @@ import './sound.js';
 import './system.js';
 import './timer.js';
 
+await ig.debugReady;
+
 ig.boot();
 
 ig.main = function main(canvasId, gameClass, fps, width, height, scale, loaderClass) {

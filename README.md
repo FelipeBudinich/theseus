@@ -27,7 +27,7 @@ Set `PORT` to use a different port or `HOST` on `server.mjs` to change the bind 
 ## Changes in this port
 
 - The live ESM runtime lives under `public/lib/`, but browser URLs remain `/lib/...` because `public/` is the server static root.
-- `public/index.html` uses `lib/game/bootstrap.js` so the optional Impact debug panel can patch engine classes before the game entry evaluates. The debug panel is enabled only by `?debug` or `?debug=true`.
+- `public/index.html` loads the game entry directly from `lib/game/main.js`; `impact.js` waits for the URL-controlled debug decision before exposing the booted engine. The debug panel is enabled only by `?debug` or `?debug=true`.
 - `ig.input.bind()` now uses string input codes instead of `ig.KEY` or `ig.GAMEPAD` constants. Keyboard bindings use `KeyboardEvent.code` values such as `ArrowLeft`, `KeyX`, and `Space`; mouse and wheel bindings use Theseus strings such as `MousePrimary`, `MouseSecondary`, `WheelUp`, and `WheelDown`.
 - Gamepad bindings are string-based logical controller slots. Use `Gamepad0Left`, `Gamepad0FaceBottom`, `Gamepad1Left`, etc.; generic gamepad names such as `GamepadLeft` are intentionally rejected.
 - `/dist.html` serves the latest Vite build from `public/dist/index.html` when present.
