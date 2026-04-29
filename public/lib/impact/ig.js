@@ -1,7 +1,243 @@
-import { installNativeExtensions } from './core/native-extensions.js';
-import { attachClassSystem } from './core/class.js';
-import { attachNamespaceHelpers } from './core/namespace.js';
-import { attachObjectHelpers } from './core/object.js';
+const hasOwn = Object.prototype.hasOwnProperty;
+
+const definePrototypeMethod = (prototype, name, value) => {
+  if (!hasOwn.call(prototype, name)) {
+    Object.defineProperty(prototype, name, {
+      value,
+      configurable: true,
+      writable: true
+    });
+  }
+};
+
+const installNativeExtensions = () => {
+  definePrototypeMethod(Number.prototype, 'map', function map(
+    istart,
+    istop,
+    ostart,
+    ostop
+  ) {
+    return ostart + (ostop - ostart) * ((this - istart) / (istop - istart));
+  });
+
+  definePrototypeMethod(Number.prototype, 'limit', function limit(min, max) {
+    return Math.min(max, Math.max(min, this));
+  });
+
+  definePrototypeMethod(Number.prototype, 'round', function round(precision) {
+    const multiplier = Math.pow(10, precision || 0);
+    return Math.round(this * multiplier) / multiplier;
+  });
+
+  definePrototypeMethod(Number.prototype, 'floor', function floor() {
+    return Math.floor(this);
+  });
+
+  definePrototypeMethod(Number.prototype, 'ceil', function ceil() {
+    return Math.ceil(this);
+  });
+
+  definePrototypeMethod(Number.prototype, 'toInt', function toInt() {
+    return this | 0;
+  });
+
+  definePrototypeMethod(Number.prototype, 'toRad', function toRad() {
+    return (this / 180) * Math.PI;
+  });
+
+  definePrototypeMethod(Number.prototype, 'toDeg', function toDeg() {
+    return (this * 180) / Math.PI;
+  });
+
+  definePrototypeMethod(Array.prototype, 'erase', function erase(item) {
+    for (let index = this.length; index--;) {
+      if (this[index] === item) {
+        this.splice(index, 1);
+      }
+    }
+
+    return this;
+  });
+
+  definePrototypeMethod(Array.prototype, 'random', function random() {
+    return this[Math.floor(Math.random() * this.length)];
+  });
+};
+
+const createNamespace = (target, namespacePath) => {
+  if (!namespacePath) {
+    return target;
+  }
+
+  return namespacePath.split('.').reduce((current, segment) => {
+    if (!segment) {
+      return current;
+    }
+
+    if (typeof current[segment] !== 'object' || current[segment] === null) {
+      current[segment] = {};
+    }
+
+    return current[segment];
+  }, target);
+};
+
+const isDomElement = (value) =>
+  typeof HTMLElement !== 'undefined' && value instanceof HTMLElement;
+
+const isImpactClassInstance = (ig, value) =>
+  Boolean(ig.Class) && value instanceof ig.Class;
+
+const copy = (ig, object) => {
+  if (
+    !object ||
+    typeof object !== 'object' ||
+    isDomElement(object) ||
+    isImpactClassInstance(ig, object)
+  ) {
+    return object;
+  }
+
+  if (Array.isArray(object)) {
+    return object.map((value) => copy(ig, value));
+  }
+
+  const clone = {};
+
+  for (const key in object) {
+    clone[key] = copy(ig, object[key]);
+  }
+
+  return clone;
+};
+
+const merge = (ig, original, extended) => {
+  for (const key in extended) {
+    const value = extended[key];
+
+    if (
+      typeof value !== 'object' ||
+      value === null ||
+      isDomElement(value) ||
+      isImpactClassInstance(ig, value)
+    ) {
+      original[key] = value;
+      continue;
+    }
+
+    if (!original[key] || typeof original[key] !== 'object') {
+      original[key] = Array.isArray(value) ? [] : {};
+    }
+
+    merge(ig, original[key], value);
+  }
+
+  return original;
+};
+
+const ksort = (object) => {
+  if (!object || typeof object !== 'object') {
+    return [];
+  }
+
+  return Object.keys(object)
+    .sort()
+    .map((key) => object[key]);
+};
+
+const fnTest = /xyz/.test(() => {
+  xyz;
+})
+  ? /\bparent\b/
+  : /.*/;
+
+let lastClassId = 0;
+
+const shouldWrapParentMethod = (value, parentValue) =>
+  typeof value === 'function' &&
+  typeof parentValue === 'function' &&
+  fnTest.test(value);
+
+const wrapParentMethod = (parentMethod, method) =>
+  function parentWrappedMethod(...args) {
+    const previousParent = this.parent;
+    this.parent = parentMethod;
+
+    try {
+      return method.apply(this, args);
+    } finally {
+      this.parent = previousParent;
+    }
+  };
+
+const applyClassProperties = (target, parent, properties) => {
+  for (const name in properties) {
+    const value = properties[name];
+
+    target[name] = shouldWrapParentMethod(value, parent[name])
+      ? wrapParentMethod(parent[name], value)
+      : value;
+  }
+};
+
+const installClassSystem = (ig) => {
+  if (ig.Class && typeof ig.Class.extend === 'function') {
+    return ig.Class;
+  }
+
+  let initializing = false;
+
+  const inject = function inject(properties = {}) {
+    applyClassProperties(this.prototype, this.prototype, properties);
+  };
+
+  const ImpactClass = function ImpactClass() {};
+
+  ImpactClass.extend = function extend(properties = {}) {
+    const parent = this.prototype;
+
+    initializing = true;
+    const prototype = new this();
+    initializing = false;
+
+    applyClassProperties(prototype, parent, properties);
+
+    function Class(...args) {
+      if (!initializing) {
+        if (this.staticInstantiate) {
+          const instance = this.staticInstantiate(...args);
+
+          if (instance) {
+            return instance;
+          }
+        }
+
+        for (const property in this) {
+          if (typeof this[property] === 'object') {
+            this[property] = ig.copy(this[property]);
+          }
+        }
+
+        if (this.init) {
+          this.init(...args);
+        }
+      }
+
+      return this;
+    }
+
+    Class.prototype = prototype;
+    Class.prototype.constructor = Class;
+    Class.extend = ImpactClass.extend;
+    Class.inject = inject;
+    Class.classId = prototype.classId = ++lastClassId;
+
+    return Class;
+  };
+
+  ig.Class = ImpactClass;
+  return ig.Class;
+};
 
 installNativeExtensions();
 
@@ -187,9 +423,27 @@ ig.getImagePixels ??= (image, x, y, width, height) => {
 };
 ig.boot = () => bootEnvironment();
 
-attachNamespaceHelpers(ig);
-attachObjectHelpers(ig);
-attachClassSystem(ig);
+ig.namespace = (namespacePath, root = ig.global) => {
+  if (!namespacePath) {
+    return root;
+  }
+
+  if (namespacePath === 'ig') {
+    return ig;
+  }
+
+  if (namespacePath.startsWith('ig.')) {
+    return createNamespace(ig, namespacePath.slice(3));
+  }
+
+  return createNamespace(root, namespacePath);
+};
+
+ig.copy = (object) => copy(ig, object);
+ig.merge = (original, extended) => merge(ig, original, extended);
+ig.ksort = ksort;
+
+installClassSystem(ig);
 
 globalScope.ig = ig;
 bootEnvironment();
