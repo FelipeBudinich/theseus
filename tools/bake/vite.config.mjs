@@ -19,7 +19,12 @@ export default defineConfig({
     'globalThis.__THESEUS_INCLUDE_DEBUG__': false
   },
 
-  plugins: [createTextureAtlasPlugin()],
+  plugins: [
+    createTextureAtlasPlugin({
+      injectManifestIntoHtml: false,
+      prependManifestToJavaScript: true,
+    }),
+  ],
 
   build: {
     outDir: path.join(publicRoot, 'dist'),

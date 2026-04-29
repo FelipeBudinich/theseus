@@ -18,6 +18,9 @@ const joinPublicBase = (base, fileName) => {
 
 const escapeInlineScriptJson = (value) => JSON.stringify(value).replace(/</g, '\\u003c');
 
+const buildTextureAtlasManifestAssignment = (manifest) =>
+  `globalThis.__THESEUS_TEXTURE_ATLAS_MANIFEST__ = ${escapeInlineScriptJson(manifest)};`;
+
 const collectTextureInputs = async (absoluteDirectory, projectRoot) => {
   const directoryEntries = await fs.readdir(absoluteDirectory, { withFileTypes: true });
   directoryEntries.sort((left, right) => left.name.localeCompare(right.name));
@@ -200,6 +203,9 @@ const packTexturesForBuild = async ({
 const createTextureAtlasPlugin = (options = {}) => {
   const {
     emitManifestFile = false,
+    injectManifestIntoHtml = true,
+    prependManifestToJavaScript = false,
+    prependManifestToAllJavaScriptChunks = true,
     ...textureOptions
   } = options;
 
@@ -256,7 +262,31 @@ const createTextureAtlasPlugin = (options = {}) => {
       assetsEmitted = true;
     },
 
+    async renderChunk(code, chunk) {
+      if (!prependManifestToJavaScript) {
+        return null;
+      }
+
+      if (!prependManifestToAllJavaScriptChunks && !chunk.isEntry) {
+        return null;
+      }
+
+      const textureAtlasBuild = await ensureTextureAtlases();
+      if (!textureAtlasBuild) {
+        return null;
+      }
+
+      return {
+        code: `${buildTextureAtlasManifestAssignment(textureAtlasBuild.manifest)}\n${code}`,
+        map: null,
+      };
+    },
+
     async transformIndexHtml(html) {
+      if (!injectManifestIntoHtml) {
+        return html;
+      }
+
       const textureAtlasBuild = await ensureTextureAtlases();
       if (!textureAtlasBuild) {
         return html;
@@ -268,7 +298,7 @@ const createTextureAtlasPlugin = (options = {}) => {
           {
             tag: 'script',
             injectTo: 'head-prepend',
-            children: `window.__THESEUS_TEXTURE_ATLAS_MANIFEST__ = ${escapeInlineScriptJson(textureAtlasBuild.manifest)};`,
+            children: buildTextureAtlasManifestAssignment(textureAtlasBuild.manifest),
           },
         ],
       };
