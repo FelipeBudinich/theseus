@@ -198,6 +198,11 @@ const packTexturesForBuild = async ({
 };
 
 const createTextureAtlasPlugin = (options = {}) => {
+  const {
+    emitManifestFile = false,
+    ...textureOptions
+  } = options;
+
   let resolvedConfig = null;
   let textureAtlasBuildPromise = null;
   let assetsEmitted = false;
@@ -211,7 +216,7 @@ const createTextureAtlasPlugin = (options = {}) => {
       textureAtlasBuildPromise = packTexturesForBuild({
         projectRoot: resolvedConfig.root,
         publicBase: resolvedConfig.base,
-        ...options,
+        ...textureOptions,
       });
     }
 
@@ -240,11 +245,13 @@ const createTextureAtlasPlugin = (options = {}) => {
         });
       }
 
-      this.emitFile({
-        type: 'asset',
-        fileName: 'packed-textures/manifest.json',
-        source: JSON.stringify(textureAtlasBuild.manifest, null, 2),
-      });
+      if (emitManifestFile) {
+        this.emitFile({
+          type: 'asset',
+          fileName: 'packed-textures/manifest.json',
+          source: JSON.stringify(textureAtlasBuild.manifest, null, 2),
+        });
+      }
 
       assetsEmitted = true;
     },
