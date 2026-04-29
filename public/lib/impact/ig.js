@@ -273,9 +273,10 @@ const loadDebugFromUrl = () => {
     return ig.debugReady;
   }
 
-  ig.debugReady = hasDebugQuery()
-    ? import('./debug/debug.js').then(() => ig.debug ?? null)
-    : Promise.resolve(null);
+  ig.debugReady =
+    globalThis.__THESEUS_INCLUDE_DEBUG__ !== false && hasDebugQuery()
+      ? import('./debug/debug.js').then(() => ig.debug ?? null)
+      : Promise.resolve(null);
 
   return ig.debugReady;
 };

@@ -15,6 +15,10 @@ export default defineConfig({
   base: '/dist/',
   publicDir: false,
 
+  define: {
+    'globalThis.__THESEUS_INCLUDE_DEBUG__': false
+  },
+
   plugins: [createTextureAtlasPlugin()],
 
   build: {

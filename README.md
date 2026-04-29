@@ -20,14 +20,14 @@ Set `PORT` to use a different port or `HOST` on `server.mjs` to change the bind 
 - Sample game: `http://localhost:3000/`
 - Sample game with Impact debug panel: `http://localhost:3000/?debug` or `http://localhost:3000/?debug=true`
 - Latest baked game: `http://localhost:3000/dist.html`
-- Latest baked game with Impact debug panel: `http://localhost:3000/dist.html?debug`
+- Latest baked game with debug query ignored: `http://localhost:3000/dist.html?debug`
 - Weltmeister shell: `http://localhost:3000/tools/weltmeister.html` loads the editor shell from `tools/weltmeister/main.js`, which prepares entity metadata from the generated manifest before booting the editor.
 - Font atlas tool: `http://localhost:3000/tools/font-tool.html` generates `ig.Font`-compatible PNG atlases from local or fallback CSS fonts, validates the metric row, and saves the result into `media/`.
 
 ## Changes in this port
 
 - The live ESM runtime lives under `public/lib/`, but browser URLs remain `/lib/...` because `public/` is the server static root.
-- `public/index.html` loads the game entry directly from `lib/game/main.js`; `impact.js` waits for the URL-controlled debug decision before exposing the booted engine. The debug panel is enabled only by `?debug` or `?debug=true`.
+- `public/index.html` loads the game entry directly from `lib/game/main.js`; `impact.js` waits for the URL-controlled debug decision before exposing the booted engine. The debug panel is enabled only by `?debug` or `?debug=true` in the source-served game; baked builds intentionally exclude the debug panel.
 - `ig.input.bind()` now uses string input codes instead of `ig.KEY` or `ig.GAMEPAD` constants. Keyboard bindings use `KeyboardEvent.code` values such as `ArrowLeft`, `KeyX`, and `Space`; mouse and wheel bindings use Theseus strings such as `MousePrimary`, `MouseSecondary`, `WheelUp`, and `WheelDown`.
 - Gamepad bindings are string-based logical controller slots. Use `Gamepad0Left`, `Gamepad0FaceBottom`, `Gamepad1Left`, etc.; generic gamepad names such as `GamepadLeft` are intentionally rejected.
 - `/dist.html` serves the latest Vite build from `public/dist/index.html` when present.

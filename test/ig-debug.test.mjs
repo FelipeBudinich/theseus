@@ -23,6 +23,11 @@ test('ig owns debug query parsing and debug import', async () => {
     /import\('\.\/debug\/debug\.js'\)/
   );
 
+  assert.match(
+    igSource,
+    /globalThis\.__THESEUS_INCLUDE_DEBUG__ !== false && hasDebugQuery\(\)/
+  );
+
   assert.doesNotMatch(
     igSource,
     /import\(['"]\.\/main\.js['"]\)/
