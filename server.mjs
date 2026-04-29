@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { createDocsRouter } from './docs-cms.mjs';
+import { createDocsRouter } from './tools/docs-cms/docs-cms.mjs';
 import { createWeltmeisterApiRouter } from './tools/weltmeister/api/node-api.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
