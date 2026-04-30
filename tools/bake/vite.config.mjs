@@ -23,20 +23,21 @@ export default defineConfig({
 
   plugins: [
     createTextureAtlasPlugin({
+      outputDir: 'assets',
       injectManifestIntoHtml: false,
       prependManifestToJavaScript: true,
     }),
     createSfxAtlasPlugin({
       sourceDir: 'media/sounds',
       atlasName: 'sfx-atlas',
-      outputDir: 'sfx-atlas',
+      outputDir: 'assets',
       injectManifestIntoHtml: false,
       prependManifestToJavaScript: true
     }),
     createMusicAtlasPlugin({
       sourceDir: 'media/music',
       atlasName: 'music-atlas',
-      outputDir: 'music-atlas',
+      outputDir: 'assets',
       injectManifestIntoHtml: false,
       prependManifestToJavaScript: true
     }),

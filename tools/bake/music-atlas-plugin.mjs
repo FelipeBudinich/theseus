@@ -7,6 +7,7 @@ import { pipeline } from 'node:stream/promises';
 
 const FFMPEG_MISSING_MESSAGE = 'music-atlas requires ffmpeg in PATH to bake packed music audio.';
 const BYTES_PER_SAMPLE = 2;
+const DEFAULT_OUTPUT_DIR = 'assets';
 const SILENCE_CHUNK_BYTES = 1024 * 1024;
 
 const DEFAULT_SOURCE_FORMAT_PREFERENCE = ['wav', 'ogg', 'mp3', 'm4a', 'webm', 'caf'];
@@ -15,6 +16,9 @@ const toPosixPath = (value) => value.split(path.sep).join('/').replace(/\\/g, '/
 
 const normalizePublicPath = (value) =>
   toPosixPath(String(value || '')).replace(/^\.\//, '').replace(/^\/+/, '');
+
+const joinPublicPath = (...parts) =>
+  parts.map((part) => normalizePublicPath(part)).filter(Boolean).join('/');
 
 const joinPublicBase = (base, fileName) => {
   const normalizedBase = base.endsWith('/') ? base : `${base}/`;
@@ -287,7 +291,7 @@ const buildRuntimeManifest = ({
   const atlasFormats = {};
 
   for (const format of formats) {
-    const atlasFileName = `${normalizePublicPath(outputDir)}/${atlasName}.${format}`;
+    const atlasFileName = joinPublicPath(outputDir, `${atlasName}.${format}`);
     atlasFormats[format] = joinPublicBase(publicBase, atlasFileName);
   }
 
@@ -326,7 +330,7 @@ const packMusicAtlasForBuild = async ({
   publicBase = '/',
   sourceDir = 'media/music',
   atlasName = 'music-atlas',
-  outputDir = 'music-atlas',
+  outputDir = DEFAULT_OUTPUT_DIR,
   formats = ['ogg', 'mp3'],
   sampleRate = 44100,
   channels = 2,
@@ -422,7 +426,7 @@ const packMusicAtlasForBuild = async ({
         sampleRate,
       });
       atlasAssets.push({
-        fileName: `${normalizedOutputDir}/${atlasName}.${format}`,
+        fileName: joinPublicPath(normalizedOutputDir, `${atlasName}.${format}`),
         source: await fs.readFile(outputPath),
       });
     }
@@ -450,6 +454,7 @@ const packMusicAtlasForBuild = async ({
 const createMusicAtlasPlugin = (options = {}) => {
   const {
     emitManifestFile = false,
+    manifestFileName = null,
     injectManifestIntoHtml = true,
     prependManifestToJavaScript = false,
     prependManifestToAllJavaScriptChunks = true,
@@ -501,7 +506,10 @@ const createMusicAtlasPlugin = (options = {}) => {
       if (emitManifestFile) {
         this.emitFile({
           type: 'asset',
-          fileName: `${normalizePublicPath(musicAtlasOptions.outputDir || 'music-atlas')}/manifest.json`,
+          fileName: normalizePublicPath(
+            manifestFileName
+              ?? joinPublicPath(musicAtlasOptions.outputDir ?? DEFAULT_OUTPUT_DIR, 'music-atlas-manifest.json'),
+          ),
           source: JSON.stringify(musicAtlasBuild.manifest, null, 2),
         });
       }
@@ -566,6 +574,7 @@ const __private__ = {
   escapeInlineScriptJson,
   groupMusicSources,
   joinPublicBase,
+  joinPublicPath,
   normalizePublicPath,
   roundSeconds,
   runProcess,

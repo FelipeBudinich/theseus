@@ -5,6 +5,7 @@ import path from 'node:path';
 
 const FFMPEG_MISSING_MESSAGE = 'sfx-atlas requires ffmpeg in PATH to bake packed SFX audio.';
 const BYTES_PER_SAMPLE = 2;
+const DEFAULT_OUTPUT_DIR = 'assets';
 
 const DEFAULT_SOURCE_FORMAT_PREFERENCE = ['wav', 'ogg', 'mp3', 'm4a', 'webm', 'caf'];
 
@@ -12,6 +13,9 @@ const toPosixPath = (value) => value.split(path.sep).join('/').replace(/\\/g, '/
 
 const normalizePublicPath = (value) =>
   toPosixPath(String(value || '')).replace(/^\.\//, '').replace(/^\/+/, '');
+
+const joinPublicPath = (...parts) =>
+  parts.map((part) => normalizePublicPath(part)).filter(Boolean).join('/');
 
 const joinPublicBase = (base, fileName) => {
   const normalizedBase = base.endsWith('/') ? base : `${base}/`;
@@ -299,7 +303,7 @@ const buildRuntimeManifest = ({
   const atlasFormats = {};
 
   for (const format of formats) {
-    const atlasFileName = `${normalizePublicPath(outputDir)}/${atlasName}.${format}`;
+    const atlasFileName = joinPublicPath(outputDir, `${atlasName}.${format}`);
     atlasFormats[format] = joinPublicBase(publicBase, atlasFileName);
   }
 
@@ -338,7 +342,7 @@ const packSfxAtlasForBuild = async ({
   publicBase = '/',
   sourceDir = 'media/sounds',
   atlasName = 'sfx-atlas',
-  outputDir = 'sfx-atlas',
+  outputDir = DEFAULT_OUTPUT_DIR,
   formats = ['ogg', 'mp3'],
   sampleRate = 44100,
   channels = 2,
@@ -417,7 +421,7 @@ const packSfxAtlasForBuild = async ({
         format: normalizedFormat,
       });
       atlasAssets.push({
-        fileName: `${normalizedOutputDir}/${atlasName}.${normalizedFormat}`,
+        fileName: joinPublicPath(normalizedOutputDir, `${atlasName}.${normalizedFormat}`),
         source: await fs.readFile(outputPath),
       });
     }
@@ -445,6 +449,7 @@ const packSfxAtlasForBuild = async ({
 const createSfxAtlasPlugin = (options = {}) => {
   const {
     emitManifestFile = false,
+    manifestFileName = null,
     injectManifestIntoHtml = true,
     prependManifestToJavaScript = false,
     prependManifestToAllJavaScriptChunks = true,
@@ -496,7 +501,10 @@ const createSfxAtlasPlugin = (options = {}) => {
       if (emitManifestFile) {
         this.emitFile({
           type: 'asset',
-          fileName: `${normalizePublicPath(sfxAtlasOptions.outputDir || 'sfx-atlas')}/manifest.json`,
+          fileName: normalizePublicPath(
+            manifestFileName
+              ?? joinPublicPath(sfxAtlasOptions.outputDir ?? DEFAULT_OUTPUT_DIR, 'sfx-atlas-manifest.json'),
+          ),
           source: JSON.stringify(sfxAtlasBuild.manifest, null, 2),
         });
       }
@@ -557,6 +565,7 @@ const __private__ = {
   escapeInlineScriptJson,
   groupSfxSources,
   joinPublicBase,
+  joinPublicPath,
   normalizePublicPath,
   roundSeconds,
 };

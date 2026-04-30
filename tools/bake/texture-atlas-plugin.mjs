@@ -8,12 +8,19 @@ const require = createRequire(import.meta.url);
 const texturePacker = require('free-tex-packer-core');
 
 const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg']);
+const DEFAULT_OUTPUT_DIR = 'assets';
 
-const toPosixPath = (value) => value.split(path.sep).join('/');
+const toPosixPath = (value) => value.split(path.sep).join('/').replace(/\\/g, '/');
+
+const normalizePublicPath = (value) =>
+  toPosixPath(String(value || '')).replace(/^\.\//, '').replace(/^\/+/, '').replace(/\/+$/, '');
+
+const joinPublicPath = (...parts) =>
+  parts.map((part) => normalizePublicPath(part)).filter(Boolean).join('/');
 
 const joinPublicBase = (base, fileName) => {
   const normalizedBase = base.endsWith('/') ? base : `${base}/`;
-  return `${normalizedBase}${fileName}`;
+  return `${normalizedBase}${normalizePublicPath(fileName)}`;
 };
 
 const escapeInlineScriptJson = (value) => JSON.stringify(value).replace(/</g, '\\u003c');
@@ -72,7 +79,7 @@ const groupPackedFiles = (packedFiles) => {
   return [...groups.entries()].sort(([left], [right]) => left.localeCompare(right));
 };
 
-const buildRuntimeManifest = ({ groupedPackedFiles, publicBase }) => {
+const buildRuntimeManifest = ({ groupedPackedFiles, publicBase, outputDir }) => {
   const manifest = {
     version: 1,
     atlases: [],
@@ -88,7 +95,7 @@ const buildRuntimeManifest = ({ groupedPackedFiles, publicBase }) => {
 
     const atlasMetadata = JSON.parse(group.metadata.buffer.toString('utf8'));
     const atlasIndex = manifest.atlases.length;
-    const atlasFileName = `packed-textures/${path.posix.basename(baseName)}.webp`;
+    const atlasFileName = joinPublicPath(outputDir, `${path.posix.basename(baseName)}.webp`);
 
     atlasAssets.push({
       fileName: atlasFileName,
@@ -138,6 +145,7 @@ const packTexturesForBuild = async ({
   projectRoot,
   publicBase,
   sourceDir = 'media',
+  outputDir = DEFAULT_OUTPUT_DIR,
   atlasName = 'theseus-atlas',
   atlasWidth = 2048,
   atlasHeight = 2048,
@@ -191,7 +199,7 @@ const packTexturesForBuild = async ({
   });
 
   const groupedPackedFiles = groupPackedFiles(packedFiles);
-  const { atlasAssets, manifest } = buildRuntimeManifest({ groupedPackedFiles, publicBase });
+  const { atlasAssets, manifest } = buildRuntimeManifest({ groupedPackedFiles, publicBase, outputDir });
   const webpAtlasAssets = await convertAtlasAssetsToWebp(atlasAssets, webpOptions);
 
   return {
@@ -254,7 +262,10 @@ const createTextureAtlasPlugin = (options = {}) => {
       if (emitManifestFile) {
         this.emitFile({
           type: 'asset',
-          fileName: 'packed-textures/manifest.json',
+          fileName: joinPublicPath(
+            textureOptions.outputDir ?? DEFAULT_OUTPUT_DIR,
+            'texture-atlas-manifest.json',
+          ),
           source: JSON.stringify(textureAtlasBuild.manifest, null, 2),
         });
       }

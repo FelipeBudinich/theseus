@@ -112,7 +112,7 @@ test('music manifest aliases include wildcard and every existing extension varia
 test('music runtime manifest uses base URLs and generated track aliases', () => {
   const manifest = buildRuntimeManifest({
     publicBase: '/dist/',
-    outputDir: 'music-atlas',
+    outputDir: 'assets',
     atlasName: 'music-atlas',
     formats: ['ogg', 'mp3'],
     sampleRate: 44100,
@@ -136,8 +136,8 @@ test('music runtime manifest uses base URLs and generated track aliases', () => 
   });
 
   assert.deepEqual(manifest.atlases[0].formats, {
-    ogg: '/dist/music-atlas/music-atlas.ogg',
-    mp3: '/dist/music-atlas/music-atlas.mp3',
+    ogg: '/dist/assets/music-atlas.ogg',
+    mp3: '/dist/assets/music-atlas.mp3',
   });
   assert.equal(manifest.atlases[0].duration, 124.56789);
   assert.equal(manifest.tracks['media/music/foo.*'].source, 'media/music/foo.ogg');
@@ -217,14 +217,14 @@ test(
       publicBase: '/dist/',
       sourceDir: 'media/music',
       atlasName: 'music-atlas',
-      outputDir: 'music-atlas',
+      outputDir: 'assets',
       formats: ['ogg', 'mp3'],
     });
 
     assert.ok(build);
     assert.deepEqual(
       build.atlasAssets.map((asset) => asset.fileName),
-      ['music-atlas/music-atlas.ogg', 'music-atlas/music-atlas.mp3'],
+      ['assets/music-atlas.ogg', 'assets/music-atlas.mp3'],
     );
     assert.ok(build.atlasAssets.every((asset) => Buffer.isBuffer(asset.source) && asset.source.length > 0));
     assert.equal(

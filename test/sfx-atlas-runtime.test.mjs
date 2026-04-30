@@ -171,7 +171,7 @@ const createManifest = () => ({
   atlases: [
     {
       formats: {
-        ogg: '/dist/sfx-atlas/sfx-atlas.ogg',
+        ogg: '/dist/assets/sfx-atlas.ogg',
       },
       duration: 1,
     },
@@ -206,7 +206,7 @@ const createMusicManifest = () => ({
   atlases: [
     {
       formats: {
-        ogg: '/dist/music-atlas/music-atlas.ogg',
+        ogg: '/dist/assets/music-atlas.ogg',
       },
       duration: 125,
     },
@@ -259,7 +259,7 @@ test('SoundManager uses SFX atlas only for multichannel WebAudio sounds', () => 
   const sfxSource = manager.load('media/sounds/jump.*', true);
   assert.equal(sfxSource instanceof ig.Sound.AtlasWebAudioSource, true);
   assert.equal(requests.length, 1);
-  assert.equal(requests[0].url, '/dist/sfx-atlas/sfx-atlas.ogg?cache=1');
+  assert.equal(requests[0].url, '/dist/assets/sfx-atlas.ogg?cache=1');
 
   const musicSource = manager.load('media/sounds/coin.*', false);
   assert.equal(musicSource instanceof MockAudio, true);
@@ -293,7 +293,7 @@ test('SoundManager uses music atlas only for non-multichannel HTML5 music', () =
   const musicSource = manager.load('media/music/energy-warrior.*', false);
   assert.equal(musicSource instanceof ig.Sound.MusicAtlasHTML5Source, true);
   assert.equal(musicSource instanceof ig.Sound.WebAudioSource, false);
-  assert.equal(musicSource.audio.src, '/dist/music-atlas/music-atlas.ogg?cache=1');
+  assert.equal(musicSource.audio.src, '/dist/assets/music-atlas.ogg?cache=1');
   assert.equal(requests.length, 0);
 
   resetSoundEnvironment();
@@ -314,7 +314,7 @@ test('SoundManager falls back to individual music files when atlas lacks the bro
     atlases: [
       {
         formats: {
-          mp3: '/dist/music-atlas/music-atlas.mp3',
+          mp3: '/dist/assets/music-atlas.mp3',
         },
         duration: 125,
       },
@@ -352,7 +352,7 @@ test('MusicAtlasHTML5Source exposes relative time and segment-only ended and loo
   const manager = new ig.SoundManager();
   ig.soundManager = manager;
 
-  const source = new ig.Sound.MusicAtlasHTML5Source('/dist/music-atlas/music-atlas.ogg', 10, 5);
+  const source = new ig.Sound.MusicAtlasHTML5Source('/dist/assets/music-atlas.ogg', 10, 5);
   const endedEvents = [];
   source.addEventListener('ended', (ev) => {
     endedEvents.push(ev);
@@ -372,7 +372,7 @@ test('MusicAtlasHTML5Source exposes relative time and segment-only ended and loo
   assert.equal(endedEvents.length, 1);
   assert.equal(endedEvents[0].target, source);
 
-  const looped = new ig.Sound.MusicAtlasHTML5Source('/dist/music-atlas/music-atlas.ogg', 20, 3);
+  const looped = new ig.Sound.MusicAtlasHTML5Source('/dist/assets/music-atlas.ogg', 20, 3);
   looped.loop = true;
   looped.audio.currentTime = 23;
   looped.audio.paused = false;

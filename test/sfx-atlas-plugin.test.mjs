@@ -102,19 +102,19 @@ test('SFX atlas path helpers normalize to POSIX and preserve the Vite public bas
     'media/sounds/jump.ogg',
   );
   assert.equal(
-    joinPublicBase('/dist', 'sfx-atlas\\sfx-atlas.ogg'),
-    '/dist/sfx-atlas/sfx-atlas.ogg',
+    joinPublicBase('/dist', 'assets\\sfx-atlas.ogg'),
+    '/dist/assets/sfx-atlas.ogg',
   );
   assert.equal(
-    joinPublicBase('/dist/', '/sfx-atlas/sfx-atlas.mp3'),
-    '/dist/sfx-atlas/sfx-atlas.mp3',
+    joinPublicBase('/dist/', '/assets/sfx-atlas.mp3'),
+    '/dist/assets/sfx-atlas.mp3',
   );
 });
 
 test('SFX runtime manifest uses base URLs and generated sound aliases', () => {
   const manifest = buildRuntimeManifest({
     publicBase: '/dist/',
-    outputDir: 'sfx-atlas',
+    outputDir: 'assets',
     atlasName: 'sfx-atlas',
     formats: ['ogg', 'mp3'],
     sampleRate: 44100,
@@ -138,8 +138,8 @@ test('SFX runtime manifest uses base URLs and generated sound aliases', () => {
   });
 
   assert.deepEqual(manifest.atlases[0].formats, {
-    ogg: '/dist/sfx-atlas/sfx-atlas.ogg',
-    mp3: '/dist/sfx-atlas/sfx-atlas.mp3',
+    ogg: '/dist/assets/sfx-atlas.ogg',
+    mp3: '/dist/assets/sfx-atlas.mp3',
   });
   assert.equal(manifest.atlases[0].duration, 1.234568);
   assert.equal(manifest.sounds['media/sounds/jump.*'].source, 'media/sounds/jump.ogg');
@@ -172,14 +172,14 @@ test(
       publicBase: '/dist/',
       sourceDir: 'media/sounds',
       atlasName: 'sfx-atlas',
-      outputDir: 'sfx-atlas',
+      outputDir: 'assets',
       formats: ['ogg', 'mp3'],
     });
 
     assert.ok(build);
     assert.deepEqual(
       build.atlasAssets.map((asset) => asset.fileName),
-      ['sfx-atlas/sfx-atlas.ogg', 'sfx-atlas/sfx-atlas.mp3'],
+      ['assets/sfx-atlas.ogg', 'assets/sfx-atlas.mp3'],
     );
     assert.ok(build.atlasAssets.every((asset) => Buffer.isBuffer(asset.source) && asset.source.length > 0));
     assert.equal(build.manifest.sounds['media/sounds/jump.*'].source, 'media/sounds/jump.ogg');

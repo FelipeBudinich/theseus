@@ -26,8 +26,9 @@ game and Weltmeister workflow.
 - `/dist.html` serves the latest baked `public/dist/index.html` when it exists.
 - `/dist.html` returns `404` with a `npm run bake` hint when no baked build is
   present.
-- Built JavaScript is served from `/dist/assets/...`; runtime media and sounds
-  still resolve from the source-hosted `/media/...` tree.
+- Built JavaScript and generated texture, SFX, and music atlases are served from
+  `/dist/assets/...`; unpacked runtime media and sound fallbacks still resolve
+  from the source-hosted `/media/...` tree.
 - The retired PHP bake helpers have been removed.
 
 ## Input

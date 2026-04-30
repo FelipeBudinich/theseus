@@ -68,12 +68,13 @@ test('npm run bake builds the game into public/dist with /dist asset URLs', {
 
   const distIndexPath = path.resolve('public/dist/index.html');
   const distAssetsPath = path.resolve('public/dist/assets');
-  const sfxAtlasPath = path.resolve('public/dist/sfx-atlas');
-  const musicAtlasPath = path.resolve('public/dist/music-atlas');
+  const obsoleteAtlasDirs = [
+    path.resolve('public/dist/packed-textures'),
+    path.resolve('public/dist/sfx-atlas'),
+    path.resolve('public/dist/music-atlas'),
+  ];
   const builtHtml = await fs.readFile(distIndexPath, 'utf8');
   const assetEntries = await fs.readdir(distAssetsPath);
-  const sfxAtlasEntries = await fs.readdir(sfxAtlasPath);
-  const musicAtlasEntries = await fs.readdir(musicAtlasPath);
   const builtAssetSources = await Promise.all(
     assetEntries
       .filter((fileName) => fileName.endsWith('.js'))
@@ -90,21 +91,32 @@ test('npm run bake builds the game into public/dist with /dist asset URLs', {
     'expected public/dist/assets to contain a built JavaScript bundle'
   );
   assert.ok(
-    sfxAtlasEntries.includes('sfx-atlas.ogg'),
-    'expected public/dist/sfx-atlas/sfx-atlas.ogg to be emitted'
+    assetEntries.includes('theseus-atlas.webp'),
+    'expected public/dist/assets/theseus-atlas.webp to be emitted'
   );
   assert.ok(
-    sfxAtlasEntries.includes('sfx-atlas.mp3'),
-    'expected public/dist/sfx-atlas/sfx-atlas.mp3 to be emitted'
+    assetEntries.includes('sfx-atlas.ogg'),
+    'expected public/dist/assets/sfx-atlas.ogg to be emitted'
   );
   assert.ok(
-    musicAtlasEntries.includes('music-atlas.ogg'),
-    'expected public/dist/music-atlas/music-atlas.ogg to be emitted'
+    assetEntries.includes('sfx-atlas.mp3'),
+    'expected public/dist/assets/sfx-atlas.mp3 to be emitted'
   );
   assert.ok(
-    musicAtlasEntries.includes('music-atlas.mp3'),
-    'expected public/dist/music-atlas/music-atlas.mp3 to be emitted'
+    assetEntries.includes('music-atlas.ogg'),
+    'expected public/dist/assets/music-atlas.ogg to be emitted'
   );
+  assert.ok(
+    assetEntries.includes('music-atlas.mp3'),
+    'expected public/dist/assets/music-atlas.mp3 to be emitted'
+  );
+  for (const obsoleteAtlasDir of obsoleteAtlasDirs) {
+    await assert.rejects(
+      () => fs.stat(obsoleteAtlasDir),
+      { code: 'ENOENT' },
+      `expected ${obsoleteAtlasDir} not to be emitted as a top-level atlas directory`,
+    );
+  }
   assert.match(
     builtJavaScript,
     /globalThis\.__THESEUS_TEXTURE_ATLAS_MANIFEST__/
