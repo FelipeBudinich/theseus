@@ -19,6 +19,12 @@ import './levels/snowhills.js';
 
 let touchButtons = null;
 
+const playGameMusic = () => {
+	ig.music.add('media/music/energy-warrior.*', 'energy-warrior');
+	ig.music.loop = true;
+	ig.music.play('energy-warrior');
+};
+
 const MyGame = ig.Game.extend({
 	clearColor: '#d0f4f7',
 	gravity: 800,
@@ -111,7 +117,8 @@ const MyTitle = ig.Game.extend({
 		if (touchButtons) {
 			touchButtons.align();
 		}
-
+		ig.music.add('media/music/energy-warrior.*', 'energy-warrior');
+		ig.music.loop = true;
 		this.font.letterSpacing = -2;
 		this.loadLevel(LevelTitle);
 		this.maxY = this.backgroundMaps[0].pxHeight - ig.system.height;
@@ -119,6 +126,7 @@ const MyTitle = ig.Game.extend({
 
 	update: function() {
 		if (ig.input.pressed('jump') || ig.input.pressed('shoot')) {
+			ig.music.play('energy-warrior');
 			ig.system.setGame(MyGame);
 			return;
 		}
