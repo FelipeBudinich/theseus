@@ -2,6 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 
+import { createMusicAtlasPlugin } from './music-atlas-plugin.mjs';
 import { createSfxAtlasPlugin } from './sfx-atlas-plugin.mjs';
 import { createTextureAtlasPlugin } from './texture-atlas-plugin.mjs';
 
@@ -29,6 +30,13 @@ export default defineConfig({
       sourceDir: 'media/sounds',
       atlasName: 'sfx-atlas',
       outputDir: 'sfx-atlas',
+      injectManifestIntoHtml: false,
+      prependManifestToJavaScript: true
+    }),
+    createMusicAtlasPlugin({
+      sourceDir: 'media/music',
+      atlasName: 'music-atlas',
+      outputDir: 'music-atlas',
       injectManifestIntoHtml: false,
       prependManifestToJavaScript: true
     }),

@@ -33,6 +33,7 @@ const installBrowserLikeGlobals = () => {
 installBrowserLikeGlobals();
 
 const createdSources = [];
+const createdAudios = [];
 const requests = [];
 
 class MockAudio {
@@ -41,14 +42,22 @@ class MockAudio {
     this.paused = true;
     this.ended = false;
     this.currentTime = 0;
+    this.loop = false;
+    this.volume = 1;
+    this.preload = '';
+    this.readyState = 1;
+    this.loadCalls = 0;
     this.eventListeners = {};
+    createdAudios.push(this);
   }
 
   canPlayType(mime) {
     return mime.includes('ogg') ? 'probably' : '';
   }
 
-  load() {}
+  load() {
+    this.loadCalls++;
+  }
 
   addEventListener(eventName, callback) {
     this.eventListeners[eventName] = callback;
@@ -135,6 +144,7 @@ const ig = globalThis.window.ig;
 const resetSoundEnvironment = () => {
   requests.length = 0;
   createdSources.length = 0;
+  createdAudios.length = 0;
   ig.prefix = '';
   ig.nocache = '';
   ig.ua.mobile = false;
@@ -143,10 +153,14 @@ const resetSoundEnvironment = () => {
       addEventListener() {},
       removeEventListener() {},
     },
+    stopRunLoop() {
+      throw new Error('stopRunLoop should not be called during this test');
+    },
   };
   ig.Sound.enabled = true;
   ig.Sound.useWebAudio = true;
   delete globalThis.__THESEUS_SFX_ATLAS_MANIFEST__;
+  delete globalThis.__THESEUS_MUSIC_ATLAS_MANIFEST__;
 };
 
 const createManifest = () => ({
@@ -184,6 +198,41 @@ const createManifest = () => ({
   },
 });
 
+const createMusicManifest = () => ({
+  version: 1,
+  sampleRate: 44100,
+  channels: 2,
+  padding: 1,
+  atlases: [
+    {
+      formats: {
+        ogg: '/dist/music-atlas/music-atlas.ogg',
+      },
+      duration: 125,
+    },
+  ],
+  tracks: {
+    'media/music/energy-warrior.*': {
+      atlas: 0,
+      start: 1,
+      duration: 122.5,
+      source: 'media/music/energy-warrior.ogg',
+    },
+    'media/music/energy-warrior.ogg': {
+      atlas: 0,
+      start: 1,
+      duration: 122.5,
+      source: 'media/music/energy-warrior.ogg',
+    },
+    'media/music/energy-warrior.mp3': {
+      atlas: 0,
+      start: 1,
+      duration: 122.5,
+      source: 'media/music/energy-warrior.ogg',
+    },
+  },
+});
+
 test('SoundManager resolves exact and wildcard SFX atlas manifest paths', () => {
   resetSoundEnvironment();
   globalThis.__THESEUS_SFX_ATLAS_MANIFEST__ = createManifest();
@@ -216,6 +265,122 @@ test('SoundManager uses SFX atlas only for multichannel WebAudio sounds', () => 
   assert.equal(musicSource instanceof MockAudio, true);
   assert.equal(musicSource.src, 'media/sounds/coin.ogg?cache=1');
   assert.equal(requests.length, 1);
+});
+
+test('SoundManager resolves exact and wildcard music atlas manifest paths', () => {
+  resetSoundEnvironment();
+  globalThis.__THESEUS_MUSIC_ATLAS_MANIFEST__ = createMusicManifest();
+  const manager = new ig.SoundManager();
+
+  assert.equal(
+    manager.getMusicAtlasEntry('media\\music\\energy-warrior.ogg').source,
+    'media/music/energy-warrior.ogg',
+  );
+  assert.equal(
+    manager.getMusicAtlasEntry('media/music/energy-warrior.mp3').source,
+    'media/music/energy-warrior.ogg',
+  );
+  assert.equal(manager.getMusicAtlasEntry('media/music/missing.*'), null);
+});
+
+test('SoundManager uses music atlas only for non-multichannel HTML5 music', () => {
+  resetSoundEnvironment();
+  globalThis.__THESEUS_MUSIC_ATLAS_MANIFEST__ = createMusicManifest();
+  ig.nocache = '?cache=1';
+  const manager = new ig.SoundManager();
+  ig.soundManager = manager;
+
+  const musicSource = manager.load('media/music/energy-warrior.*', false);
+  assert.equal(musicSource instanceof ig.Sound.MusicAtlasHTML5Source, true);
+  assert.equal(musicSource instanceof ig.Sound.WebAudioSource, false);
+  assert.equal(musicSource.audio.src, '/dist/music-atlas/music-atlas.ogg?cache=1');
+  assert.equal(requests.length, 0);
+
+  resetSoundEnvironment();
+  globalThis.__THESEUS_MUSIC_ATLAS_MANIFEST__ = createMusicManifest();
+  ig.nocache = '?cache=1';
+  const multichannelManager = new ig.SoundManager();
+  ig.soundManager = multichannelManager;
+  const webAudioSource = multichannelManager.load('media/music/energy-warrior.ogg', true);
+  assert.equal(webAudioSource instanceof ig.Sound.WebAudioSource, true);
+  assert.equal(webAudioSource instanceof ig.Sound.MusicAtlasHTML5Source, false);
+  assert.equal(requests[0].url, 'media/music/energy-warrior.ogg?cache=1');
+});
+
+test('SoundManager falls back to individual music files when atlas lacks the browser format', () => {
+  resetSoundEnvironment();
+  globalThis.__THESEUS_MUSIC_ATLAS_MANIFEST__ = {
+    ...createMusicManifest(),
+    atlases: [
+      {
+        formats: {
+          mp3: '/dist/music-atlas/music-atlas.mp3',
+        },
+        duration: 125,
+      },
+    ],
+  };
+  ig.nocache = '?cache=1';
+  const manager = new ig.SoundManager();
+  ig.soundManager = manager;
+
+  const musicSource = manager.load('media/music/energy-warrior.*', false);
+  assert.equal(musicSource instanceof MockAudio, true);
+  assert.equal(musicSource.src, 'media/music/energy-warrior.ogg?cache=1');
+});
+
+test('ig.Music.add accepts music atlas HTML5 sources without WebAudio music errors', () => {
+  resetSoundEnvironment();
+  globalThis.__THESEUS_MUSIC_ATLAS_MANIFEST__ = createMusicManifest();
+  const manager = new ig.SoundManager();
+  ig.soundManager = manager;
+
+  const music = new ig.Music();
+  music.loop = true;
+  music.volume = 0.5;
+
+  assert.doesNotThrow(() => {
+    music.add('media/music/energy-warrior.*', 'theme');
+  });
+  assert.equal(music.namedTracks.theme instanceof ig.Sound.MusicAtlasHTML5Source, true);
+  assert.equal(music.namedTracks.theme.loop, true);
+  assert.equal(music.namedTracks.theme.volume, 0.5);
+});
+
+test('MusicAtlasHTML5Source exposes relative time and segment-only ended and loop behavior', () => {
+  resetSoundEnvironment();
+  const manager = new ig.SoundManager();
+  ig.soundManager = manager;
+
+  const source = new ig.Sound.MusicAtlasHTML5Source('/dist/music-atlas/music-atlas.ogg', 10, 5);
+  const endedEvents = [];
+  source.addEventListener('ended', (ev) => {
+    endedEvents.push(ev);
+  });
+
+  source.audio.currentTime = 12;
+  assert.equal(source.currentTime, 2);
+  source.currentTime = 99;
+  assert.equal(source.audio.currentTime, 15);
+
+  source.audio.currentTime = 15;
+  source.audio.paused = false;
+  source._checkBoundary();
+  assert.equal(source.audio.paused, true);
+  assert.equal(source.audio.currentTime, 10);
+  assert.equal(source.ended, true);
+  assert.equal(endedEvents.length, 1);
+  assert.equal(endedEvents[0].target, source);
+
+  const looped = new ig.Sound.MusicAtlasHTML5Source('/dist/music-atlas/music-atlas.ogg', 20, 3);
+  looped.loop = true;
+  looped.audio.currentTime = 23;
+  looped.audio.paused = false;
+  looped._checkBoundary();
+  assert.equal(looped.audio.currentTime, 20);
+  assert.equal(looped.audio.paused, false);
+  assert.equal(looped.ended, false);
+  looped._clearBoundaryCheck();
 });
 
 test('SFX atlas buffer loading shares one XHR and decode across sounds in the same atlas', () => {

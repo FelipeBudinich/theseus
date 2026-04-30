@@ -42,6 +42,34 @@ const getSfxAtlasDefinition = function( atlasIndex ) {
 	return manifest.atlases[atlasIndex];
 };
 
+const getMusicAtlasManifest = function() {
+	return globalScope.__THESEUS_MUSIC_ATLAS_MANIFEST__ || null;
+};
+
+const getMusicAtlasEntry = function( path ) {
+	var manifest = getMusicAtlasManifest();
+	if( !manifest || !manifest.tracks ) {
+		return null;
+	}
+
+	var normalizedPath = normalizePath( path );
+	var entry = manifest.tracks[normalizedPath];
+	if( entry ) {
+		return entry;
+	}
+
+	return manifest.tracks[normalizedPath.replace(/\.[^/.]*$/, '.*')] || null;
+};
+
+const getMusicAtlasDefinition = function( atlasIndex ) {
+	var manifest = getMusicAtlasManifest();
+	if( !manifest || !manifest.atlases || !manifest.atlases[atlasIndex] ) {
+		return null;
+	}
+
+	return manifest.atlases[atlasIndex];
+};
+
 ig.SoundManager = ig.Class.extend({
 	clips: {},
 	sfxAtlasCache: {},
@@ -105,12 +133,23 @@ ig.SoundManager = ig.Class.extend({
 			return this.loadWebAudio( path, multiChannel, loadCallback );
 		}
 
+		if( !multiChannel ) {
+			var musicAtlasEntry = this.getMusicAtlasEntry( path );
+			if( musicAtlasEntry ) {
+				return this.loadMusicAtlasHTML5( path, musicAtlasEntry, loadCallback );
+			}
+		}
+
 		// Oldschool HTML5 Audio - always used for Music
 		return this.loadHTML5Audio( path, multiChannel, loadCallback );
 	},
 
 	getSfxAtlasEntry: function( path ) {
 		return getSfxAtlasEntry( path );
+	},
+
+	getMusicAtlasEntry: function( path ) {
+		return getMusicAtlasEntry( path );
 	},
 
 	loadWebAudio: function( path, multiChannel, loadCallback ) {
@@ -269,6 +308,51 @@ ig.SoundManager = ig.Class.extend({
 		request.onerror = fail;
 		request.send();
 	},
+
+	loadMusicAtlasHTML5: function( path, atlasEntry, loadCallback ) {
+		if( this.clips[path] ) {
+			return this.clips[path];
+		}
+
+		var atlasDefinition = getMusicAtlasDefinition( atlasEntry.atlas );
+		var atlasPath = atlasDefinition && atlasDefinition.formats && this.format
+			? atlasDefinition.formats[this.format.ext]
+			: null;
+
+		if( !atlasPath ) {
+			return this.loadHTML5Audio( path, false, loadCallback );
+		}
+
+		var audioSource = new ig.Sound.MusicAtlasHTML5Source(
+			appendCacheSuffix( atlasPath ),
+			atlasEntry.start || 0,
+			atlasEntry.duration || 0
+		);
+
+		if( loadCallback ) {
+			if( ig.ua.mobile ) {
+				setTimeout(function(){
+					loadCallback( path, true, null );
+				}, 0);
+			}
+			else {
+				audioSource.addEventListener( 'canplaythrough', function cb(ev){
+					audioSource.removeEventListener('canplaythrough', cb, false);
+					loadCallback( path, true, ev );
+				}, false );
+
+				audioSource.addEventListener( 'error', function(ev){
+					loadCallback( path, false, ev );
+				}, false);
+			}
+		}
+
+		audioSource.preload = 'auto';
+		audioSource.load();
+
+		this.clips[path] = audioSource;
+		return audioSource;
+	},
 	
 	loadHTML5Audio: function( path, multiChannel, loadCallback ) {
 		
@@ -279,6 +363,10 @@ ig.SoundManager = ig.Class.extend({
 		if( this.clips[path] ) {
 			// Loaded as WebAudio, but now requested as HTML5 Audio? Probably Music?
 			if( this.clips[path] instanceof ig.Sound.WebAudioSource ) {
+				return this.clips[path];
+			}
+
+			if( this.clips[path] instanceof ig.Sound.MusicAtlasHTML5Source ) {
 				return this.clips[path];
 			}
 			
@@ -344,6 +432,10 @@ ig.SoundManager = ig.Class.extend({
 			return channels;
 		}
 
+		if( channels && channels instanceof ig.Sound.MusicAtlasHTML5Source ) {
+			return channels;
+		}
+
 		// Oldschool HTML5 Audio - find a channel that's not currently 
 		// playing or, if all are playing, rewind one
 		for( var i = 0, clip; clip = channels[i++]; ) {
@@ -361,8 +453,6 @@ ig.SoundManager = ig.Class.extend({
 		return channels[0];
 	}
 });
-
-
 
 ig.Music = ig.Class.extend({
 	tracks: [],
@@ -599,6 +689,255 @@ ig.Sound = ig.Class.extend({
 		if( this.currentClip ) {
 			this.currentClip.pause();
 			this.currentClip.currentTime = 0;
+		}
+	}
+});
+
+// Music-atlas uses one streaming HTML5 Audio element and seeks inside the atlas.
+// This reduces baked request count, but segment boundaries are not sample accurate;
+// exact seamless loops should keep individual files or use a future optional
+// WebAudio music mode.
+ig.Sound.MusicAtlasHTML5Source = ig.Class.extend({
+	audio: null,
+	offset: 0,
+	duration: 0,
+	end: 0,
+	_loop: false,
+	_volume: 1,
+	_ended: false,
+	_listeners: null,
+	_boundaryTimer: null,
+	_pendingSeek: null,
+	_pendingPlay: false,
+
+	init: function( atlasUrl, offset, duration ) {
+		this.audio = new Audio( atlasUrl );
+		this.offset = offset || 0;
+		this.duration = duration || 0;
+		this.end = this.offset + this.duration;
+		this._listeners = {};
+		this.audio.loop = false;
+
+		Object.defineProperty(this, 'currentTime', {
+			get: this.getCurrentTime.bind(this),
+			set: this.setCurrentTime.bind(this)
+		});
+
+		Object.defineProperty(this, 'loop', {
+			get: this.getLooping.bind(this),
+			set: this.setLooping.bind(this)
+		});
+
+		Object.defineProperty(this, 'volume', {
+			get: this.getVolume.bind(this),
+			set: this.setVolume.bind(this)
+		});
+
+		Object.defineProperty(this, 'paused', {
+			get: function(){ return this.audio.paused; }.bind(this)
+		});
+
+		Object.defineProperty(this, 'ended', {
+			get: function(){ return this._ended; }.bind(this)
+		});
+
+		Object.defineProperty(this, 'preload', {
+			get: function(){ return this.audio.preload; }.bind(this),
+			set: function(value){ this.audio.preload = value; }.bind(this)
+		});
+
+		this.audio.addEventListener('loadedmetadata', this._handleLoadedMetadata.bind(this), false);
+		this.audio.addEventListener('timeupdate', this._checkBoundary.bind(this), false);
+		this.audio.addEventListener('ended', this._handleUnderlyingEnded.bind(this), false);
+	},
+
+	load: function() {
+		this.audio.load();
+	},
+
+	play: function() {
+		this._ended = false;
+
+		if( !this._isInsideSegment() || this.audio.currentTime >= this.end - 0.025 ) {
+			this._seekToAtlasTime( this.offset );
+		}
+
+		if( this.audio.readyState < 1 ) {
+			this._pendingPlay = true;
+			this.audio.load();
+			return;
+		}
+
+		var result = this.audio.play();
+		this._scheduleBoundaryCheck();
+		return result;
+	},
+
+	pause: function() {
+		this.audio.pause();
+		this._clearBoundaryCheck();
+	},
+
+	getCurrentTime: function() {
+		return this._clampRelativeTime( this.audio.currentTime - this.offset );
+	},
+
+	setCurrentTime: function( value ) {
+		this._ended = false;
+		this._seekToRelativeTime( value );
+	},
+
+	getLooping: function() {
+		return this._loop;
+	},
+
+	setLooping: function( value ) {
+		this._loop = !!value;
+		this.audio.loop = false;
+	},
+
+	getVolume: function() {
+		return this.audio.volume;
+	},
+
+	setVolume: function( value ) {
+		if( value && value.limit ) {
+			this.audio.volume = value.limit(0, 1);
+			return;
+		}
+
+		var volume = Number(value);
+		this.audio.volume = isNaN(volume) ? 0 : Math.max(0, Math.min(1, volume));
+	},
+
+	addEventListener: function( type, listener, options ) {
+		if( type === 'ended' ) {
+			this._listeners[type] = this._listeners[type] || [];
+			this._listeners[type].push( listener );
+			return;
+		}
+
+		this.audio.addEventListener( type, listener, options || false );
+	},
+
+	removeEventListener: function( type, listener, options ) {
+		if( type === 'ended' && this._listeners[type] ) {
+			if( this._listeners[type].erase ) {
+				this._listeners[type].erase(listener);
+			}
+			else {
+				this._listeners[type] = this._listeners[type].filter(function(fn){
+					return fn !== listener;
+				});
+			}
+			return;
+		}
+
+		this.audio.removeEventListener( type, listener, options || false );
+	},
+
+	_clampRelativeTime: function( value ) {
+		value = Number(value) || 0;
+		return Math.max(0, Math.min(this.duration, value));
+	},
+
+	_isInsideSegment: function() {
+		return this.audio.currentTime >= this.offset && this.audio.currentTime < this.end;
+	},
+
+	_seekToRelativeTime: function( value ) {
+		this._seekToAtlasTime( this.offset + this._clampRelativeTime(value) );
+	},
+
+	_seekToAtlasTime: function( value ) {
+		this._pendingSeek = value;
+
+		try {
+			this.audio.currentTime = value;
+			this._pendingSeek = null;
+		}
+		catch( err ) {
+			// Some browsers require metadata before seeking.
+		}
+	},
+
+	_handleLoadedMetadata: function() {
+		if( this._pendingSeek !== null ) {
+			var pendingSeek = this._pendingSeek;
+			this._pendingSeek = null;
+			this._seekToAtlasTime( pendingSeek );
+		}
+
+		if( this._pendingPlay ) {
+			this._pendingPlay = false;
+			this.play();
+		}
+	},
+
+	_scheduleBoundaryCheck: function() {
+		this._clearBoundaryCheck();
+
+		if( this.audio.paused ) {
+			return;
+		}
+
+		var remaining = Math.max(0, this.end - this.audio.currentTime);
+		var delay = Math.max(0, (remaining * 1000) - 25);
+
+		this._boundaryTimer = setTimeout(this._checkBoundary.bind(this), delay);
+	},
+
+	_clearBoundaryCheck: function() {
+		if( this._boundaryTimer !== null ) {
+			clearTimeout( this._boundaryTimer );
+			this._boundaryTimer = null;
+		}
+	},
+
+	_checkBoundary: function() {
+		if( this.audio.paused ) {
+			return;
+		}
+
+		if( this.audio.currentTime < this.end - 0.025 ) {
+			this._scheduleBoundaryCheck();
+			return;
+		}
+
+		if( this._loop ) {
+			this._seekToAtlasTime( this.offset );
+			this.audio.play();
+			this._scheduleBoundaryCheck();
+			return;
+		}
+
+		this.audio.pause();
+		this._seekToAtlasTime( this.offset );
+		this._ended = true;
+		this._clearBoundaryCheck();
+		this._dispatchEvent( 'ended' );
+	},
+
+	_handleUnderlyingEnded: function() {
+		if( this._loop ) {
+			this._seekToAtlasTime( this.offset );
+			this.audio.play();
+			this._scheduleBoundaryCheck();
+			return;
+		}
+
+		this._seekToAtlasTime( this.offset );
+		this._ended = true;
+		this._clearBoundaryCheck();
+		this._dispatchEvent( 'ended' );
+	},
+
+	_dispatchEvent: function( type ) {
+		var listeners = (this._listeners[type] || []).slice(0);
+		var event = { type: type, target: this, currentTarget: this };
+
+		for( var i = 0; i < listeners.length; i++ ) {
+			listeners[i].call( this, event );
 		}
 	}
 });

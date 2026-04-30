@@ -62,16 +62,18 @@ const runBake = async () =>
 const ffmpegPath = await findFfmpeg();
 
 test('npm run bake builds the game into public/dist with /dist asset URLs', {
-  skip: ffmpegPath ? false : 'ffmpeg not found on PATH; skipping baked build test that packs SFX audio'
+  skip: ffmpegPath ? false : 'ffmpeg not found on PATH; skipping baked build test that packs audio atlases'
 }, async () => {
   await runBake();
 
   const distIndexPath = path.resolve('public/dist/index.html');
   const distAssetsPath = path.resolve('public/dist/assets');
   const sfxAtlasPath = path.resolve('public/dist/sfx-atlas');
+  const musicAtlasPath = path.resolve('public/dist/music-atlas');
   const builtHtml = await fs.readFile(distIndexPath, 'utf8');
   const assetEntries = await fs.readdir(distAssetsPath);
   const sfxAtlasEntries = await fs.readdir(sfxAtlasPath);
+  const musicAtlasEntries = await fs.readdir(musicAtlasPath);
   const builtAssetSources = await Promise.all(
     assetEntries
       .filter((fileName) => fileName.endsWith('.js'))
@@ -95,9 +97,25 @@ test('npm run bake builds the game into public/dist with /dist asset URLs', {
     sfxAtlasEntries.includes('sfx-atlas.mp3'),
     'expected public/dist/sfx-atlas/sfx-atlas.mp3 to be emitted'
   );
+  assert.ok(
+    musicAtlasEntries.includes('music-atlas.ogg'),
+    'expected public/dist/music-atlas/music-atlas.ogg to be emitted'
+  );
+  assert.ok(
+    musicAtlasEntries.includes('music-atlas.mp3'),
+    'expected public/dist/music-atlas/music-atlas.mp3 to be emitted'
+  );
+  assert.match(
+    builtJavaScript,
+    /globalThis\.__THESEUS_TEXTURE_ATLAS_MANIFEST__/
+  );
   assert.match(
     builtJavaScript,
     /globalThis\.__THESEUS_SFX_ATLAS_MANIFEST__/
+  );
+  assert.match(
+    builtJavaScript,
+    /globalThis\.__THESEUS_MUSIC_ATLAS_MANIFEST__/
   );
   assert.equal(
     assetEntries.some((fileName) => /debug/i.test(fileName)),
