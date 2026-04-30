@@ -1,11 +1,56 @@
 import ig from './ig.js';
 
+const globalScope = typeof window !== 'undefined' ? window : globalThis;
+
+const normalizePath = function( path ) {
+	return (path || '').replace(/^\.\//, '').replace(/\\/g, '/');
+};
+
+const appendCacheSuffix = function( url ) {
+	if( !ig.nocache ) {
+		return url;
+	}
+
+	return url + (url.indexOf('?') === -1 ? ig.nocache : '&' + ig.nocache.slice(1));
+};
+
+const getSfxAtlasManifest = function() {
+	return globalScope.__THESEUS_SFX_ATLAS_MANIFEST__ || null;
+};
+
+const getSfxAtlasEntry = function( path ) {
+	var manifest = getSfxAtlasManifest();
+	if( !manifest || !manifest.sounds ) {
+		return null;
+	}
+
+	var normalizedPath = normalizePath( path );
+	var entry = manifest.sounds[normalizedPath];
+	if( entry ) {
+		return entry;
+	}
+
+	return manifest.sounds[normalizedPath.replace(/\.[^/.]*$/, '.*')] || null;
+};
+
+const getSfxAtlasDefinition = function( atlasIndex ) {
+	var manifest = getSfxAtlasManifest();
+	if( !manifest || !manifest.atlases || !manifest.atlases[atlasIndex] ) {
+		return null;
+	}
+
+	return manifest.atlases[atlasIndex];
+};
+
 ig.SoundManager = ig.Class.extend({
 	clips: {},
+	sfxAtlasCache: {},
 	volume: 1,
 	format: null,
 	
 	init: function() {
+		this.sfxAtlasCache = {};
+
 		// Quick sanity check if the Browser supports the Audio tag
 		if( !ig.Sound.enabled || !window.Audio ) {
 			ig.Sound.enabled = false;
@@ -52,12 +97,20 @@ ig.SoundManager = ig.Class.extend({
 	load: function( path, multiChannel, loadCallback ) {
 		if( multiChannel && ig.Sound.useWebAudio ) {
 			// Requested as Multichannel and we're using WebAudio?
+			var sfxAtlasEntry = this.getSfxAtlasEntry( path );
+			if( sfxAtlasEntry ) {
+				return this.loadSfxAtlasWebAudio( path, sfxAtlasEntry, loadCallback );
+			}
+
 			return this.loadWebAudio( path, multiChannel, loadCallback );
 		}
-		else {
-			// Oldschool HTML5 Audio - always used for Music
-			return this.loadHTML5Audio( path, multiChannel, loadCallback );
-		}
+
+		// Oldschool HTML5 Audio - always used for Music
+		return this.loadHTML5Audio( path, multiChannel, loadCallback );
+	},
+
+	getSfxAtlasEntry: function( path ) {
+		return getSfxAtlasEntry( path );
 	},
 
 	loadWebAudio: function( path, multiChannel, loadCallback ) {
@@ -100,6 +153,121 @@ ig.SoundManager = ig.Class.extend({
 		request.send();
 
 		return audioSource;
+	},
+
+	loadSfxAtlasWebAudio: function( path, atlasEntry, loadCallback ) {
+		if( this.clips[path] ) {
+			return this.clips[path];
+		}
+
+		var atlasDefinition = getSfxAtlasDefinition( atlasEntry.atlas );
+		var atlasPath = atlasDefinition && atlasDefinition.formats && this.format
+			? atlasDefinition.formats[this.format.ext]
+			: null;
+
+		if( !atlasPath ) {
+			return this.loadWebAudio( path, true, loadCallback );
+		}
+
+		var audioSource = new ig.Sound.AtlasWebAudioSource(
+			null,
+			atlasEntry.start || 0,
+			atlasEntry.duration || 0
+		);
+		this.clips[path] = audioSource;
+
+		this.loadSfxAtlasBuffer( atlasEntry.atlas, function( status, buffer, ev ) {
+			if( status ) {
+				audioSource.buffer = buffer;
+			}
+
+			if( loadCallback ) {
+				loadCallback( path, status, ev );
+			}
+		});
+
+		return audioSource;
+	},
+
+	loadSfxAtlasBuffer: function( atlasIndex, callback ) {
+		var atlasDefinition = getSfxAtlasDefinition( atlasIndex );
+		var extension = this.format && this.format.ext;
+		var atlasUrl = atlasDefinition && atlasDefinition.formats && extension
+			? atlasDefinition.formats[extension]
+			: null;
+
+		if( !atlasUrl ) {
+			callback( false, null, null );
+			return;
+		}
+
+		var cacheKey = atlasIndex + ':' + extension;
+		var cacheRecord = this.sfxAtlasCache[cacheKey];
+		if( !cacheRecord ) {
+			cacheRecord = this.sfxAtlasCache[cacheKey] = {
+				loading: false,
+				loaded: false,
+				failed: false,
+				buffer: null,
+				callbacks: []
+			};
+		}
+
+		if( cacheRecord.loaded ) {
+			callback( true, cacheRecord.buffer, null );
+			return;
+		}
+
+		if( cacheRecord.failed ) {
+			callback( false, null, null );
+			return;
+		}
+
+		cacheRecord.callbacks.push( callback );
+		if( cacheRecord.loading ) {
+			return;
+		}
+
+		cacheRecord.loading = true;
+
+		var request = new XMLHttpRequest();
+		request.open( 'GET', appendCacheSuffix( atlasUrl ), true );
+		request.responseType = 'arraybuffer';
+
+		var that = this;
+		var notifyCallbacks = function( status, buffer, ev ) {
+			var callbacks = cacheRecord.callbacks.slice(0);
+			cacheRecord.callbacks.length = 0;
+
+			for( var i = 0; i < callbacks.length; i++ ) {
+				callbacks[i]( status, buffer, ev );
+			}
+		};
+		var fail = function( ev ) {
+			cacheRecord.loading = false;
+			cacheRecord.failed = true;
+			notifyCallbacks( false, null, ev );
+		};
+
+		request.onload = function( ev ) {
+			try {
+				that.audioContext.decodeAudioData(
+					request.response,
+					function( buffer ) {
+						cacheRecord.loading = false;
+						cacheRecord.loaded = true;
+						cacheRecord.buffer = buffer;
+						notifyCallbacks( true, buffer, ev );
+					},
+					fail
+				);
+			}
+			catch( err ) {
+				fail( err );
+			}
+		};
+		request.onerror = fail;
+		request.send();
 	},
 	
 	loadHTML5Audio: function( path, multiChannel, loadCallback ) {
@@ -443,6 +611,7 @@ ig.Sound.WebAudioSource = ig.Class.extend({
 	_loop: false,
 
 	init: function() {
+		this.sources = [];
 		this.gain = ig.soundManager.audioContext.createGain();
 		this.gain.connect(ig.soundManager.audioContext.destination);
 
@@ -499,6 +668,45 @@ ig.Sound.WebAudioSource = ig.Class.extend({
 
 	setVolume: function( volume ) {
 		this.gain.gain.value = volume;
+	}
+});
+
+ig.Sound.AtlasWebAudioSource = ig.Sound.WebAudioSource.extend({
+	offset: 0,
+	duration: 0,
+
+	init: function( buffer, offset, duration ) {
+		this.parent();
+		this.sources = [];
+		this.buffer = buffer || null;
+		this.offset = offset || 0;
+		this.duration = duration || 0;
+	},
+
+	play: function() {
+		if( !this.buffer ) { return; }
+		var source = ig.soundManager.audioContext.createBufferSource();
+		source.buffer = this.buffer;
+		source.connect(this.gain);
+		source.loop = this._loop;
+
+		if( this._loop ) {
+			source.loopStart = this.offset;
+			source.loopEnd = this.offset + this.duration;
+		}
+
+		// Add this new source to our sources array and remove it again
+		// later when it has finished playing.
+		var that = this;
+		this.sources.push(source);
+		source.onended = function(){ that.sources.erase(source); };
+
+		if( this._loop ) {
+			source.start(0, this.offset);
+		}
+		else {
+			source.start(0, this.offset, this.duration);
+		}
 	}
 });
 

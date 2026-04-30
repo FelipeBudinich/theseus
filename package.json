@@ -5,9 +5,9 @@
   "scripts": {
     "start": "node server.mjs",
     "dev": "node --watch server.mjs",
-    "bake": "vite build --config tools/bake/vite.config.mjs",
+    "bake": "node tools/bake/with-ffmpeg-static-path.mjs vite build --config tools/bake/vite.config.mjs",
     "build:weltmeister-entity-manifest": "node tools/weltmeister/build-weltmeister-entity-manifest.mjs",
-    "test": "node --test test/*.test.mjs",
+    "test": "node tools/bake/with-ffmpeg-static-path.mjs node --test test/*.test.mjs",
     "test:esm-engine": "node --test test/esm-engine-runtime.test.mjs",
     "test:weltmeister-api": "node --test test/weltmeister-api.test.mjs",
     "test:weltmeister-entity-manifest": "node --test test/weltmeister-entity-manifest.test.mjs"
@@ -18,6 +18,7 @@
     "marked": "^18.0.2"
   },
   "devDependencies": {
+    "ffmpeg-static": "^5.3.0",
     "free-tex-packer-core": "^0.3.5",
     "sharp": "^0.34.5",
     "vite": "^8.0.8"
