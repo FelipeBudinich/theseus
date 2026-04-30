@@ -1,47 +1,306 @@
-# Theseus
+# Theseus.js
 
-Theseus is an HTML5 game engine port of Impact.js that keeps the classic API and Weltmeister workflow running on a native ESM + Node/Express baseline.
+Theseus.js is an HTML5 game engine and toolchain for building 2D canvas games with native ES modules. It keeps the familiar Impact-style `ig` API at the center of the project while providing a modern source layout, a local Express server, a Vite bake pipeline, an ESM Weltmeister editor, runtime debug tooling, and asset helpers for texture, audio, and font workflows.
 
-More info & documentation about the original engine: http://impactjs.com/
+The repository includes a playable sample game, engine runtime modules, editor tooling, build tooling, documentation routes, and tests. It is designed so you can run the game directly from source during development, edit levels in the browser, then bake a production build into `public/dist/`.
 
-Impact was published under the [MIT Open Source License](http://opensource.org/licenses/mit-license.php).
+## Quick start
 
-## Getting started
+```sh
+npm install
+npm start
+```
 
-1. Run `npm install` to setup your local copy.
-2. Run `npm start` for the normal server, or `npm run dev` to restart on changes.
-3. Run `npm run bake` to build the sample game from `public/index.html` into `public/dist/`.
+Open the game at:
 
-The server listens on `http://127.0.0.1:3000` by default and is also reachable at `http://localhost:3000`.
-Set `PORT` to use a different port or `HOST` on `server.mjs` to change the bind address.
+```text
+http://127.0.0.1:3000/
+```
 
-## Useful URLs
+Use a different bind address or port with environment variables:
 
-- Sample game: `http://localhost:3000/`
-- Sample game with Impact debug panel: `http://localhost:3000/?debug` or `http://localhost:3000/?debug=true`
-- Latest baked game: `http://localhost:3000/dist.html`
-- Latest baked game with debug query ignored: `http://localhost:3000/dist.html?debug`
-- Weltmeister shell: `http://localhost:3000/tools/weltmeister.html` loads the editor shell from `tools/weltmeister/main.js`, which prepares entity metadata from the generated manifest before booting the editor.
-- Font atlas tool: `http://localhost:3000/tools/font-tool.html` generates `ig.Font`-compatible PNG atlases from local or fallback CSS fonts, validates the metric row, and saves the result into `media/`.
+```sh
+HOST=0.0.0.0 PORT=5173 npm start
+```
 
-## Changes in this port
+For development with automatic server restarts:
 
-- The live ESM runtime lives under `public/lib/`, but browser URLs remain `/lib/...` because `public/` is the server static root.
-- `public/index.html` loads the game entry directly from `lib/game/main.js`; `impact.js` waits for the URL-controlled debug decision before exposing the booted engine. The debug panel is enabled only by `?debug` or `?debug=true` in the source-served game; baked builds intentionally exclude the debug panel.
-- `ig.input.bind()` now uses string input codes instead of `ig.KEY` or `ig.GAMEPAD` constants. Keyboard bindings use `KeyboardEvent.code` values such as `ArrowLeft`, `KeyX`, and `Space`; mouse and wheel bindings use Theseus strings such as `MousePrimary`, `MouseSecondary`, `WheelUp`, and `WheelDown`.
-- Gamepad bindings are string-based logical controller slots. Use `Gamepad0Left`, `Gamepad0FaceBottom`, `Gamepad1Left`, etc.; generic gamepad names such as `GamepadLeft` are intentionally rejected.
-- `/dist.html` serves the latest Vite build from `public/dist/index.html` when present.
-- Weltmeister still edits `lib/game/levels/` by default, and the server resolves that to `public/lib/game/levels/` on disk. Saving to a `.js` path writes a native ESM level module, while saving to a `.json` path writes plain JSON.
+```sh
+npm run dev
+```
 
-Example input bindings:
+## Common commands
+
+| Command | What it does |
+| --- | --- |
+| `npm start` | Starts the local Express server with `server.mjs`. |
+| `npm run dev` | Starts the server through Node's watch mode. |
+| `npm run bake` | Builds the sample game with Vite and writes the baked output to `public/dist/`. |
+| `npm run build:weltmeister-entity-manifest` | Regenerates the Weltmeister entity manifest from game entity modules. |
+| `npm test` | Runs the repository's Node test suite. |
+| `npm run test:esm-engine` | Runs the focused ESM engine runtime tests. |
+| `npm run test:weltmeister-api` | Runs the focused Weltmeister API tests. |
+| `npm run test:weltmeister-entity-manifest` | Runs the focused entity manifest tests. |
+
+## Useful local URLs
+
+| URL | Purpose |
+| --- | --- |
+| `/` | Runs the source-served sample game from `public/index.html`. |
+| `/?debug` | Runs the source-served game with the Impact debug panel enabled. |
+| `/dist.html` | Runs the latest baked build from `public/dist/index.html` after `npm run bake`. |
+| `/tools/weltmeister.html` | Opens the Weltmeister level editor. |
+| `/tools/font-tool.html` | Opens the font atlas generator. |
+| `/docs.html` | Lists Markdown documentation from `public/docs/`. |
+| `/docs/<keyword>` | Renders a single Markdown doc by filename keyword. |
+| `/docs.json?fields=keyword,title,date,tags` | Returns docs metadata as JSON. |
+
+The server listens on `127.0.0.1:3000` by default. Browser-facing paths are rooted at `public/`, so a URL such as `/lib/game/main.js` maps to `public/lib/game/main.js` on disk.
+
+## Repository layout
+
+```text
+public/
+  index.html              Source-served game page
+  lib/
+    impact/               Engine runtime modules
+    game/                 Sample game, entities, and levels
+    plugins/              Runtime plugins such as camera, touch buttons, and gamepad input
+  media/                  Source images, fonts, sounds, and music
+  docs/                   Markdown docs served by the docs router
+  dist/                   Baked output generated by npm run bake
+
+tools/
+  bake/                   Vite config and atlas build plugins
+  docs-cms/               Markdown documentation renderer and JSON docs API
+  font-tool/              Browser UI for generating ig.Font-compatible PNG atlases
+  weltmeister/            ESM Weltmeister editor, level helpers, entity manifest, and browser assets
+  font-tool.html          Font tool shell served at /tools/font-tool.html
+  weltmeister.html        Weltmeister shell served at /tools/weltmeister.html
+
+test/                     Node tests and browser smoke-test pages
+server.mjs                Express app and local server entry point
+```
+
+## Runtime overview
+
+The engine runtime lives in `public/lib/impact/` and is imported as native ESM. The full engine entry point is `public/lib/impact/impact.js`; it loads the core runtime modules, waits for the URL-controlled debug decision, boots the shared `ig` object, and exposes `ig.main()`.
+
+A typical game entry imports the runtime and plugins, imports the entities and levels it uses, defines one or more `ig.Game` classes, then starts the game:
+
+```js
+import ig from '../impact/impact.js';
+
+import '../plugins/camera.js';
+import '../plugins/gamepad.js';
+
+import './entities/player.js';
+import { LevelGrasslands } from './levels/grasslands.js';
+
+const MyGame = ig.Game.extend({
+  gravity: 800,
+
+  init() {
+    this.loadLevel(LevelGrasslands);
+  },
+
+  update() {
+    this.parent();
+  },
+
+  draw() {
+    this.parent();
+  }
+});
+
+ig.main('#canvas', MyGame, 60, 640, 480, 1);
+```
+
+`ig.main()` creates the canvas system, input manager, sound manager, music manager, and resource loader, then hands control to the selected game class.
+
+## Sample game
+
+The sample game in `public/lib/game/` is a side-scrolling jump-and-run. Its source entry is `public/lib/game/main.js`, loaded directly by `public/index.html` through a module script. It demonstrates:
+
+- `ig.Game` subclasses for title and gameplay screens.
+- Entity modules registered with `ig.registerClass(...)`.
+- ESM level modules imported from `public/lib/game/levels/`.
+- Keyboard, gamepad, and mobile touch-button input.
+- Camera following, collision maps, background layers, sprite animation, sound effects, music, and HUD drawing.
+- Responsive canvas resizing for desktop and mobile browser windows.
+
+## Input
+
+Theseus uses string input codes. Keyboard bindings use `KeyboardEvent.code` values, mouse and wheel bindings use Theseus-specific strings, and gamepad bindings use logical controller slots.
 
 ```js
 ig.input.bind('ArrowLeft', 'left');
+ig.input.bind('ArrowRight', 'right');
 ig.input.bind('KeyX', 'jump');
+ig.input.bind('KeyC', 'shoot');
+
 ig.input.bind('MousePrimary', 'shoot');
 ig.input.bind('WheelUp', 'zoomIn');
+ig.input.bind('WheelDown', 'zoomOut');
 
 ig.input.bind('Gamepad0Left', 'left');
+ig.input.bind('Gamepad0Right', 'right');
 ig.input.bind('Gamepad0FaceBottom', 'jump');
-ig.input.bind('Gamepad1Left', 'p2-left');
+ig.input.bind('Gamepad1FaceBottom', 'p2-jump');
 ```
+
+Use `ig.input.state(action)` for held actions, `ig.input.pressed(action)` for the first active frame, and `ig.input.released(action)` for release detection.
+
+The gamepad plugin maps browser gamepads into stable logical slots such as `Gamepad0` and `Gamepad1`. Standard-mapped controllers expose semantic names such as `FaceBottom`, `DpadLeft`, `LeftStickRight`, `LeftShoulder`, and `RightTrigger`, while raw button and axis names remain available for controller-specific handling.
+
+## Entities
+
+Entity modules are regular ES modules. Define the entity class on `ig`, register it by name, and export it when you want direct ESM imports as well as class-registry lookups.
+
+```js
+import ig from '../../impact/impact.js';
+
+const EntityGem = ig.Entity.extend({
+  size: { x: 16, y: 16 },
+  type: ig.Entity.TYPE.B,
+  checkAgainst: ig.Entity.TYPE.A,
+
+  check(other) {
+    other.giveCoins?.(1);
+    this.kill();
+  }
+});
+
+ig.EntityGem = EntityGem;
+ig.registerClass('EntityGem', EntityGem);
+
+export { EntityGem };
+export default EntityGem;
+```
+
+Weltmeister discovers available entity modules from `tools/weltmeister/entity-manifest.js`. Regenerate that manifest after adding, removing, or renaming entity files:
+
+```sh
+npm run build:weltmeister-entity-manifest
+```
+
+## Levels and Weltmeister
+
+Open the level editor at:
+
+```text
+http://127.0.0.1:3000/tools/weltmeister.html
+```
+
+Weltmeister loads through `tools/weltmeister/main.js`, prepares entity metadata from the generated manifest, and then boots the editor UI. The editor is configured to work with the game source tree:
+
+- Entity modules are discovered from `lib/game/entities/**/*.js`.
+- Levels are created under `lib/game/levels/`.
+- New levels default to native ESM `.js` level files.
+- Saving to a `.json` filename writes plain JSON instead.
+- Level JSON is pretty-printed by default.
+
+ESM level files store level data inside a module, register the level with the runtime registry, and export the level symbol and resource list. The editor's Node/Express API handles browsing files, saving `.js` and `.json` level files, and saving generated PNG images under `media/`.
+
+## Assets
+
+Source assets live under `public/media/` and are referenced with `media/...` paths from game code:
+
+```js
+const playerSheet = new ig.AnimationSheet('media/player.png', 75, 100);
+const jumpSound = new ig.Sound('media/sounds/jump.*');
+const font = new ig.Font('media/fredoka-one.font.png');
+```
+
+During source serving, images and audio are loaded from `/media/...`. During a baked build, Theseus can provide atlas manifests that let the runtime resolve the same `media/...` paths from generated assets in `/dist/assets/...`.
+
+The bake pipeline includes:
+
+- A texture atlas plugin that packs source images into WebP atlas pages and injects `__THESEUS_TEXTURE_ATLAS_MANIFEST__`.
+- An SFX atlas plugin that groups sound effects for WebAudio playback.
+- A music atlas plugin that groups music tracks for streaming HTML5 Audio playback.
+
+The runtime image and sound loaders understand these manifests, so game code can keep using the same `ig.Image`, `ig.AnimationSheet`, `ig.Sound`, and `ig.music.add(...)` calls in source and baked builds.
+
+## Font atlas tool
+
+Open the font tool at:
+
+```text
+http://127.0.0.1:3000/tools/font-tool.html
+```
+
+The font tool renders browser fonts into `ig.Font`-compatible PNG atlases. It supports preset character ranges, custom ranges, local font selection, manual CSS font families, fill color, spacing controls, alpha-threshold options, validation previews, and saving generated atlases into `public/media/`.
+
+A generated font can be used like any other Theseus font asset:
+
+```js
+const font = new ig.Font('media/my-font.font.png');
+font.firstChar = 32;
+```
+
+## Documentation routes
+
+Markdown files in `public/docs/` are served through the docs CMS router:
+
+- `/docs.html` lists active docs.
+- `/docs/<keyword>` renders a doc by filename keyword.
+- `/docs/tag/<tag>` lists docs with a tag.
+- `/docs.json` and `/json` expose docs metadata and selected fields as JSON.
+
+Docs can use a simple header block for metadata such as `title`, `date`, `tags`, and `active`. Code blocks are rendered with Highlight.js for supported languages.
+
+## Baking a production build
+
+Run:
+
+```sh
+npm run bake
+```
+
+The bake command uses Vite with `tools/bake/vite.config.mjs`, reads the game from `public/index.html`, and writes output to:
+
+```text
+public/dist/
+```
+
+After baking, open:
+
+```text
+http://127.0.0.1:3000/dist.html
+```
+
+The baked build uses `/dist/` as its public base path and emits generated JavaScript and atlas assets under `/dist/assets/`.
+
+## Debug panel
+
+The source-served game can load the Impact debug panel through the `debug` query parameter:
+
+```text
+http://127.0.0.1:3000/?debug
+http://127.0.0.1:3000/?debug=true
+```
+
+The debug entry is resolved before `ig.main()` runs, so the game starts with debug instrumentation already available. Use the source route for inspection and profiling, and use `/dist.html` for baked-build checks.
+
+## Tests
+
+Run the full test suite with:
+
+```sh
+npm test
+```
+
+The tests cover server routes, source and baked serving behavior, docs routing, ESM engine behavior, input bindings, gamepad behavior, Weltmeister helpers and API behavior, entity manifest generation, level serialization, font-tool helpers, and bake-time atlas behavior.
+
+Focused test commands are available for the ESM engine, Weltmeister API, and Weltmeister entity manifest:
+
+```sh
+npm run test:esm-engine
+npm run test:weltmeister-api
+npm run test:weltmeister-entity-manifest
+```
+
+## License
+
+Theseus.js is distributed under the MIT License. The repository includes the original Impact license notice, copyright 2018 Dominic Szablewski.
