@@ -7,7 +7,7 @@ game and Weltmeister workflow.
 
 - The live `public/lib/` tree contains the ESM runtime and is served at `/lib/`.
 - `/` serves the source sample game entry from `public/index.html`.
-- `public/index.html` loads `lib/game/main.js` directly; the engine imports the
+- `public/index.html` loads `games/example/main.js` directly; the engine imports the
   Impact debug panel before exposing `ig.main` only when the URL uses `?debug`
   or `?debug=true`.
 - `test/esm-engine-smoke.html` verifies the full `public/lib/impact/impact.js` engine
@@ -61,7 +61,7 @@ game and Weltmeister workflow.
 
 - Entity discovery on the ESM editor path comes from the generated manifest in
   `tools/weltmeister/entity-manifest.js`.
-- The manifest generator scans `public/lib/game/entities/**/*.js` and also writes a
+- The manifest generator scans `public/games/example/entities/**/*.js` and also writes a
   JSON mirror to `tools/weltmeister/entity-manifest.json`.
 - Regenerate the manifest after adding, removing, or renaming entity modules
   with `npm run build:weltmeister-entity-manifest`.
@@ -69,10 +69,10 @@ game and Weltmeister workflow.
   files.
 - Level saving supports both formats. Saving to a `.js` path writes a native ESM
   level module; saving to a `.json` path writes plain JSON.
-- New levels default to `lib/game/levels/*.js` in the editor because the current
-  editor config sets `project.levelPath` to `lib/game/levels/` and
+- New levels default to `games/example/levels/*.js` in the editor because the current
+  editor config sets `project.levelPath` to `games/example/levels/` and
   `project.outputFormat` to `esm`; the server resolves those paths under
-  `public/lib/game/levels/` on disk.
+  `public/games/example/levels/` on disk.
 - Current ESM level modules embed level JSON between `/*JSON[*/` markers,
   register themselves through `ig.Game.registerLevel(...)`, and export the level
   symbol plus its resource list.

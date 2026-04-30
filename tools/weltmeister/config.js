@@ -3,13 +3,13 @@ import wm from './wm.js';
 const config = (wm.config ??= {
   project: {
     // The prefix path of this project's ESM source tree.
-    modulePath: 'lib/',
+    modulePath: 'games/example/',
 
     // Legacy entity globbing is no longer used on the ESM editor path.
-    entityFiles: 'lib/game/entities/**/*.js',
+    entityFiles: 'games/example/entities/**/*.js',
 
     // Weltmeister now edits the native ESM level tree by default.
-    levelPath: 'lib/game/levels/',
+    levelPath: 'games/example/levels/',
 
     // New levels default to native ESM `.js` files. Saving to a `.json`
     // path writes plain JSON instead.

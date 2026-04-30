@@ -61,13 +61,13 @@ const writeProjectFile = async (projectRoot, relativePath, contents = '') => {
 test('buildEntityManifestArtifacts derives sorted entries and stable import metadata', async () => {
   const projectRoot = await makeTempProjectRoot();
 
-  await writeProjectFile(projectRoot, 'public/lib/game/entities/zapper.js');
-  await writeProjectFile(projectRoot, 'public/lib/game/entities/blob.js');
-  await writeProjectFile(projectRoot, 'public/lib/game/entities/subdir/shield-wall.js');
+  await writeProjectFile(projectRoot, 'public/games/example/entities/zapper.js');
+  await writeProjectFile(projectRoot, 'public/games/example/entities/blob.js');
+  await writeProjectFile(projectRoot, 'public/games/example/entities/subdir/shield-wall.js');
 
   const artifacts = await buildEntityManifestArtifacts({
     projectRoot,
-    sourceDirectories: ['public/lib/game/entities']
+    sourceDirectories: ['public/games/example/entities']
   });
 
   assert.deepEqual(
@@ -79,22 +79,22 @@ test('buildEntityManifestArtifacts derives sorted entries and stable import meta
     })),
     [
       {
-        key: 'game/entities/blob',
-        moduleId: 'game.entities.blob',
+        key: 'games/example/entities/blob',
+        moduleId: 'games.example.entities.blob',
         className: 'EntityBlob',
-        importPath: '../../lib/game/entities/blob.js'
+        importPath: '../../games/example/entities/blob.js'
       },
       {
-        key: 'game/entities/subdir/shield-wall',
-        moduleId: 'game.entities.subdir.shield-wall',
+        key: 'games/example/entities/subdir/shield-wall',
+        moduleId: 'games.example.entities.subdir.shield-wall',
         className: 'EntityShieldWall',
-        importPath: '../../lib/game/entities/subdir/shield-wall.js'
+        importPath: '../../games/example/entities/subdir/shield-wall.js'
       },
       {
-        key: 'game/entities/zapper',
-        moduleId: 'game.entities.zapper',
+        key: 'games/example/entities/zapper',
+        moduleId: 'games.example.entities.zapper',
         className: 'EntityZapper',
-        importPath: '../../lib/game/entities/zapper.js'
+        importPath: '../../games/example/entities/zapper.js'
       }
     ]
   );
@@ -103,12 +103,12 @@ test('buildEntityManifestArtifacts derives sorted entries and stable import meta
 test('writeEntityManifestArtifacts is reproducible and checkEntityManifestArtifacts detects drift', async () => {
   const projectRoot = await makeTempProjectRoot();
 
-  await writeProjectFile(projectRoot, 'public/lib/game/entities/blob.js');
-  await writeProjectFile(projectRoot, 'public/lib/game/entities/player.js');
+  await writeProjectFile(projectRoot, 'public/games/example/entities/blob.js');
+  await writeProjectFile(projectRoot, 'public/games/example/entities/player.js');
 
   const firstWrite = await writeEntityManifestArtifacts({
     projectRoot,
-    sourceDirectories: ['public/lib/game/entities']
+    sourceDirectories: ['public/games/example/entities']
   });
   const firstModuleSource = await fs.readFile(
     path.join(projectRoot, firstWrite.moduleOutputPath),
@@ -117,7 +117,7 @@ test('writeEntityManifestArtifacts is reproducible and checkEntityManifestArtifa
 
   await writeEntityManifestArtifacts({
     projectRoot,
-    sourceDirectories: ['public/lib/game/entities']
+    sourceDirectories: ['public/games/example/entities']
   });
   const secondModuleSource = await fs.readFile(
     path.join(projectRoot, firstWrite.moduleOutputPath),
@@ -128,14 +128,14 @@ test('writeEntityManifestArtifacts is reproducible and checkEntityManifestArtifa
 
   const inSync = await checkEntityManifestArtifacts({
     projectRoot,
-    sourceDirectories: ['public/lib/game/entities']
+    sourceDirectories: ['public/games/example/entities']
   });
   assert.equal(inSync.matches, true);
 
   await fs.writeFile(path.join(projectRoot, firstWrite.moduleOutputPath), '// stale\n', 'utf8');
   const stale = await checkEntityManifestArtifacts({
     projectRoot,
-    sourceDirectories: ['public/lib/game/entities']
+    sourceDirectories: ['public/games/example/entities']
   });
   assert.equal(stale.matches, false);
 });
@@ -161,6 +161,7 @@ test('ESM Weltmeister entity loader consumes the manifest and registers entity c
     )
   ]);
   await fs.symlink(path.resolve('public/lib'), path.join(moduleRoot, 'lib'), 'dir');
+  await fs.symlink(path.resolve('public/games'), path.join(moduleRoot, 'games'), 'dir');
 
   const moduleUrl = `${pathToFileURL(path.join(moduleRoot, 'tools/weltmeister/entities.js')).href}?test=${Date.now()}`;
   const {
@@ -170,12 +171,24 @@ test('ESM Weltmeister entity loader consumes the manifest and registers entity c
   } = await import(moduleUrl);
 
   assert.equal(entityManifest.length > 0, true);
-  assert.equal(entityManifest.some((entry) => entry.filePath === 'lib/game/entities/blob.js'), true);
+  assert.equal(
+    entityManifest.some((entry) => entry.filePath === 'games/example/entities/blob.js'),
+    true
+  );
 
   const prepared = await prepareWeltmeisterEntityState();
-  assert.equal(prepared.entityModules['game.entities.blob'], 'lib/game/entities/blob.js');
-  assert.equal(globalThis.wm.entityModules['game.entities.player'], 'lib/game/entities/player.js');
-  assert.equal(getLegacyEntityModuleMap()['game.entities.levelchange'], 'lib/game/entities/levelchange.js');
+  assert.equal(
+    prepared.entityModules['games.example.entities.blob'],
+    'games/example/entities/blob.js'
+  );
+  assert.equal(
+    globalThis.wm.entityModules['games.example.entities.player'],
+    'games/example/entities/player.js'
+  );
+  assert.equal(
+    getLegacyEntityModuleMap()['games.example.entities.levelchange'],
+    'games/example/entities/levelchange.js'
+  );
 
   const blobEntry = prepared.loadedEntries.find((entry) => entry.className === 'EntityBlob');
   assert.equal(typeof blobEntry?.entityClass, 'function');

@@ -1,9 +1,9 @@
-import ig from '../impact/impact.js';
+import ig from '../../lib/impact/impact.js';
 
-import '../plugins/camera.js';
-import '../plugins/touch-button.js';
-import '../plugins/impact-splash-loader.js';
-import '../plugins/gamepad.js';
+import '../../lib/plugins/camera.js';
+import '../../lib/plugins/touch-button.js';
+import '../../lib/plugins/impact-splash-loader.js';
+import '../../lib/plugins/gamepad.js';
 
 import './entities/fireball.js';
 import './entities/player.js';

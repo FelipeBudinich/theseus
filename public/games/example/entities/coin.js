@@ -1,4 +1,4 @@
-import ig from '../../impact/impact.js';
+import ig from '../../../lib/impact/impact.js';
 
 ig.EntityCoin = ig.Entity.extend({
 	size: {x: 36, y: 36},

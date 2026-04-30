@@ -29,17 +29,17 @@ test('saveFile writes .js files relative to the configured project root', async 
   const projectRoot = await makeTempProjectRoot();
   t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
 
-  await fs.mkdir(path.join(projectRoot, 'lib/game/levels'), { recursive: true });
+  await fs.mkdir(path.join(projectRoot, 'games/example/levels'), { recursive: true });
 
   const result = await saveFile({
     projectRoot,
-    filePath: 'lib/game/levels/test-level.js',
+    filePath: 'games/example/levels/test-level.js',
     data: 'export default 1;\n'
   });
 
   assert.deepEqual(result, { error: 0 });
   assert.equal(
-    await fs.readFile(path.join(projectRoot, 'lib/game/levels/test-level.js'), 'utf8'),
+    await fs.readFile(path.join(projectRoot, 'games/example/levels/test-level.js'), 'utf8'),
     'export default 1;\n'
   );
 });
@@ -48,18 +48,18 @@ test('saveFile writes .json files relative to the configured project root', asyn
   const projectRoot = await makeTempProjectRoot();
   t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
 
-  await fs.mkdir(path.join(projectRoot, 'lib/game/levels'), { recursive: true });
+  await fs.mkdir(path.join(projectRoot, 'games/example/levels'), { recursive: true });
 
   const data = '{\n  "entities": [],\n  "layer": []\n}\n';
   const result = await saveFile({
     projectRoot,
-    filePath: 'lib/game/levels/test-level.json',
+    filePath: 'games/example/levels/test-level.json',
     data
   });
 
   assert.deepEqual(result, { error: 0 });
   assert.equal(
-    await fs.readFile(path.join(projectRoot, 'lib/game/levels/test-level.json'), 'utf8'),
+    await fs.readFile(path.join(projectRoot, 'games/example/levels/test-level.json'), 'utf8'),
     data
   );
 });
@@ -69,20 +69,20 @@ test('saveFile strips traversal markers but keeps writes rooted inside the proje
   const sandboxRoot = path.dirname(projectRoot);
   t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
 
-  await fs.mkdir(path.join(projectRoot, 'lib/game/levels'), { recursive: true });
+  await fs.mkdir(path.join(projectRoot, 'games/example/levels'), { recursive: true });
 
   const result = await saveFile({
     projectRoot,
-    filePath: '../lib/game/levels/safe.js',
+    filePath: '../games/example/levels/safe.js',
     data: 'safe = true;\n'
   });
 
   assert.deepEqual(result, { error: 0 });
   assert.equal(
-    await fs.readFile(path.join(projectRoot, 'lib/game/levels/safe.js'), 'utf8'),
+    await fs.readFile(path.join(projectRoot, 'games/example/levels/safe.js'), 'utf8'),
     'safe = true;\n'
   );
-  await assert.rejects(fs.access(path.join(sandboxRoot, 'lib/game/levels/safe.js')));
+  await assert.rejects(fs.access(path.join(sandboxRoot, 'games/example/levels/safe.js')));
 });
 
 test('saveFile preserves the .js/.json level suffix constraint', async (t) => {
@@ -91,7 +91,7 @@ test('saveFile preserves the .js/.json level suffix constraint', async (t) => {
 
   const result = await saveFile({
     projectRoot,
-    filePath: 'lib/game/levels/not-allowed.txt',
+    filePath: 'games/example/levels/not-allowed.txt',
     data: '{}'
   });
 
@@ -127,7 +127,7 @@ test('saveImageFile rejects writes outside media', async (t) => {
 
   const result = await saveImageFile({
     projectRoot,
-    filePath: 'lib/game/generated.font.png',
+    filePath: 'games/example/generated.font.png',
     data: ONE_BY_ONE_PNG_DATA_URL
   });
 

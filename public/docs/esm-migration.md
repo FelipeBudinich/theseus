@@ -1,12 +1,12 @@
 # ESM Migration Note
 
 The native ESM migration is complete in the live repo layout: the game runtime
-lives under `public/lib/` and is served at `/lib/`, while browser-side editor tooling loads from
-`tools/weltmeister/`.
+lives under `public/lib/` and is served at `/lib/`, the sample game lives under
+`public/games/example/`, and browser-side editor tooling loads from `tools/weltmeister/`.
 
 ## Live Entrypoints
 
-- `public/index.html` loads the sample game directly from `lib/game/main.js`; `impact.js` waits for the URL-controlled debug decision before exposing `ig.main`.
+- `public/index.html` loads the sample game directly from `games/example/main.js`; `impact.js` waits for the URL-controlled debug decision before exposing `ig.main`.
 - `dist.html` is a server route that serves the latest Vite production build from `public/dist/index.html`.
 - `tools/weltmeister.html` loads the editor from `tools/weltmeister/main.js`.
 - `test/esm-engine-smoke.html` imports `public/lib/impact/impact.js` directly.
@@ -61,7 +61,7 @@ npm run build:weltmeister-entity-manifest
 This also refreshes `tools/weltmeister/entity-manifest.json`, which mirrors
 the manifest contents in a debug-friendly format.
 
-The generator scans `public/lib/game/entities/**/*.js` by default. The underlying CLI
+The generator scans `public/games/example/entities/**/*.js` by default. The underlying CLI
 also supports `--check` so CI or local scripts can detect drift without
 rewriting files.
 

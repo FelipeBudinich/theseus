@@ -1,63 +1,63 @@
 {
   "sourceDirectories": [
-    "public/lib/game/entities"
+    "public/games/example/entities"
   ],
   "entities": [
     {
-      "key": "game/entities/blob",
-      "moduleId": "game.entities.blob",
+      "key": "games/example/entities/blob",
+      "moduleId": "games.example.entities.blob",
       "className": "EntityBlob",
       "displayName": "Blob",
-      "filePath": "lib/game/entities/blob.js",
-      "importPath": "../../lib/game/entities/blob.js"
+      "filePath": "games/example/entities/blob.js",
+      "importPath": "../../games/example/entities/blob.js"
     },
     {
-      "key": "game/entities/coin",
-      "moduleId": "game.entities.coin",
+      "key": "games/example/entities/coin",
+      "moduleId": "games.example.entities.coin",
       "className": "EntityCoin",
       "displayName": "Coin",
-      "filePath": "lib/game/entities/coin.js",
-      "importPath": "../../lib/game/entities/coin.js"
+      "filePath": "games/example/entities/coin.js",
+      "importPath": "../../games/example/entities/coin.js"
     },
     {
-      "key": "game/entities/fireball",
-      "moduleId": "game.entities.fireball",
+      "key": "games/example/entities/fireball",
+      "moduleId": "games.example.entities.fireball",
       "className": "EntityFireball",
       "displayName": "Fireball",
-      "filePath": "lib/game/entities/fireball.js",
-      "importPath": "../../lib/game/entities/fireball.js"
+      "filePath": "games/example/entities/fireball.js",
+      "importPath": "../../games/example/entities/fireball.js"
     },
     {
-      "key": "game/entities/hurt",
-      "moduleId": "game.entities.hurt",
+      "key": "games/example/entities/hurt",
+      "moduleId": "games.example.entities.hurt",
       "className": "EntityHurt",
       "displayName": "Hurt",
-      "filePath": "lib/game/entities/hurt.js",
-      "importPath": "../../lib/game/entities/hurt.js"
+      "filePath": "games/example/entities/hurt.js",
+      "importPath": "../../games/example/entities/hurt.js"
     },
     {
-      "key": "game/entities/levelchange",
-      "moduleId": "game.entities.levelchange",
+      "key": "games/example/entities/levelchange",
+      "moduleId": "games.example.entities.levelchange",
       "className": "EntityLevelchange",
       "displayName": "Levelchange",
-      "filePath": "lib/game/entities/levelchange.js",
-      "importPath": "../../lib/game/entities/levelchange.js"
+      "filePath": "games/example/entities/levelchange.js",
+      "importPath": "../../games/example/entities/levelchange.js"
     },
     {
-      "key": "game/entities/player",
-      "moduleId": "game.entities.player",
+      "key": "games/example/entities/player",
+      "moduleId": "games.example.entities.player",
       "className": "EntityPlayer",
       "displayName": "Player",
-      "filePath": "lib/game/entities/player.js",
-      "importPath": "../../lib/game/entities/player.js"
+      "filePath": "games/example/entities/player.js",
+      "importPath": "../../games/example/entities/player.js"
     },
     {
-      "key": "game/entities/trigger",
-      "moduleId": "game.entities.trigger",
+      "key": "games/example/entities/trigger",
+      "moduleId": "games.example.entities.trigger",
       "className": "EntityTrigger",
       "displayName": "Trigger",
-      "filePath": "lib/game/entities/trigger.js",
-      "importPath": "../../lib/game/entities/trigger.js"
+      "filePath": "games/example/entities/trigger.js",
+      "importPath": "../../games/example/entities/trigger.js"
     }
   ]
 }

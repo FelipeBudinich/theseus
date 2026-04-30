@@ -1,4 +1,4 @@
-import ig from '../../impact/impact.js';
+import ig from '../../../lib/impact/impact.js';
 
 ig.EntityBlob = ig.Entity.extend({
 	size: {x: 40, y: 28},

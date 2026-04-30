@@ -3,7 +3,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const DEFAULT_SOURCE_DIRECTORIES = ['public/lib/game/entities'];
+const DEFAULT_SOURCE_DIRECTORIES = ['public/games/example/entities'];
 const DEFAULT_MODULE_OUTPUT_PATH = 'tools/weltmeister/entity-manifest.js';
 const DEFAULT_JSON_OUTPUT_PATH = 'tools/weltmeister/entity-manifest.json';
 
@@ -28,12 +28,11 @@ const toPublicPath = (filePath) => toPosixPath(filePath).replace(/^public\//, ''
 
 const toModuleId = (filePath) =>
   toPublicPath(filePath)
-    .replace(/^lib\//, '')
     .replace(/\.js$/, '')
     .replace(/\//g, '.');
 
 const toStableKey = (filePath) =>
-  toPublicPath(filePath).replace(/^lib\//, '').replace(/\.js$/, '');
+  toPublicPath(filePath).replace(/\.js$/, '');
 
 const toImportPath = (filePath, moduleOutputPath) => {
   const publicPath = toPublicPath(filePath);

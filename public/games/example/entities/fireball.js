@@ -1,4 +1,4 @@
-import ig from '../../impact/impact.js';
+import ig from '../../../lib/impact/impact.js';
 
 ig.EntityFireball = ig.Entity.extend({
 	_wmIgnore: true,

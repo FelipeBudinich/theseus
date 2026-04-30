@@ -52,16 +52,17 @@ npm run dev
 | `/docs/<keyword>` | Renders a single Markdown doc by filename keyword. |
 | `/docs.json?fields=keyword,title,date,tags` | Returns docs metadata as JSON. |
 
-The server listens on `127.0.0.1:3000` by default. Browser-facing paths are rooted at `public/`, so a URL such as `/lib/game/main.js` maps to `public/lib/game/main.js` on disk.
+The server listens on `127.0.0.1:3000` by default. Browser-facing paths are rooted at `public/`, so a URL such as `/games/example/main.js` maps to `public/games/example/main.js` on disk.
 
 ## Repository layout
 
 ```text
 public/
   index.html              Source-served game page
+  games/
+    example/              Sample game, entities, and levels
   lib/
     impact/               Engine runtime modules
-    game/                 Sample game, entities, and levels
     plugins/              Runtime plugins such as camera, touch buttons, and gamepad input
   media/                  Source images, fonts, sounds, and music
   docs/                   Markdown docs served by the docs router
@@ -86,10 +87,10 @@ The engine runtime lives in `public/lib/impact/` and is imported as native ESM. 
 A typical game entry imports the runtime and plugins, imports the entities and levels it uses, defines one or more `ig.Game` classes, then starts the game:
 
 ```js
-import ig from '../impact/impact.js';
+import ig from '../../lib/impact/impact.js';
 
-import '../plugins/camera.js';
-import '../plugins/gamepad.js';
+import '../../lib/plugins/camera.js';
+import '../../lib/plugins/gamepad.js';
 
 import './entities/player.js';
 import { LevelGrasslands } from './levels/grasslands.js';
@@ -117,11 +118,11 @@ ig.main('#canvas', MyGame, 60, 640, 480, 1);
 
 ## Sample game
 
-The sample game in `public/lib/game/` is a side-scrolling jump-and-run. Its source entry is `public/lib/game/main.js`, loaded directly by `public/index.html` through a module script. It demonstrates:
+The sample game in `public/games/example/` is a side-scrolling jump-and-run. Its source entry is `public/games/example/main.js`, loaded directly by `public/index.html` through a module script. It demonstrates:
 
 - `ig.Game` subclasses for title and gameplay screens.
 - Entity modules registered with `ig.registerClass(...)`.
-- ESM level modules imported from `public/lib/game/levels/`.
+- ESM level modules imported from `public/games/example/levels/`.
 - Keyboard, gamepad, and mobile touch-button input.
 - Camera following, collision maps, background layers, sprite animation, sound effects, music, and HUD drawing.
 - Responsive canvas resizing for desktop and mobile browser windows.
@@ -155,7 +156,7 @@ The gamepad plugin maps browser gamepads into stable logical slots such as `Game
 Entity modules are regular ES modules. Define the entity class on `ig`, register it by name, and export it when you want direct ESM imports as well as class-registry lookups.
 
 ```js
-import ig from '../../impact/impact.js';
+import ig from '../../../lib/impact/impact.js';
 
 const EntityGem = ig.Entity.extend({
   size: { x: 16, y: 16 },
@@ -191,8 +192,8 @@ http://127.0.0.1:3000/tools/weltmeister.html
 
 Weltmeister loads through `tools/weltmeister/main.js`, prepares entity metadata from the generated manifest, and then boots the editor UI. The editor is configured to work with the game source tree:
 
-- Entity modules are discovered from `lib/game/entities/**/*.js`.
-- Levels are created under `lib/game/levels/`.
+- Entity modules are discovered from `games/example/entities/**/*.js`.
+- Levels are created under `games/example/levels/`.
 - New levels default to native ESM `.js` level files.
 - Saving to a `.json` filename writes plain JSON instead.
 - Level JSON is pretty-printed by default.

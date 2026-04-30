@@ -1,4 +1,4 @@
-import ig from '../../impact/impact.js';
+import ig from '../../../lib/impact/impact.js';
 
 ig.EntityTrigger = ig.Entity.extend({
 	size: {x: 32, y: 32},
