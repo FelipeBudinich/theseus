@@ -11,10 +11,10 @@ ig.EntityPlayer = ig.Entity.extend({
 	checkAgainst: ig.Entity.TYPE.NONE,
 	collides: ig.Entity.COLLIDES.PASSIVE,
 	
-	animSheet: new ig.AnimationSheet('media/player.png', 75, 100),
+	animSheet: new ig.AnimationSheet('games/example/media/player.png', 75, 100),
 	
-	sfxHurt: new ig.Sound('media/sounds/hurt.*'),
-	sfxJump: new ig.Sound('media/sounds/jump.*'),
+	sfxHurt: new ig.Sound('games/example/media/sounds/hurt.*'),
+	sfxJump: new ig.Sound('games/example/media/sounds/jump.*'),
 	
 	health: 3,
 	flip: false,

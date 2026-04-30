@@ -26,7 +26,7 @@ game and Weltmeister workflow.
   present.
 - Built JavaScript and generated texture, SFX, and music atlases are served from
   `/dist/assets/...`; unpacked runtime media and sound fallbacks still resolve
-  from the source-hosted `/media/...` tree.
+  from the source-hosted `/games/example/media/...` tree.
 - The retired PHP bake helpers have been removed.
 
 ## Input
@@ -54,7 +54,7 @@ game and Weltmeister workflow.
   is required.
 - Weltmeister save requests target `/tools/weltmeister/api/save`.
 - Image save requests target `/tools/weltmeister/api/save-image` and accept PNG
-  data rooted under `media/`.
+  data rooted under `games/example/media/`.
 - File browsing targets `/tools/weltmeister/api/browse`.
 
 ## Entities And Levels
@@ -80,5 +80,5 @@ game and Weltmeister workflow.
 ## Tools
 
 - `/tools/font-tool.html` serves the font atlas tool from the source tree.
-- The font atlas tool writes `ig.Font`-compatible PNG atlases into `media/`
+- The font atlas tool writes `ig.Font`-compatible PNG atlases into `games/example/media/`
   through `/tools/weltmeister/api/save-image`.

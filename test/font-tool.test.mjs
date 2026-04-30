@@ -17,11 +17,14 @@ test('getExpectedGlyphCount returns the contiguous range size', () => {
   assert.equal(getExpectedGlyphCount(90, 65), 0);
 });
 
-test('slugifyFontName and buildDefaultOutputPath create stable media font paths', () => {
+test('slugifyFontName and buildDefaultOutputPath create stable example media font paths', () => {
   assert.equal(slugifyFontName('Fredoka One'), 'fredoka-one');
   assert.equal(slugifyFontName(' 04b03 '), '04b03');
-  assert.equal(buildDefaultOutputPath('Fredoka One'), 'media/fredoka-one.font.png');
-  assert.equal(buildDefaultOutputPath(''), 'media/font.font.png');
+  assert.equal(
+    buildDefaultOutputPath('Fredoka One'),
+    'games/example/media/fredoka-one.font.png'
+  );
+  assert.equal(buildDefaultOutputPath(''), 'games/example/media/font.font.png');
 });
 
 test('parseMetricAlphaRow mirrors ig.Font metric parsing without a trailing separator', () => {

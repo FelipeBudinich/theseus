@@ -144,7 +144,7 @@ const convertAtlasAssetsToWebp = async (atlasAssets, webpOptions) => Promise.all
 const packTexturesForBuild = async ({
   projectRoot,
   publicBase,
-  sourceDir = 'media',
+  sourceDir = 'games/example/media',
   outputDir = DEFAULT_OUTPUT_DIR,
   atlasName = 'theseus-atlas',
   atlasWidth = 2048,

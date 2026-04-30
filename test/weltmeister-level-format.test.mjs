@@ -47,7 +47,7 @@ test('buildLevelSave emits native ESM module output for .js paths', () => {
         height: 1,
         linkWithCollision: false,
         visible: true,
-        tilesetName: 'media/tiles-70.png',
+        tilesetName: 'games/example/media/tiles-70.png',
         repeat: false,
         preRender: false,
         distance: 1,

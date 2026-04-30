@@ -40,7 +40,7 @@ const LevelTitle = /*JSON[*/{
       "height": 14,
       "linkWithCollision": false,
       "visible": true,
-      "tilesetName": "media/tiles-70.png",
+      "tilesetName": "games/example/media/tiles-70.png",
       "repeat": true,
       "preRender": false,
       "distance": "2",
@@ -307,7 +307,7 @@ const LevelTitle = /*JSON[*/{
       "height": 14,
       "linkWithCollision": false,
       "visible": true,
-      "tilesetName": "media/tiles-70.png",
+      "tilesetName": "games/example/media/tiles-70.png",
       "repeat": false,
       "preRender": false,
       "distance": "1",
@@ -837,7 +837,7 @@ const LevelTitle = /*JSON[*/{
     }
   ]
 }/*]JSON*/;
-const LevelTitleResources = [new ig.Image("media/tiles-70.png")];
+const LevelTitleResources = [new ig.Image("games/example/media/tiles-70.png")];
 
 ig.Game.registerLevel("LevelTitle", LevelTitle);
 

@@ -94,7 +94,7 @@ npm run bake
 This writes the built game to `public/dist/`. The Node server keeps `/` pointed at the
 source `public/index.html`, while `/dist.html` serves the latest baked `public/dist/index.html`.
 Built JavaScript is served from `/dist/assets/...`, but runtime media and sound
-paths still come from the source-hosted `/media/...` tree.
+paths still come from the source-hosted `/games/example/media/...` tree.
 
 ## Build Tooling
 

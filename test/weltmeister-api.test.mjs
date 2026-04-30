@@ -101,27 +101,27 @@ test('saveFile preserves the .js/.json level suffix constraint', async (t) => {
   });
 });
 
-test('saveImageFile writes valid PNG files inside media', async (t) => {
+test('saveImageFile writes valid PNG files inside example game media', async (t) => {
   const projectRoot = await makeTempProjectRoot();
   t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
 
   const result = await saveImageFile({
     projectRoot,
-    filePath: 'media/generated/test.font.png',
+    filePath: 'games/example/media/generated/test.font.png',
     data: ONE_BY_ONE_PNG_DATA_URL
   });
 
   assert.deepEqual(result, {
     error: 0,
-    path: 'media/generated/test.font.png'
+    path: 'games/example/media/generated/test.font.png'
   });
   assert.deepEqual(
-    await fs.readFile(path.join(projectRoot, 'media/generated/test.font.png')),
+    await fs.readFile(path.join(projectRoot, 'games/example/media/generated/test.font.png')),
     ONE_BY_ONE_PNG_BUFFER
   );
 });
 
-test('saveImageFile rejects writes outside media', async (t) => {
+test('saveImageFile rejects writes outside example game media', async (t) => {
   const projectRoot = await makeTempProjectRoot();
   t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
 
@@ -133,7 +133,7 @@ test('saveImageFile rejects writes outside media', async (t) => {
 
   assert.deepEqual(result, {
     error: '4',
-    msg: 'Image path must stay inside media/'
+    msg: 'Image path must stay inside games/example/media/'
   });
 });
 
@@ -141,36 +141,39 @@ test('browseFiles returns image and script listings for Weltmeister pickers', as
   const projectRoot = await makeTempProjectRoot();
   t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
 
-  await writeProjectFile(projectRoot, 'media/hero.png');
-  await writeProjectFile(projectRoot, 'media/readme.txt');
-  await writeProjectFile(projectRoot, 'media/.hidden.png');
-  await writeProjectFile(projectRoot, 'media/scripts/player.js');
-  await writeProjectFile(projectRoot, 'media/scripts/player.json');
-  await fs.mkdir(path.join(projectRoot, 'media/backgrounds'), { recursive: true });
+  await writeProjectFile(projectRoot, 'games/example/media/hero.png');
+  await writeProjectFile(projectRoot, 'games/example/media/readme.txt');
+  await writeProjectFile(projectRoot, 'games/example/media/.hidden.png');
+  await writeProjectFile(projectRoot, 'games/example/media/scripts/player.js');
+  await writeProjectFile(projectRoot, 'games/example/media/scripts/player.json');
+  await fs.mkdir(path.join(projectRoot, 'games/example/media/backgrounds'), { recursive: true });
 
   assert.deepEqual(
     await browseFiles({
       projectRoot,
-      dir: 'media',
+      dir: 'games/example/media',
       type: 'images'
     }),
     {
-      parent: '',
-      dirs: ['media/backgrounds', 'media/scripts'],
-      files: ['media/hero.png']
+      parent: 'games/example',
+      dirs: ['games/example/media/backgrounds', 'games/example/media/scripts'],
+      files: ['games/example/media/hero.png']
     }
   );
 
   assert.deepEqual(
     await browseFiles({
       projectRoot,
-      dir: 'media/scripts',
+      dir: 'games/example/media/scripts',
       type: 'scripts'
     }),
     {
-      parent: 'media',
+      parent: 'games/example/media',
       dirs: [],
-      files: ['media/scripts/player.js', 'media/scripts/player.json']
+      files: [
+        'games/example/media/scripts/player.js',
+        'games/example/media/scripts/player.json'
+      ]
     }
   );
 });

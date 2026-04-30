@@ -340,7 +340,7 @@ const buildRuntimeManifest = ({
 const packSfxAtlasForBuild = async ({
   projectRoot,
   publicBase = '/',
-  sourceDir = 'media/sounds',
+  sourceDir = 'games/example/media/sounds',
   atlasName = 'sfx-atlas',
   outputDir = DEFAULT_OUTPUT_DIR,
   formats = ['ogg', 'mp3'],

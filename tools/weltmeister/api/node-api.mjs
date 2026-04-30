@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const LEGACY_FILE_ROOT = '../../../';
 const IMAGE_EXTENSIONS = new Set(['.png', '.gif', '.jpg', '.jpeg']);
-const MEDIA_ROOT = 'media/';
+const MEDIA_ROOT = 'games/example/media/';
 const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 const WELTMEISTER_SAVE_BODY_LIMIT = '10mb';
 
@@ -146,7 +146,7 @@ const saveImageFile = async ({ projectRoot, filePath, data }) => {
   if (!normalizedPath.startsWith(MEDIA_ROOT)) {
     return {
       error: '4',
-      msg: 'Image path must stay inside media/'
+      msg: 'Image path must stay inside games/example/media/'
     };
   }
 

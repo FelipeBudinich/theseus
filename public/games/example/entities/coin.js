@@ -7,8 +7,8 @@ ig.EntityCoin = ig.Entity.extend({
 	checkAgainst: ig.Entity.TYPE.A,
 	collides: ig.Entity.COLLIDES.NEVER,
 	
-	animSheet: new ig.AnimationSheet('media/coin.png', 36, 36),
-	sfxCollect: new ig.Sound('media/sounds/coin.*'),
+	animSheet: new ig.AnimationSheet('games/example/media/coin.png', 36, 36),
+	sfxCollect: new ig.Sound('games/example/media/sounds/coin.*'),
 	
 	init: function(x, y, settings) {
 		this.parent(x, y, settings);

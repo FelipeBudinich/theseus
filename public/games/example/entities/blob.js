@@ -14,8 +14,8 @@ ig.EntityBlob = ig.Entity.extend({
 	speed: 36,
 	flip: false,
 	
-	animSheet: new ig.AnimationSheet('media/blob.png', 64, 28),
-	sfxDie: new ig.Sound('media/sounds/blob-die.*'),
+	animSheet: new ig.AnimationSheet('games/example/media/blob.png', 64, 28),
+	sfxDie: new ig.Sound('games/example/media/sounds/blob-die.*'),
 	
 	init: function(x, y, settings) {
 		this.parent(x, y, settings);

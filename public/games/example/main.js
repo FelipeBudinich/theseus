@@ -20,7 +20,7 @@ import './levels/snowhills.js';
 let touchButtons = null;
 
 const playGameMusic = () => {
-	ig.music.add('media/music/energy-warrior.*', 'energy-warrior');
+	ig.music.add('games/example/media/music/energy-warrior.*', 'energy-warrior');
 	ig.music.loop = true;
 	ig.music.play('energy-warrior');
 };
@@ -29,10 +29,10 @@ const MyGame = ig.Game.extend({
 	clearColor: '#d0f4f7',
 	gravity: 800,
 	
-	font: new ig.Font('media/fredoka-one.font.png'),
-	heartFull: new ig.Image('media/heart-full.png'),
-	heartEmpty: new ig.Image('media/heart-empty.png'),
-	coinIcon: new ig.Image('media/coin.png'),
+	font: new ig.Font('games/example/media/fredoka-one.font.png'),
+	heartFull: new ig.Image('games/example/media/heart-full.png'),
+	heartEmpty: new ig.Image('games/example/media/heart-empty.png'),
+	coinIcon: new ig.Image('games/example/media/coin.png'),
 	
 	init: function() {
 		this.font.letterSpacing = -2;
@@ -99,8 +99,8 @@ const MyTitle = ig.Game.extend({
 	clearColor: '#d0f4f7',
 	gravity: 800,
 
-	title: new ig.Image('media/title.png'),
-	font: new ig.Font('media/fredoka-one.font.png'),
+	title: new ig.Image('games/example/media/title.png'),
+	font: new ig.Font('games/example/media/fredoka-one.font.png'),
 
 	init: function() {
 		ig.input.bind('ArrowLeft', 'left');
@@ -117,7 +117,7 @@ const MyTitle = ig.Game.extend({
 		if (touchButtons) {
 			touchButtons.align();
 		}
-		ig.music.add('media/music/energy-warrior.*', 'energy-warrior');
+		ig.music.add('games/example/media/music/energy-warrior.*', 'energy-warrior');
 		ig.music.loop = true;
 		this.font.letterSpacing = -2;
 		this.loadLevel(LevelTitle);
@@ -157,7 +157,7 @@ const MyTitle = ig.Game.extend({
 });
 
 if (ig.ua.mobile) {
-	var buttonImage = new ig.Image('media/touch-buttons.png');
+	var buttonImage = new ig.Image('games/example/media/touch-buttons.png');
 	touchButtons = new ig.TouchButtonCollection([
 		new ig.TouchButton('left', {left: 0, bottom: 0}, 128, 128, buttonImage, 0),
 		new ig.TouchButton('right', {left: 128, bottom: 0}, 128, 128, buttonImage, 1),

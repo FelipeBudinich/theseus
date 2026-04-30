@@ -306,7 +306,8 @@ export const slugifyFontName = (value) => {
   return slug || 'font';
 };
 
-export const buildDefaultOutputPath = (value) => `media/${slugifyFontName(value)}.font.png`;
+export const buildDefaultOutputPath = (value) =>
+  `games/example/media/${slugifyFontName(value)}.font.png`;
 
 export const buildMetricAlphaRow = (slotWidths) => {
   const totalWidth =
@@ -887,8 +888,12 @@ const saveRenderedAtlas = async (state) => {
     throw new Error('Render and validation must succeed before saving.');
   }
 
-  if (!outputPath.startsWith('media/') || !outputPath.toLowerCase().endsWith('.png') || outputPath.includes('..')) {
-    throw new Error('Output path must stay inside media/ and end with .png.');
+  if (
+    !outputPath.startsWith('games/example/media/') ||
+    !outputPath.toLowerCase().endsWith('.png') ||
+    outputPath.includes('..')
+  ) {
+    throw new Error('Output path must stay inside games/example/media/ and end with .png.');
   }
 
   const payload = {

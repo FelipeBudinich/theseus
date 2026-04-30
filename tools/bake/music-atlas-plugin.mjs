@@ -328,7 +328,7 @@ const buildRuntimeManifest = ({
 const packMusicAtlasForBuild = async ({
   projectRoot,
   publicBase = '/',
-  sourceDir = 'media/music',
+  sourceDir = 'games/example/media/music',
   atlasName = 'music-atlas',
   outputDir = DEFAULT_OUTPUT_DIR,
   formats = ['ogg', 'mp3'],

@@ -12,8 +12,8 @@ ig.EntityFireball = ig.Entity.extend({
 	checkAgainst: ig.Entity.TYPE.B,
 	collides: ig.Entity.COLLIDES.PASSIVE,
 		
-	animSheet: new ig.AnimationSheet('media/fireball.png', 36, 36),
-	sfxSpawn: new ig.Sound('media/sounds/fireball.*'),
+	animSheet: new ig.AnimationSheet('games/example/media/fireball.png', 36, 36),
+	sfxSpawn: new ig.Sound('games/example/media/sounds/fireball.*'),
 	
 	bounceCounter: 0,
 	

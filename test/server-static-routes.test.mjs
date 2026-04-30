@@ -121,12 +121,15 @@ test('/dist.html returns 404 with a bake hint when no baked build exists', async
   assert.match(response.text, /npm run bake/);
 });
 
-test('/media/* serves files from public/media', async (t) => {
+test('/games/example/media/* serves files from public/games/example/media', async (t) => {
   const { port } = await startTestServer({}, t);
-  const response = await requestServer({ port, path: '/media/tiles-70.png' });
+  const response = await requestServer({ port, path: '/games/example/media/tiles-70.png' });
 
   assert.equal(response.statusCode, 200);
-  assert.deepEqual(response.body, await fs.readFile(path.resolve('public/media/tiles-70.png')));
+  assert.deepEqual(
+    response.body,
+    await fs.readFile(path.resolve('public/games/example/media/tiles-70.png'))
+  );
 });
 
 test('/tools/weltmeister.html serves tools/weltmeister.html', async (t) => {
@@ -149,19 +152,19 @@ test('/tools/weltmeister/api/* is mounted', async (t) => {
   const staticRoot = await makeTempDirectory('theseus-weltmeister-api-route-');
   t.after(() => fs.rm(staticRoot, { recursive: true, force: true }));
 
-  await writeFile(staticRoot, 'media/hero.png', '');
-  await writeFile(staticRoot, 'media/readme.txt', '');
+  await writeFile(staticRoot, 'games/example/media/hero.png', '');
+  await writeFile(staticRoot, 'games/example/media/readme.txt', '');
 
   const { port } = await startTestServer({ staticRoot }, t);
   const response = await requestServer({
     port,
-    path: '/tools/weltmeister/api/browse?dir=media&type=images'
+    path: '/tools/weltmeister/api/browse?dir=games/example/media&type=images'
   });
 
   assert.equal(response.statusCode, 200);
   assert.deepEqual(JSON.parse(response.text), {
-    parent: '',
+    parent: 'games/example',
     dirs: [],
-    files: ['media/hero.png']
+    files: ['games/example/media/hero.png']
   });
 });
