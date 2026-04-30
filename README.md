@@ -36,7 +36,6 @@ npm run dev
 | `npm start` | Starts the local Express server with `server.mjs`. |
 | `npm run dev` | Starts the server through Node's watch mode. |
 | `npm run bake` | Builds the sample game with Vite and writes the baked output to `public/dist/`. |
-| `npm run build:weltmeister-entity-manifest` | Regenerates the Weltmeister entity manifest from game entity modules. |
 | `npm test` | Runs the repository's Node test suite. |
 
 
