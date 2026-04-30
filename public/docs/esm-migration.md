@@ -9,7 +9,6 @@ lives under `public/lib/` and is served at `/lib/`, while browser-side editor to
 - `public/index.html` loads the sample game directly from `lib/game/main.js`; `impact.js` waits for the URL-controlled debug decision before exposing `ig.main`.
 - `dist.html` is a server route that serves the latest Vite production build from `public/dist/index.html`.
 - `tools/weltmeister.html` loads the editor from `tools/weltmeister/main.js`.
-- `test/esm-smoke.html` imports `public/lib/impact/ig.js` directly.
 - `test/esm-engine-smoke.html` imports `public/lib/impact/impact.js` directly.
 
 ## Conversion Rule For Future Modules

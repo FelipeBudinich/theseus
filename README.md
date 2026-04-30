@@ -78,7 +78,7 @@ tools/
   font-tool.html          Font tool shell served at /tools/font-tool.html
   weltmeister.html        Weltmeister shell served at /tools/weltmeister.html
 
-test/                     Node tests and browser smoke-test pages
+test/                     Focused Node tests and the manual ESM engine smoke page
 server.mjs                Express app and local server entry point
 ```
 
@@ -291,7 +291,7 @@ Run the full test suite with:
 npm test
 ```
 
-The tests cover server routes, source and baked serving behavior, docs routing, ESM engine behavior, input bindings, gamepad behavior, Weltmeister helpers and API behavior, entity manifest generation, level serialization, font-tool helpers, and bake-time atlas behavior.
+The tests cover current server routes, ESM engine behavior, input bindings, gamepad behavior, Weltmeister API behavior, entity manifest generation, level serialization, font-tool helpers, and debug boot behavior.
 
 Focused test commands are available for the ESM engine, Weltmeister API, and Weltmeister entity manifest:
 

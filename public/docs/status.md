@@ -10,8 +10,6 @@ game and Weltmeister workflow.
 - `public/index.html` loads `lib/game/main.js` directly; the engine imports the
   Impact debug panel before exposing `ig.main` only when the URL uses `?debug`
   or `?debug=true`.
-- `test/esm-smoke.html` verifies the lower-level `public/lib/impact/ig.js` bootstrap
-  path in a browser.
 - `test/esm-engine-smoke.html` verifies the full `public/lib/impact/impact.js` engine
   entry, including `ig.main` and class-registry access.
 - `npm run test:esm-engine` covers the ESM engine entry and level-registry
@@ -58,9 +56,6 @@ game and Weltmeister workflow.
 - Image save requests target `/tools/weltmeister/api/save-image` and accept PNG
   data rooted under `media/`.
 - File browsing targets `/tools/weltmeister/api/browse`.
-- Former `/lib/weltmeister/*` routes, `/weltmeister.html`, and legacy
-  `/tools/weltmeister/api/*.php` routes are intentionally left unmatched and
-  return `404`.
 
 ## Entities And Levels
 

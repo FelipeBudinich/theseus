@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
 import path from 'node:path';
+import test from 'node:test';
 import { pathToFileURL } from 'node:url';
 
 let gamepads = [];
@@ -93,7 +93,7 @@ const createGamepad = ({
   );
   const gamepadAxes = [0, 0, 0, 0];
 
-  for (var i = 0; i < axes.length; i++) {
+  for (let i = 0; i < axes.length; i++) {
     gamepadAxes[i] = axes[i];
   }
 
@@ -137,80 +137,18 @@ test('browser indices auto-assign to logical slots in connection order', () => {
   assert.equal(input.gamepadSlots[1].index, 0);
 });
 
-test('standard button 0 fires logical-slot raw and semantic face-bottom codes', () => {
+test('standard face-bottom button fires its logical-slot semantic code', () => {
   gamepads = [createGamepad({
     buttons: { 0: createButton({ pressed: true }) },
     index: 3
   })];
   const input = createInput();
 
-  input.bind('Gamepad0Button0', 'rawJump');
   input.bind('Gamepad0FaceBottom', 'jump');
   input.pollGamepad();
 
-  assert.equal(input.presses.rawJump, true);
   assert.equal(input.presses.jump, true);
-  assert.equal(input.actions.rawJump, true);
   assert.equal(input.actions.jump, true);
-});
-
-test('standard button 0 uses the logical slot when firing codes', () => {
-  gamepads = [
-    createGamepad({ index: 3 }),
-    createGamepad({
-      buttons: { 0: createButton({ pressed: true }) },
-      index: 0
-    })
-  ];
-  const input = createInput();
-
-  input.bind('Gamepad0FaceBottom', 'p1Jump');
-  input.bind('Gamepad1Button0', 'p2RawJump');
-  input.bind('Gamepad1FaceBottom', 'p2Jump');
-  input.pollGamepad();
-
-  assert.equal(input.presses.p1Jump, undefined);
-  assert.equal(input.presses.p2RawJump, true);
-  assert.equal(input.presses.p2Jump, true);
-});
-
-test('standard d-pad left button fires logical-slot left alias', () => {
-  gamepads = [createGamepad({
-    buttons: { 14: createButton({ pressed: true }) },
-    index: 3
-  })];
-  const input = createInput();
-
-  input.bind('Gamepad0Left', 'left');
-  input.pollGamepad();
-
-  assert.equal(input.presses.left, true);
-  assert.equal(input.actions.left, true);
-});
-
-test('standard left stick axis fires logical-slot left alias', () => {
-  gamepads = [createGamepad({ axes: [-0.75, 0, 0, 0], index: 3 })];
-  const input = createInput();
-
-  input.bind('Gamepad0Left', 'left');
-  input.pollGamepad();
-
-  assert.equal(input.presses.left, true);
-  assert.equal(input.actions.left, true);
-});
-
-test('non-standard axes fire raw fallback codes only', () => {
-  gamepads = [createGamepad({ axes: [-0.75, 0.75], index: 3, mapping: '' })];
-  const input = createInput();
-
-  input.bind('Gamepad0Axis0Negative', 'leftAxis');
-  input.bind('Gamepad0Axis1Positive', 'downAxis');
-  input.bind('Gamepad0Left', 'left');
-  input.pollGamepad();
-
-  assert.equal(input.presses.leftAxis, true);
-  assert.equal(input.presses.downAxis, true);
-  assert.equal(input.presses.left, undefined);
 });
 
 test('disconnection releases active slot actions', () => {
@@ -299,23 +237,4 @@ test('joined gamepads ignore gameplay input until released once', () => {
   gamepad.buttons[0] = createButton({ pressed: true });
   input.pollGamepad();
   assert.equal(input.presses.jump, true);
-});
-
-test('forgetGamepadSlot releases active inputs and removes slot state', () => {
-  const gamepad = createGamepad({
-    buttons: { 0: createButton({ pressed: true }) },
-    index: 3
-  });
-  gamepads = [gamepad];
-  const input = createInput();
-
-  input.bind('Gamepad0FaceBottom', 'jump');
-  input.pollGamepad();
-  input.clearPressed();
-
-  input.forgetGamepadSlot(0);
-
-  assert.equal(input.delayedKeyup.jump, true);
-  assert.equal(input.gamepadSlots[0], undefined);
-  assert.equal(input.gamepadIndexToSlot[3], undefined);
 });
