@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.mjs",
     "dev": "node --watch server.mjs",
-    "bake": "node tools/bake/with-ffmpeg-static-path.mjs vite build --config tools/bake/vite.config.mjs",
+    "bake": "node tools/bake/with-ffmpeg-static-path.mjs node tools/bake/build-games.mjs",
     "build:weltmeister-entity-manifest": "node tools/weltmeister/build-weltmeister-entity-manifest.mjs",
     "test": "node tools/bake/with-ffmpeg-static-path.mjs node --test test/*.test.mjs",
     "test:esm-engine": "node --test test/esm-engine-runtime.test.mjs",

@@ -98,7 +98,7 @@ test('source example page sets ImpactPrefix before loading the game module', asy
   assert.ok(prefixIndex < moduleIndex);
 });
 
-test('/dist.html serves public/dist/index.html when a baked build exists', async (t) => {
+test('/dist.html serves the generated baked games list when it exists', async (t) => {
   const distRoot = await makeTempDirectory('theseus-dist-route-');
   t.after(() => fs.rm(distRoot, { recursive: true, force: true }));
 
@@ -108,7 +108,7 @@ test('/dist.html serves public/dist/index.html when a baked build exists', async
     [
       '<!doctype html>',
       '<html>',
-      '<body>Baked build</body>',
+      '<body><a href="/dist/example/index.html">Baked</a></body>',
       '</html>'
     ].join('\n')
   );

@@ -1,34 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>Super Generic Jump'n'Run</title>
-	<style type="text/css">
-		html,body {
-			background-color: #333;
-			color: #fff;
-			font-family: helvetica, arial, sans-serif;
-			margin: 0;
-			padding: 0;
-			font-size: 12pt;
-		}
-		
-		#canvas {
-			position: absolute;
-			left: 0;
-			top: 0;
-			margin: auto;
-		}
-	</style>
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-	<meta name="mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
-	<script>
-		window.ImpactPrefix = '/';
-	</script>
-  <script type="module" crossorigin src="/dist/assets/index-v7x2LX-n.js"></script>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Theseus Games</title>
+	<link rel="stylesheet" href="/style.css">
 </head>
-<body>
-	<canvas id="canvas"></canvas>
+<body class="landing-page">
+	<main class="landing-content">
+		<h1>Theseus Games</h1>
+		<p>Open a baked game or its source-served version.</p>
+		<ul class="game-list">
+			<li class="game-list-item">
+				<span class="game-name">Super Generic Jump'n'Run</span>
+				<span class="game-links">
+					<a class="button-link" href="/dist/example/index.html">Baked</a>
+					<a class="button-link" href="/games/example/index.html">Source</a>
+				</span>
+			</li>
+			<li class="game-list-item">
+				<span class="game-name">Super Generic Jump'n'Run 2</span>
+				<span class="game-links">
+					<a class="button-link" href="/dist/example2/index.html">Baked</a>
+					<a class="button-link" href="/games/example2/index.html">Source</a>
+				</span>
+			</li>
+		</ul>
+	</main>
 </body>
 </html>
