@@ -23,7 +23,10 @@
 	<meta name="mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-		<script type="module" src="main.js"></script>
+	<script>
+		window.ImpactPrefix = '/';
+	</script>
+	<script type="module" src="main.js"></script>
 </head>
 <body>
 	<canvas id="canvas"></canvas>

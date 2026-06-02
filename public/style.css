@@ -8,6 +8,53 @@ body {
   margin: 0;
 }
 
+.landing-page {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.landing-content {
+  box-sizing: border-box;
+  max-width: 34rem;
+  padding: 2rem;
+  text-align: center;
+  width: 100%;
+}
+
+.landing-content h1 {
+  font-size: 2rem;
+  line-height: 1.2;
+  margin: 0 0 1rem;
+}
+
+.landing-content p {
+  margin: 0 0 1.5rem;
+}
+
+.landing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.button-link {
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  border-radius: 0.5rem;
+  color: inherit;
+  display: inline-block;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+}
+
+.button-link:focus,
+.button-link:hover {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
 .site-header,
 .site-footer,
 .content {

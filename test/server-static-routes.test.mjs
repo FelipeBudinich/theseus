@@ -88,6 +88,16 @@ test('/ serves public/index.html', async (t) => {
   assert.equal(response.text, await fs.readFile(path.resolve('public/index.html'), 'utf8'));
 });
 
+test('source example page sets ImpactPrefix before loading the game module', async () => {
+  const html = await fs.readFile(path.resolve('public/games/example/index.html'), 'utf8');
+  const prefixIndex = html.indexOf("window.ImpactPrefix = '/';");
+  const moduleIndex = html.indexOf('<script type="module" src="main.js"></script>');
+
+  assert.notEqual(prefixIndex, -1);
+  assert.notEqual(moduleIndex, -1);
+  assert.ok(prefixIndex < moduleIndex);
+});
+
 test('/dist.html serves public/dist/index.html when a baked build exists', async (t) => {
   const distRoot = await makeTempDirectory('theseus-dist-route-');
   t.after(() => fs.rm(distRoot, { recursive: true, force: true }));

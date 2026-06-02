@@ -4,63 +4,16 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Theseus</title>
-	<style>
-		html,
-		body {
-			background: #f7f4ed;
-			color: #25211b;
-			font-family: Helvetica, Arial, sans-serif;
-			margin: 0;
-			min-height: 100%;
-		}
-
-		body {
-			align-items: center;
-			display: flex;
-			justify-content: center;
-			min-height: 100vh;
-		}
-
-		main {
-			max-width: 34rem;
-			padding: 2rem;
-			text-align: center;
-		}
-
-		h1 {
-			font-size: 2rem;
-			font-weight: 700;
-			line-height: 1.2;
-			margin: 0 0 1rem;
-		}
-
-		p {
-			font-size: 1rem;
-			line-height: 1.5;
-			margin: 0 0 1.5rem;
-		}
-
-		a {
-			background: #20242c;
-			border-radius: 4px;
-			color: #fff;
-			display: inline-block;
-			font-weight: 700;
-			padding: 0.75rem 1rem;
-			text-decoration: none;
-		}
-
-		a:focus,
-		a:hover {
-			background: #3a4658;
-		}
-	</style>
+	<link rel="stylesheet" href="/style.css">
 </head>
-<body>
-	<main>
+<body class="landing-page">
+	<main class="landing-content">
 		<h1>Theseus</h1>
-		<p>The example game has moved to its own page.</p>
-		<a href="games/example/index.html">Open Example Game</a>
+		<p>Open the example game or browse the generated docs.</p>
+		<div class="landing-actions">
+			<a class="button-link" href="/games/example/index.html">Open Example Game</a>
+			<a class="button-link" href="/docs.html">Open Docs</a>
+		</div>
 	</main>
 </body>
 </html>

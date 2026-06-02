@@ -466,7 +466,7 @@ function layout({ title, body, siteTitle, docsIndexPath, docsJsonPath }) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(pageTitle)}</title>
   <link rel="stylesheet" href="/hljs/github.min.css">
-  <link rel="stylesheet" href="/docs.css">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <header class="site-header">
