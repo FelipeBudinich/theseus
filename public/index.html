@@ -1,31 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>Super Generic Jump'n'Run</title>
-	<style type="text/css">
-		html,body {
-			background-color: #333;
-			color: #fff;
-			font-family: helvetica, arial, sans-serif;
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Theseus</title>
+	<style>
+		html,
+		body {
+			background: #f7f4ed;
+			color: #25211b;
+			font-family: Helvetica, Arial, sans-serif;
 			margin: 0;
-			padding: 0;
-			font-size: 12pt;
+			min-height: 100%;
 		}
-		
-		#canvas {
-			position: absolute;
-			left: 0;
-			top: 0;
-			margin: auto;
+
+		body {
+			align-items: center;
+			display: flex;
+			justify-content: center;
+			min-height: 100vh;
+		}
+
+		main {
+			max-width: 34rem;
+			padding: 2rem;
+			text-align: center;
+		}
+
+		h1 {
+			font-size: 2rem;
+			font-weight: 700;
+			line-height: 1.2;
+			margin: 0 0 1rem;
+		}
+
+		p {
+			font-size: 1rem;
+			line-height: 1.5;
+			margin: 0 0 1.5rem;
+		}
+
+		a {
+			background: #20242c;
+			border-radius: 4px;
+			color: #fff;
+			display: inline-block;
+			font-weight: 700;
+			padding: 0.75rem 1rem;
+			text-decoration: none;
+		}
+
+		a:focus,
+		a:hover {
+			background: #3a4658;
 		}
 	</style>
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-	<meta name="mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
-	<script type="module" src="games/example/main.js"></script>
 </head>
 <body>
-	<canvas id="canvas"></canvas>
+	<main>
+		<h1>Theseus</h1>
+		<p>The example game has moved to its own page.</p>
+		<a href="games/example/index.html">Open Example Game</a>
+	</main>
 </body>
 </html>

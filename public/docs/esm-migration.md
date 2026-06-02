@@ -6,7 +6,8 @@ lives under `public/lib/` and is served at `/lib/`, the sample game lives under
 
 ## Live Entrypoints
 
-- `public/index.html` loads the sample game directly from `games/example/main.js`; `impact.js` waits for the URL-controlled debug decision before exposing `ig.main`.
+- `public/index.html` is a landing page for examples.
+- `public/games/example/index.html` loads the sample game directly from `main.js`; `impact.js` waits for the URL-controlled debug decision before exposing `ig.main`.
 - `dist.html` is a server route that serves the latest Vite production build from `public/dist/index.html`.
 - `tools/weltmeister.html` loads the editor from `tools/weltmeister/main.js`.
 - `test/esm-engine-smoke.html` imports `public/lib/impact/impact.js` directly.
@@ -91,8 +92,9 @@ Run the sample-game production build with:
 npm run bake
 ```
 
-This writes the built game to `public/dist/`. The Node server keeps `/` pointed at the
-source `public/index.html`, while `/dist.html` serves the latest baked `public/dist/index.html`.
+This writes the built game from `public/games/example/index.html` to `public/dist/`.
+The Node server keeps `/` pointed at the source `public/index.html` landing page,
+while `/dist.html` serves the latest baked `public/dist/index.html`.
 Built JavaScript is served from `/dist/assets/...`, but runtime media and sound
 paths still come from the source-hosted `/games/example/media/...` tree.
 

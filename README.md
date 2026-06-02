@@ -11,10 +11,10 @@ npm install
 npm start
 ```
 
-Open the game at:
+Open the source-served example game at:
 
 ```text
-http://127.0.0.1:3000/
+http://127.0.0.1:3000/games/example/index.html
 ```
 
 Use a different bind address or port with environment variables:
@@ -43,8 +43,9 @@ npm run dev
 
 | URL | Purpose |
 | --- | --- |
-| `/` | Runs the source-served sample game from `public/index.html`. |
-| `/?debug` | Runs the source-served game with the Impact debug panel enabled. |
+| `/` | Opens the public landing page with a link to the example game. |
+| `/games/example/index.html` | Runs the source-served sample game. |
+| `/games/example/index.html?debug` | Runs the source-served game with the Impact debug panel enabled. |
 | `/dist.html` | Runs the latest baked build from `public/dist/index.html` after `npm run bake`. |
 | `/tools/weltmeister.html` | Opens the Weltmeister level editor. |
 | `/tools/font-tool.html` | Opens the font atlas generator. |
@@ -58,9 +59,10 @@ The server listens on `127.0.0.1:3000` by default. Browser-facing paths are root
 
 ```text
 public/
-  index.html              Source-served game page
+  index.html              Landing page for source-served examples
   games/
     example/              Sample game, entities, levels, and source media
+      index.html          Source-served game page
       media/              Source images, fonts, sounds, and music
   lib/
     impact/               Engine runtime modules
@@ -118,7 +120,7 @@ ig.main('#canvas', MyGame, 60, 640, 480, 1);
 
 ## Sample game
 
-The sample game in `public/games/example/` is a side-scrolling jump-and-run. Its source entry is `public/games/example/main.js`, loaded directly by `public/index.html` through a module script. It demonstrates:
+The sample game in `public/games/example/` is a side-scrolling jump-and-run. Its browser entry is `public/games/example/index.html`, which loads `public/games/example/main.js` through a module script. It demonstrates:
 
 - `ig.Game` subclasses for title and gameplay screens.
 - Entity modules registered with `ig.registerClass(...)`.
@@ -256,7 +258,7 @@ Run:
 npm run bake
 ```
 
-The bake command uses Vite with `tools/bake/vite.config.mjs`, reads the game from `public/index.html`, and writes output to:
+The bake command uses Vite with `tools/bake/vite.config.mjs`, reads the game from `public/games/example/index.html`, and writes output to:
 
 ```text
 public/dist/
@@ -275,8 +277,8 @@ The baked build uses `/dist/` as its public base path and emits generated JavaSc
 The source-served game can load the Impact debug panel through the `debug` query parameter:
 
 ```text
-http://127.0.0.1:3000/?debug
-http://127.0.0.1:3000/?debug=true
+http://127.0.0.1:3000/games/example/index.html?debug
+http://127.0.0.1:3000/games/example/index.html?debug=true
 ```
 
 The debug entry is resolved before `ig.main()` runs, so the game starts with debug instrumentation already available. Use the source route for inspection and profiling, and use `/dist.html` for baked-build checks.

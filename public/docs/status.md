@@ -6,8 +6,9 @@ game and Weltmeister workflow.
 ## Runtime
 
 - The live `public/lib/` tree contains the ESM runtime and is served at `/lib/`.
-- `/` serves the source sample game entry from `public/index.html`.
-- `public/index.html` loads `games/example/main.js` directly; the engine imports the
+- `/` serves the public landing page from `public/index.html`.
+- `/games/example/index.html` serves the source sample game entry.
+- `public/games/example/index.html` loads `main.js` directly; the engine imports the
   Impact debug panel before exposing `ig.main` only when the URL uses `?debug`
   or `?debug=true`.
 - `test/esm-engine-smoke.html` verifies the full `public/lib/impact/impact.js` engine
@@ -20,7 +21,7 @@ game and Weltmeister workflow.
 - The app runs directly from the Express static server with no development
   bundler requirement.
 - `npm run bake` is the current production game build path and writes the Vite
-  build to `public/dist/`.
+  build from `public/games/example/index.html` to `public/dist/`.
 - `/dist.html` serves the latest baked `public/dist/index.html` when it exists.
 - `/dist.html` returns `404` with a `npm run bake` hint when no baked build is
   present.

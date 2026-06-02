@@ -1,4 +1,5 @@
 import path from 'node:path';
+import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 
@@ -11,6 +12,19 @@ const __dirname = path.dirname(__filename);
 
 const projectRoot = path.resolve(__dirname, '../..');
 const publicRoot = path.join(projectRoot, 'public');
+const exampleGameIndex = 'games/example/index.html';
+
+const createRootIndexOutputPlugin = () => ({
+  name: 'theseus-root-index-output',
+  async closeBundle() {
+    const distRoot = path.join(publicRoot, 'dist');
+    const nestedIndex = path.join(distRoot, exampleGameIndex);
+    const rootIndex = path.join(distRoot, 'index.html');
+
+    await fs.rename(nestedIndex, rootIndex);
+    await fs.rm(path.join(distRoot, 'games'), { recursive: true, force: true });
+  }
+});
 
 export default defineConfig({
   root: publicRoot,
@@ -42,13 +56,14 @@ export default defineConfig({
       injectManifestIntoHtml: false,
       prependManifestToJavaScript: true
     }),
+    createRootIndexOutputPlugin()
   ],
 
   build: {
     outDir: path.join(publicRoot, 'dist'),
     emptyOutDir: true,
     rollupOptions: {
-      input: path.join(publicRoot, 'index.html')
+      input: path.join(publicRoot, exampleGameIndex)
     }
   }
 });

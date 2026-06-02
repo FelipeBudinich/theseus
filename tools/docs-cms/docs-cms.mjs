@@ -472,7 +472,7 @@ function layout({ title, body, siteTitle, docsIndexPath, docsJsonPath }) {
   <header class="site-header">
     <a class="brand" href="${docsIndexPath}">${escapeHtml(siteTitle)}</a>
     <nav>
-      <a href="/">Game</a>
+      <a href="/">Games</a>
       <a href="${docsIndexPath}">Docs</a>
       <a href="${docsJsonPath}?fields=keyword,title,date,tags">JSON</a>
     </nav>
