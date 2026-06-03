@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 	<meta charset="utf-8">
@@ -6,16 +6,24 @@
 	<title>Theseus Games</title>
 	<link rel="stylesheet" href="/style.css">
 </head>
-<body class="landing-page">
-	<main class="landing-content">
+<body>
+	<header class="site-header">
+		<a class="brand" href="/">Theseus</a>
+		<nav>
+			<a href="/games.html">Games</a>
+			<a href="/docs.html">Docs</a>
+		</nav>
+	</header>
+	<main class="content">
 		<h1>Theseus Games</h1>
-		<p>Open a baked game or its source-served version.</p>
+		<p>Open a baked game, its source-served version, or the debug build.</p>
 		<ul class="game-list">
 			<li class="game-list-item">
 				<span class="game-name">Super Generic Jump'n'Run</span>
 				<span class="game-links">
 					<a class="button-link" href="/dist/example/index.html">Baked</a>
 					<a class="button-link" href="/games/example/index.html">Source</a>
+					<a class="button-link" href="/games/example/index.html?debug">Debug</a>
 				</span>
 			</li>
 			<li class="game-list-item">
@@ -23,6 +31,7 @@
 				<span class="game-links">
 					<a class="button-link" href="/dist/example2/index.html">Baked</a>
 					<a class="button-link" href="/games/example2/index.html">Source</a>
+					<a class="button-link" href="/games/example2/index.html?debug">Debug</a>
 				</span>
 			</li>
 		</ul>

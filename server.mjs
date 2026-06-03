@@ -64,7 +64,7 @@ const createApp = ({
     res.sendFile(path.join(staticRoot, 'index.html'));
   });
 
-  app.get('/dist.html', async (_req, res, next) => {
+  app.get('/games.html', async (_req, res, next) => {
     const distIndexPath = path.join(resolvedDistRoot, 'index.html');
 
     try {

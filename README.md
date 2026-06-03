@@ -45,7 +45,7 @@ npm run dev
 | --- | --- |
 | `/` | Opens the public landing page with a link to the baked game list. |
 | `/games/example/index.html?debug` | Runs the source-served game with the Impact debug panel enabled. |
-| `/dist.html` | Opens the generated baked game list from `public/dist/index.html` after `npm run bake`. |
+| `/games.html` | Opens the generated baked game list from `public/dist/index.html` after `npm run bake`. |
 | `/tools/weltmeister.html` | Opens the Weltmeister level editor. |
 | `/tools/font-tool.html` | Opens the font atlas generator. |
 | `/docs.html` | Opens the Impact runtime class reference from `public/docs/docs.md`. |
@@ -274,10 +274,10 @@ public/dist/<game>/
 After baking, open the generated list:
 
 ```text
-http://127.0.0.1:3000/dist.html
+http://127.0.0.1:3000/games.html
 ```
 
-The generated list links to both the baked game, such as `/dist/example/index.html`, and the source-served game, such as `/games/example/index.html`. Each baked game uses `/dist/<game>/` as its public base path and emits generated JavaScript and atlas assets under `/dist/<game>/assets/`.
+The generated list links to the baked game, such as `/dist/example/index.html`, the source-served game, such as `/games/example/index.html`, and the source debug entry, such as `/games/example/index.html?debug`. Each baked game uses `/dist/<game>/` as its public base path and emits generated JavaScript and atlas assets under `/dist/<game>/assets/`.
 
 ## Debug panel
 
@@ -288,7 +288,7 @@ http://127.0.0.1:3000/games/example/index.html?debug
 http://127.0.0.1:3000/games/example/index.html?debug=true
 ```
 
-The debug entry is resolved before `ig.main()` runs, so the game starts with debug instrumentation already available. Use the source route for inspection and profiling, and use `/dist.html` to reach baked-build checks.
+The debug entry is resolved before `ig.main()` runs, so the game starts with debug instrumentation already available. Use the source route or the Debug action on `/games.html` for inspection and profiling.
 
 ## Tests
 

@@ -46,6 +46,9 @@ export const createDocsRouter = ({
   docsBasePath = '/docs',
   docsIndexPath = '/docs.html',
   docsJsonPath = '/docs.json',
+  gamesIndexPath = '/games.html',
+  siteHomePath = '/',
+  siteBrand = 'Theseus',
   siteTitle = 'Theseus Docs'
 } = {}) => {
   if (!docsRoot) {
@@ -77,6 +80,9 @@ export const createDocsRouter = ({
   const renderLayout = (title, body, options = {}) => layout({
     title,
     body,
+    gamesIndexPath,
+    siteBrand,
+    siteHomePath,
     siteTitle,
     docsHomePath,
     docsJsonPath,
@@ -502,6 +508,9 @@ function renderMarkdownWithOutline(markdownText) {
 function layout({
   title,
   body,
+  gamesIndexPath,
+  siteBrand,
+  siteHomePath,
   siteTitle,
   docsHomePath,
   docsJsonPath,
@@ -519,11 +528,10 @@ function layout({
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="${docsHomePath}">${escapeHtml(siteTitle)}</a>
+    <a class="brand" href="${siteHomePath}">${escapeHtml(siteBrand)}</a>
     <nav>
-      <a href="/">Games</a>
+      <a href="${gamesIndexPath}">Games</a>
       <a href="${docsHomePath}">Docs</a>
-      <a href="${docsJsonPath}?fields=keyword,title,date,tags">JSON</a>
     </nav>
   </header>
   <main class="${escapeAttribute(contentClass)}">

@@ -44,7 +44,8 @@ const discoverGames = async ({ gamesRoot = defaultGamesRoot } = {}) => {
         name: directoryEntry.name,
         title: extractTitle(html) || directoryEntry.name,
         sourcePath: `/games/${gameUrlSegment}/index.html`,
-        bakedPath: `/dist/${gameUrlSegment}/index.html`
+        bakedPath: `/dist/${gameUrlSegment}/index.html`,
+        debugPath: `/games/${gameUrlSegment}/index.html?debug`
       });
     }
     catch (error) {
@@ -67,11 +68,12 @@ const renderGamesIndexHtml = (games) => {
 				<span class="game-links">
 					<a class="button-link" href="${escapeHtml(game.bakedPath)}">Baked</a>
 					<a class="button-link" href="${escapeHtml(game.sourcePath)}">Source</a>
+					<a class="button-link" href="${escapeHtml(game.debugPath ?? `${game.sourcePath}?debug`)}">Debug</a>
 				</span>
 			</li>`).join('\n')
     : '			<li class="game-list-item">No game folders found.</li>';
 
-  return `<!DOCTYPE html>
+  return `<!doctype html>
 <html lang="en">
 <head>
 	<meta charset="utf-8">
@@ -79,10 +81,17 @@ const renderGamesIndexHtml = (games) => {
 	<title>Theseus Games</title>
 	<link rel="stylesheet" href="/style.css">
 </head>
-<body class="landing-page">
-	<main class="landing-content">
+<body>
+	<header class="site-header">
+		<a class="brand" href="/">Theseus</a>
+		<nav>
+			<a href="/games.html">Games</a>
+			<a href="/docs.html">Docs</a>
+		</nav>
+	</header>
+	<main class="content">
 		<h1>Theseus Games</h1>
-		<p>Open a baked game or its source-served version.</p>
+		<p>Open a baked game, its source-served version, or the debug build.</p>
 		<ul class="game-list">
 ${gameList}
 		</ul>

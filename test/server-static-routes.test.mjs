@@ -128,8 +128,10 @@ test('/docs.html renders docs.md as the docs home', async (t) => {
   const response = await requestServer({ port, path: '/docs.html' });
 
   assert.equal(response.statusCode, 200);
-  assert.match(response.text, /<a class="brand" href="\/docs\.html">Theseus Docs<\/a>/);
+  assert.match(response.text, /<a class="brand" href="\/">Theseus<\/a>/);
+  assert.match(response.text, /<a href="\/games\.html">Games<\/a>/);
   assert.match(response.text, /<a href="\/docs\.html">Docs<\/a>/);
+  assert.doesNotMatch(response.text, /<a href="\/docs\.json\?fields=keyword,title,date,tags">JSON<\/a>/);
   assert.match(response.text, /<h1>Runtime Docs Home<\/h1>/);
   assert.match(response.text, /<h2 id="start-here">Start Here<\/h2>/);
   assert.match(response.text, /This is the docs home page\./);
@@ -215,8 +217,10 @@ test('/docs/:keyword renders an impact-style docs sidebar', async (t) => {
   const response = await requestServer({ port, path: '/docs/beta' });
 
   assert.equal(response.statusCode, 200);
-  assert.match(response.text, /<a class="brand" href="\/docs\.html">Theseus Docs<\/a>/);
+  assert.match(response.text, /<a class="brand" href="\/">Theseus<\/a>/);
+  assert.match(response.text, /<a href="\/games\.html">Games<\/a>/);
   assert.match(response.text, /<a href="\/docs\.html">Docs<\/a>/);
+  assert.doesNotMatch(response.text, /<a href="\/docs\.json\?fields=keyword,title,date,tags">JSON<\/a>/);
   assertInOrder(response.text, [
     '<a class="docs-sidebar-link" href="/docs/alpha">Alpha Doc</a>',
     '<a class="docs-sidebar-link" href="/docs/beta" aria-current="page">Beta Doc</a>',
@@ -242,8 +246,41 @@ test('/docs/:keyword renders an impact-style docs sidebar', async (t) => {
   );
 });
 
-test('/dist.html serves the generated baked games list when it exists', async (t) => {
+test('/games.html serves the generated baked games list when it exists', async (t) => {
   const distRoot = await makeTempDirectory('theseus-dist-route-');
+  t.after(() => fs.rm(distRoot, { recursive: true, force: true }));
+
+  await writeFile(
+    distRoot,
+    'index.html',
+    [
+      '<!doctype html>',
+      '<html>',
+      '<body><a href="/dist/example/index.html">Baked</a></body>',
+      '</html>'
+    ].join('\n')
+  );
+
+  const { port } = await startTestServer({ distRoot }, t);
+  const response = await requestServer({ port, path: '/games.html' });
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.text, await fs.readFile(path.join(distRoot, 'index.html'), 'utf8'));
+});
+
+test('/games.html returns 404 with a bake hint when no baked build exists', async (t) => {
+  const distRoot = await makeTempDirectory('theseus-empty-dist-');
+  t.after(() => fs.rm(distRoot, { recursive: true, force: true }));
+
+  const { port } = await startTestServer({ distRoot }, t);
+  const response = await requestServer({ port, path: '/games.html' });
+
+  assert.equal(response.statusCode, 404);
+  assert.match(response.text, /npm run bake/);
+});
+
+test('/dist.html is not an active route', async (t) => {
+  const distRoot = await makeTempDirectory('theseus-dist-old-route-');
   t.after(() => fs.rm(distRoot, { recursive: true, force: true }));
 
   await writeFile(
@@ -260,19 +297,8 @@ test('/dist.html serves the generated baked games list when it exists', async (t
   const { port } = await startTestServer({ distRoot }, t);
   const response = await requestServer({ port, path: '/dist.html' });
 
-  assert.equal(response.statusCode, 200);
-  assert.equal(response.text, await fs.readFile(path.join(distRoot, 'index.html'), 'utf8'));
-});
-
-test('/dist.html returns 404 with a bake hint when no baked build exists', async (t) => {
-  const distRoot = await makeTempDirectory('theseus-empty-dist-');
-  t.after(() => fs.rm(distRoot, { recursive: true, force: true }));
-
-  const { port } = await startTestServer({ distRoot }, t);
-  const response = await requestServer({ port, path: '/dist.html' });
-
   assert.equal(response.statusCode, 404);
-  assert.match(response.text, /npm run bake/);
+  assert.notEqual(response.headers.location, '/games.html');
 });
 
 test('/games/example/media/* serves files from public/games/example/media', async (t) => {
