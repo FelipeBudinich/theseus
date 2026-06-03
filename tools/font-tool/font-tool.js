@@ -154,37 +154,102 @@ const buildBlankGlyphWidth = ({ measuredWidth, spaceWidth }) =>
 const sanitizeClientOutputPath = (value) =>
   normalizePathSlashes(value).replace(/^\.\//, '').replace(/^\/+/, '');
 
-const renderGlyphPassOne = ({ character, fontDeclaration, fontSize, spaceWidth }) => {
-  const measurementCanvas = createCanvasElement();
-  measurementCanvas.width = 1;
-  measurementCanvas.height = 1;
-  const measurementContext = getCanvasContext(measurementCanvas);
-  applyTextContextSettings(measurementContext, fontDeclaration);
+const finiteMetric = (value, fallback) =>
+  typeof value === 'number' && Number.isFinite(value) ? value : fallback;
 
-  const textMetrics = measurementContext.measureText(character);
+export const normalizeGlyphTextMetrics = (textMetrics = {}, fontSize) => {
   const padding = Math.max(12, Math.ceil(fontSize * 2));
-  const ascent = Math.ceil(textMetrics.actualBoundingBoxAscent || fontSize);
-  const descent = Math.ceil(textMetrics.actualBoundingBoxDescent || Math.max(1, Math.ceil(fontSize * 0.5)));
-  const left = Math.ceil(Math.max(0, textMetrics.actualBoundingBoxLeft || 0));
+  const fallbackDescent = Math.max(1, Math.ceil(fontSize * 0.5));
+  const measuredWidth = Math.max(1, Math.ceil(textMetrics.width || fontSize / 2));
+  const ascent = Math.ceil(Math.max(0, finiteMetric(textMetrics.actualBoundingBoxAscent, fontSize)));
+  const descent = Math.ceil(Math.max(0, finiteMetric(textMetrics.actualBoundingBoxDescent, fallbackDescent)));
+  const left = Math.ceil(Math.max(0, finiteMetric(textMetrics.actualBoundingBoxLeft, 0)));
   const right = Math.ceil(
-    Math.max(1, textMetrics.actualBoundingBoxRight || textMetrics.width || Math.ceil(fontSize * 0.75))
+    Math.max(1, finiteMetric(textMetrics.actualBoundingBoxRight, textMetrics.width || Math.ceil(fontSize * 0.75)))
   );
-  const scratchWidth = Math.max(left + right + padding * 2, Math.ceil(textMetrics.width) + padding * 2, fontSize * 4);
+
+  return {
+    ascent,
+    descent,
+    left,
+    measuredWidth,
+    padding,
+    right
+  };
+};
+
+export const buildSharedBaselineMetrics = (glyphMetrics, fontSize) => {
+  let ascent = 0;
+  let descent = 0;
+  const padding = Math.max(12, Math.ceil(fontSize * 2));
+
+  for (const metrics of glyphMetrics) {
+    if (!metrics) {
+      continue;
+    }
+
+    ascent = Math.max(ascent, metrics.ascent);
+    descent = Math.max(descent, metrics.descent);
+  }
+
+  if (ascent + descent < 1) {
+    ascent = Math.ceil(fontSize);
+    descent = Math.max(1, Math.ceil(fontSize * 0.5));
+  }
+
   const scratchHeight = Math.max(ascent + descent + padding * 2, fontSize * 4);
+
+  return {
+    ascent,
+    baselineY: padding + ascent,
+    descent,
+    padding,
+    scratchHeight
+  };
+};
+
+export const buildBaselineGlyphPlacement = ({ glyphMetrics, baselineMetrics, fontSize }) => {
+  const padding = baselineMetrics.padding;
+  const { left, measuredWidth, right } = glyphMetrics;
+  const scratchWidth = Math.max(
+    left + right + padding * 2,
+    measuredWidth + padding * 2,
+    fontSize * 4
+  );
+
+  return {
+    drawX: padding + left,
+    drawY: baselineMetrics.baselineY,
+    expectedMaxY: baselineMetrics.baselineY + glyphMetrics.descent,
+    expectedMinY: baselineMetrics.baselineY - glyphMetrics.ascent,
+    scratchHeight: baselineMetrics.scratchHeight,
+    scratchWidth
+  };
+};
+
+const measureGlyph = ({ character, measurementContext, fontSize }) => {
+  const textMetrics = measurementContext.measureText(character);
+
+  return {
+    character,
+    glyphMetrics: normalizeGlyphTextMetrics(textMetrics, fontSize)
+  };
+};
+
+const renderGlyph = ({ measuredGlyph, baselineMetrics, fontDeclaration, fontSize, spaceWidth }) => {
+  const { character, glyphMetrics } = measuredGlyph;
+  const placement = buildBaselineGlyphPlacement({ glyphMetrics, baselineMetrics, fontSize });
   const scratchCanvas = createCanvasElement();
-  scratchCanvas.width = scratchWidth;
-  scratchCanvas.height = scratchHeight;
+  scratchCanvas.width = placement.scratchWidth;
+  scratchCanvas.height = placement.scratchHeight;
 
   const scratchContext = getCanvasContext(scratchCanvas, { willReadFrequently: true });
   applyTextContextSettings(scratchContext, fontDeclaration);
-  const drawX = padding + left;
-  const drawY = padding + ascent;
 
-  scratchContext.fillText(character, drawX, drawY);
+  scratchContext.fillText(character, placement.drawX, placement.drawY);
 
-  const imageData = scratchContext.getImageData(0, 0, scratchWidth, scratchHeight);
-  const bounds = scanAlphaBounds(imageData.data, scratchWidth, scratchHeight);
-  const measuredWidth = Math.max(1, Math.ceil(textMetrics.width || fontSize / 2));
+  const imageData = scratchContext.getImageData(0, 0, placement.scratchWidth, placement.scratchHeight);
+  const bounds = scanAlphaBounds(imageData.data, placement.scratchWidth, placement.scratchHeight);
 
   if (!bounds) {
     return {
@@ -192,7 +257,7 @@ const renderGlyphPassOne = ({ character, fontDeclaration, fontSize, spaceWidth }
       cropCanvas: null,
       minY: null,
       maxY: null,
-      visibleWidth: buildBlankGlyphWidth({ measuredWidth, spaceWidth })
+      visibleWidth: buildBlankGlyphWidth({ measuredWidth: glyphMetrics.measuredWidth, spaceWidth })
     };
   }
 
@@ -422,10 +487,28 @@ const renderFontAtlas = ({
 }) => {
   let globalTop = Number.POSITIVE_INFINITY;
   let globalBottom = Number.NEGATIVE_INFINITY;
+  const measurementCanvas = createCanvasElement();
+  measurementCanvas.width = 1;
+  measurementCanvas.height = 1;
+  const measurementContext = getCanvasContext(measurementCanvas);
+  applyTextContextSettings(measurementContext, fontDeclaration);
 
-  const glyphs = characters.map((character) => {
-    const glyph = renderGlyphPassOne({
+  const measuredGlyphs = characters.map((character) =>
+    measureGlyph({
       character,
+      measurementContext,
+      fontSize
+    })
+  );
+  const baselineMetrics = buildSharedBaselineMetrics(
+    measuredGlyphs.map((glyph) => glyph.glyphMetrics),
+    fontSize
+  );
+
+  const glyphs = measuredGlyphs.map((measuredGlyph) => {
+    const glyph = renderGlyph({
+      baselineMetrics,
+      measuredGlyph,
       fontDeclaration,
       fontSize,
       spaceWidth
@@ -443,8 +526,8 @@ const renderFontAtlas = ({
   });
 
   if (!Number.isFinite(globalTop) || !Number.isFinite(globalBottom)) {
-    globalTop = 0;
-    globalBottom = Math.max(0, Math.ceil(fontSize) - 1);
+    globalTop = baselineMetrics.baselineY - baselineMetrics.ascent;
+    globalBottom = Math.max(globalTop, baselineMetrics.baselineY + baselineMetrics.descent - 1);
   }
 
   const glyphHeight = globalBottom - globalTop + 1;

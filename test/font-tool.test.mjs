@@ -2,10 +2,13 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  buildBaselineGlyphPlacement,
   buildDefaultOutputPath,
   buildMetricAlphaRow,
+  buildSharedBaselineMetrics,
   buildValidationSampleText,
   getExpectedGlyphCount,
+  normalizeGlyphTextMetrics,
   parseMetricAlphaRow,
   slugifyFontName,
   validateAtlasMetrics
@@ -43,6 +46,91 @@ test('parseMetricAlphaRow exposes the classic extra zero-width glyph caused by a
   assert.deepEqual(parsed.widthMap, [2, 5, 0]);
   assert.deepEqual(parsed.indices, [0, 3, 9]);
   assert.equal(parsed.endsWithOpaqueRun, false);
+});
+
+test('shared baseline metrics use one baseline for glyphs with different ascents', () => {
+  const fontSize = 16;
+  const tallGlyph = normalizeGlyphTextMetrics({
+    width: 9,
+    actualBoundingBoxAscent: 12,
+    actualBoundingBoxDescent: 2,
+    actualBoundingBoxLeft: 0,
+    actualBoundingBoxRight: 9
+  }, fontSize);
+  const lowGlyph = normalizeGlyphTextMetrics({
+    width: 8,
+    actualBoundingBoxAscent: 7,
+    actualBoundingBoxDescent: 5,
+    actualBoundingBoxLeft: 0,
+    actualBoundingBoxRight: 8
+  }, fontSize);
+  const baseline = buildSharedBaselineMetrics([tallGlyph, lowGlyph], fontSize);
+  const tallPlacement = buildBaselineGlyphPlacement({
+    glyphMetrics: tallGlyph,
+    baselineMetrics: baseline,
+    fontSize
+  });
+  const lowPlacement = buildBaselineGlyphPlacement({
+    glyphMetrics: lowGlyph,
+    baselineMetrics: baseline,
+    fontSize
+  });
+
+  assert.equal(baseline.ascent, 12);
+  assert.equal(baseline.descent, 5);
+  assert.equal(tallPlacement.drawY, lowPlacement.drawY);
+});
+
+test('baseline placement preserves descenders below the shared baseline', () => {
+  const fontSize = 16;
+  const capGlyph = normalizeGlyphTextMetrics({
+    width: 10,
+    actualBoundingBoxAscent: 12,
+    actualBoundingBoxDescent: 0,
+    actualBoundingBoxLeft: 0,
+    actualBoundingBoxRight: 10
+  }, fontSize);
+  const descenderGlyph = normalizeGlyphTextMetrics({
+    width: 8,
+    actualBoundingBoxAscent: 7,
+    actualBoundingBoxDescent: 5,
+    actualBoundingBoxLeft: 0,
+    actualBoundingBoxRight: 8
+  }, fontSize);
+  const baseline = buildSharedBaselineMetrics([capGlyph, descenderGlyph], fontSize);
+  const capPlacement = buildBaselineGlyphPlacement({
+    glyphMetrics: capGlyph,
+    baselineMetrics: baseline,
+    fontSize
+  });
+  const descenderPlacement = buildBaselineGlyphPlacement({
+    glyphMetrics: descenderGlyph,
+    baselineMetrics: baseline,
+    fontSize
+  });
+
+  assert.equal(capPlacement.drawY, descenderPlacement.drawY);
+  assert.notEqual(capPlacement.expectedMinY, descenderPlacement.expectedMinY);
+  assert.ok(descenderPlacement.expectedMinY > capPlacement.expectedMinY);
+  assert.ok(descenderPlacement.expectedMaxY > capPlacement.expectedMaxY);
+});
+
+test('glyph metric normalization falls back when text bounds are missing', () => {
+  const fontSize = 16;
+  const glyphMetrics = normalizeGlyphTextMetrics({ width: 0 }, fontSize);
+  const baseline = buildSharedBaselineMetrics([glyphMetrics], fontSize);
+
+  assert.deepEqual(glyphMetrics, {
+    ascent: 16,
+    descent: 8,
+    left: 0,
+    measuredWidth: 8,
+    padding: 32,
+    right: 12
+  });
+  assert.equal(baseline.ascent, 16);
+  assert.equal(baseline.descent, 8);
+  assert.equal(baseline.baselineY, 48);
 });
 
 test('validateAtlasMetrics rejects spacing and count problems that would break runtime parsing', () => {
