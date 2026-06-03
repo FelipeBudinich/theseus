@@ -44,12 +44,8 @@ npm run dev
 | URL | Purpose |
 | --- | --- |
 | `/` | Opens the public landing page with a link to the baked game list. |
-| `/games/example/index.html` | Runs the source-served sample game. |
-| `/games/example2/index.html` | Runs the source-served copied sample game. |
 | `/games/example/index.html?debug` | Runs the source-served game with the Impact debug panel enabled. |
 | `/dist.html` | Opens the generated baked game list from `public/dist/index.html` after `npm run bake`. |
-| `/dist/example/index.html` | Runs the baked `example` game after `npm run bake`. |
-| `/dist/example2/index.html` | Runs the baked `example2` game after `npm run bake`. |
 | `/tools/weltmeister.html` | Opens the Weltmeister level editor. |
 | `/tools/font-tool.html` | Opens the font atlas generator. |
 | `/docs.html` | Lists Markdown documentation from `public/docs/`. |
