@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<title>Hello World</title>
+	<style>
+		html,
+		body {
+			background: #090b12;
+			height: 100%;
+			margin: 0;
+			overflow: hidden;
+		}
+
+		body {
+			display: grid;
+			place-items: center;
+		}
+
+		#canvas {
+			background: #111523;
+			box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+			display: block;
+			image-rendering: pixelated;
+			touch-action: none;
+		}
+	</style>
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+	<script>
+		window.ImpactPrefix = '/';
+	</script>
+	<script type="module" src="main.js"></script>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+</body>
+</html>
