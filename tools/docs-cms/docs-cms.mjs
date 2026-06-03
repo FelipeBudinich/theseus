@@ -15,6 +15,7 @@ hljs.registerLanguage('php', php);
 hljs.registerLanguage('sql', sql);
 
 const dateFormat = 'M d, Y - H:i:s';
+const OUTLINE_HEADING_DEPTHS = new Set([2, 3]);
 const highlightLanguages = ['c', 'javascript', 'js', 'php', 'sql'];
 const markdownOptions = {
   gfm: true,
@@ -38,25 +39,7 @@ const indexCache = new Map();
 let debugStartedAt = performance.now();
 let lastFoundDocs = 0;
 
-const markdown = new Marked(markdownOptions);
-markdown.use({
-  renderer: {
-    code(token) {
-      const code = token.text ?? '';
-      const originalLang = normalizeLanguageName(token.lang);
-      const language = languageAliases.get(originalLang) ?? originalLang;
-      const langClass = originalLang ? ` language-${escapeAttribute(originalLang)}` : '';
-      const allowedLanguages = new Set(highlightLanguages);
-
-      if (language && allowedLanguages.has(language) && hljs.getLanguage(language)) {
-        const highlighted = hljs.highlight(code, { language, ignoreIllegals: true }).value;
-        return `<pre><code class="hljs${langClass}">${highlighted}</code></pre>\n`;
-      }
-
-      return `<pre><code${langClass ? ` class="${langClass.trim()}"` : ''}>${escapeHtml(code)}</code></pre>\n`;
-    }
-  }
-});
+const markdown = createMarkdownRenderer();
 
 export const createDocsRouter = ({
   docsRoot,
@@ -72,33 +55,47 @@ export const createDocsRouter = ({
   const resolvedDocsRoot = path.resolve(docsRoot);
   const router = express.Router();
   const docs = () => new Selector(resolvedDocsRoot);
+  const docsHomeKeyword = 'docs';
+  const docsHomePath = docsIndexPath;
 
-  const renderLayout = (title, body) => layout({
+  const renderDocByKeyword = (keyword, res, next) => {
+    withDebugInfo(next, () => {
+      const selector = docs();
+      const note = selector.one({ keyword });
+      if (!note) {
+        render404(res, renderLayout);
+        return;
+      }
+
+      const sidebarNotes = selector
+        .query('title', Selector.SORT_ASC, 0)
+        .filter((sidebarNote) => sidebarNote.keyword !== docsHomeKeyword);
+      res.send(renderDocPage(note, { renderLayout, docsBasePath, sidebarNotes }));
+    });
+  };
+
+  const renderLayout = (title, body, options = {}) => layout({
     title,
     body,
     siteTitle,
-    docsIndexPath,
-    docsJsonPath
+    docsHomePath,
+    docsJsonPath,
+    ...options
   });
 
-  router.get(docsIndexPath, (req, res, next) => {
-    withDebugInfo(next, () => {
-      const page = parsePositiveInteger(req.query.page, 0);
-      const notes = docs().newest(10, { page });
-
-      res.send(renderDocListPage(notes, {
-        title: 'Docs',
-        heading: 'Docs',
-        total: foundDocs(),
-        page,
-        pagePath: docsIndexPath,
-        renderLayout,
-        docsBasePath
-      }));
-    });
+  router.get(docsIndexPath, (_req, res, next) => {
+    renderDocByKeyword(docsHomeKeyword, res, next);
   });
 
   router.get(docsBasePath, (_req, res) => {
+    res.redirect(301, docsIndexPath);
+  });
+
+  router.get(`${docsBasePath}/class-reference`, (_req, res) => {
+    res.redirect(301, docsIndexPath);
+  });
+
+  router.get(`${docsBasePath}/${docsHomeKeyword}`, (_req, res) => {
     res.redirect(301, docsIndexPath);
   });
 
@@ -125,15 +122,7 @@ export const createDocsRouter = ({
       return;
     }
 
-    withDebugInfo(next, () => {
-      const note = docs().one({ keyword: req.params.keyword });
-      if (!note) {
-        render404(res, renderLayout);
-        return;
-      }
-
-      res.send(renderDocPage(note, { renderLayout, docsBasePath }));
-    });
+    renderDocByKeyword(req.params.keyword, res, next);
   });
 
   router.get(docsJsonPath, (req, res, next) => {
@@ -359,13 +348,22 @@ class Note {
   get body() {
     if (this._body !== null) return this._body;
 
+    const bodyMarkdown = this.getBodyMarkdown();
+    this._body = this.raw ? bodyMarkdown : renderMarkdown(bodyMarkdown);
+    return this._body;
+  }
+
+  renderBodyWithOutline() {
+    const bodyMarkdown = this.getBodyMarkdown();
+    return renderMarkdownWithOutline(bodyMarkdown);
+  }
+
+  getBodyMarkdown() {
     debugInfo.openedDocs.push(this.path);
     const markdownText = readContent(this.path);
-    const bodyMarkdown = this.raw || this._meta.titleSource !== 'heading'
+    return this.raw || this._meta.titleSource !== 'heading'
       ? markdownText
       : stripFirstH1(markdownText);
-    this._body = this.raw ? markdownText : renderMarkdown(bodyMarkdown);
-    return this._body;
   }
 
   hasTag(tag) {
@@ -453,11 +451,62 @@ function splitHeader(file) {
   return { header: '', body: file };
 }
 
+function createMarkdownRenderer({ outline } = {}) {
+  const renderer = {
+    code: renderCodeToken
+  };
+
+  if (outline) {
+    const headingCounts = new Map();
+    renderer.heading = function heading(token) {
+      const text = plainTextFromTokens(token.tokens) || token.text || '';
+      const id = uniqueHeadingId(slugifyHeading(text), headingCounts);
+      if (OUTLINE_HEADING_DEPTHS.has(token.depth)) {
+        outline.push({ depth: token.depth, id, text });
+      }
+
+      return `<h${token.depth} id="${escapeAttribute(id)}">${this.parser.parseInline(token.tokens)}</h${token.depth}>\n`;
+    };
+  }
+
+  const instance = new Marked(markdownOptions);
+  instance.use({ renderer });
+  return instance;
+}
+
+function renderCodeToken(token) {
+  const code = token.text ?? '';
+  const originalLang = normalizeLanguageName(token.lang);
+  const language = languageAliases.get(originalLang) ?? originalLang;
+  const langClass = originalLang ? ` language-${escapeAttribute(originalLang)}` : '';
+  const allowedLanguages = new Set(highlightLanguages);
+
+  if (language && allowedLanguages.has(language) && hljs.getLanguage(language)) {
+    const highlighted = hljs.highlight(code, { language, ignoreIllegals: true }).value;
+    return `<pre><code class="hljs${langClass}">${highlighted}</code></pre>\n`;
+  }
+
+  return `<pre><code${langClass ? ` class="${langClass.trim()}"` : ''}>${escapeHtml(code)}</code></pre>\n`;
+}
+
 function renderMarkdown(markdownText) {
   return markdown.parse(markdownText ?? '');
 }
 
-function layout({ title, body, siteTitle, docsIndexPath, docsJsonPath }) {
+function renderMarkdownWithOutline(markdownText) {
+  const outline = [];
+  const body = createMarkdownRenderer({ outline }).parse(markdownText ?? '');
+  return { body, outline };
+}
+
+function layout({
+  title,
+  body,
+  siteTitle,
+  docsHomePath,
+  docsJsonPath,
+  contentClass = 'content'
+}) {
   const pageTitle = title || siteTitle;
   return `<!doctype html>
 <html lang="en">
@@ -470,14 +519,14 @@ function layout({ title, body, siteTitle, docsIndexPath, docsJsonPath }) {
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="${docsIndexPath}">${escapeHtml(siteTitle)}</a>
+    <a class="brand" href="${docsHomePath}">${escapeHtml(siteTitle)}</a>
     <nav>
       <a href="/">Games</a>
-      <a href="${docsIndexPath}">Docs</a>
+      <a href="${docsHomePath}">Docs</a>
       <a href="${docsJsonPath}?fields=keyword,title,date,tags">JSON</a>
     </nav>
   </header>
-  <main class="content">
+  <main class="${escapeAttribute(contentClass)}">
     ${body}
   </main>
   <footer class="site-footer">
@@ -487,19 +536,56 @@ function layout({ title, body, siteTitle, docsIndexPath, docsJsonPath }) {
 </html>`;
 }
 
-function renderDocPage(note, { renderLayout, docsBasePath }) {
+function renderDocPage(note, { renderLayout, docsBasePath, sidebarNotes }) {
+  const { body, outline } = note.renderBodyWithOutline();
   const tags = note.tags.length
     ? `<span>Tags: ${note.tags.map((tag) => `<a href="${docsBasePath}/tag/${encodeURIComponent(tag)}">${tag}</a>`).join(', ')}</span>`
     : '';
 
-  return renderLayout(note.title, `<article class="note">
-    <h1>${note.title}</h1>
-    ${note.body}
-    <p class="note-meta">
-      <span>Created at ${note.date.format('Y.m.d')}</span>
-      ${tags}
-    </p>
-  </article>`);
+  return renderLayout(note.title, `<div class="docs-layout">
+    ${renderDocsSidebar({
+      notes: sidebarNotes,
+      currentKeyword: note.keyword,
+      outline,
+      docsBasePath
+    })}
+    <article class="note">
+      <h1>${note.title}</h1>
+      ${body}
+      <p class="note-meta">
+        <span>Created at ${note.date.format('Y.m.d')}</span>
+        ${tags}
+      </p>
+    </article>
+  </div>`, { contentClass: 'content content--docs' });
+}
+
+function renderDocsSidebar({ notes, currentKeyword, outline, docsBasePath }) {
+  const docItems = notes.map((note) => {
+    const currentAttribute = note.keyword === currentKeyword ? ' aria-current="page"' : '';
+    return `<li>
+      <a class="docs-sidebar-link" href="${docsBasePath}/${encodeURIComponent(note.keyword)}"${currentAttribute}>${note.title ?? note.keyword}</a>
+    </li>`;
+  }).join('');
+
+  const outlineItems = outline.map((heading) => `<li>
+    <a class="docs-outline-link docs-outline-link--depth-${heading.depth}" href="#${escapeAttribute(heading.id)}">${escapeHtml(heading.text)}</a>
+  </li>`).join('');
+
+  const outlineNav = outlineItems
+    ? `<nav class="docs-sidebar-section docs-outline" aria-labelledby="docs-outline-heading">
+      <h2 id="docs-outline-heading">On This Page</h2>
+      <ul>${outlineItems}</ul>
+    </nav>`
+    : '';
+
+  return `<aside class="docs-sidebar" aria-label="Documentation navigation">
+    <nav class="docs-sidebar-section docs-sidebar-docs" aria-labelledby="docs-sidebar-docs-heading">
+      <h2 id="docs-sidebar-docs-heading">Docs</h2>
+      <ul>${docItems}</ul>
+    </nav>
+    ${outlineNav}
+  </aside>`;
 }
 
 function renderDocListPage(notes, {
@@ -507,6 +593,7 @@ function renderDocListPage(notes, {
   heading,
   total,
   page,
+  pageSize = 0,
   pagePath,
   renderLayout,
   docsBasePath
@@ -518,7 +605,7 @@ function renderDocListPage(notes, {
 
   const pagination = `<nav class="pagination">
     ${page > 0 ? `<a href="${pagePath}?page=${page - 1}">Previous</a>` : ''}
-    ${(page + 1) * 10 < total ? `<a href="${pagePath}?page=${page + 1}">Next</a>` : ''}
+    ${pageSize > 0 && (page + 1) * pageSize < total ? `<a href="${pagePath}?page=${page + 1}">Next</a>` : ''}
   </nav>`;
 
   return renderLayout(title, `<section class="note-list">
@@ -724,6 +811,32 @@ function stripFirstH1(markdownText) {
     lines.splice(index, 1);
   }
   return lines.join('\n');
+}
+
+function plainTextFromTokens(tokens = []) {
+  return tokens.map((token) => {
+    if (Array.isArray(token.tokens)) {
+      return plainTextFromTokens(token.tokens);
+    }
+    return token.text ?? '';
+  }).join('');
+}
+
+function slugifyHeading(value) {
+  const slug = String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/&[a-z0-9#]+;/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  return slug || 'section';
+}
+
+function uniqueHeadingId(baseSlug, counts) {
+  const count = counts.get(baseSlug) ?? 0;
+  counts.set(baseSlug, count + 1);
+  return count === 0 ? baseSlug : `${baseSlug}-${count + 1}`;
 }
 
 function escapeHtml(value) {

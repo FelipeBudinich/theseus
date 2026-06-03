@@ -80,6 +80,16 @@ const requestServer = ({ method = 'GET', port, path: requestPath, headers = {}, 
     request.end();
   });
 
+const assertInOrder = (text, snippets) => {
+  let previousIndex = -1;
+  for (const snippet of snippets) {
+    const currentIndex = text.indexOf(snippet);
+    assert.notEqual(currentIndex, -1, `Expected to find ${snippet}`);
+    assert.ok(currentIndex > previousIndex, `Expected ${snippet} to appear in order`);
+    previousIndex = currentIndex;
+  }
+};
+
 test('/ serves public/index.html', async (t) => {
   const { port } = await startTestServer({}, t);
   const response = await requestServer({ port, path: '/' });
@@ -96,6 +106,140 @@ test('source example page sets ImpactPrefix before loading the game module', asy
   assert.notEqual(prefixIndex, -1);
   assert.notEqual(moduleIndex, -1);
   assert.ok(prefixIndex < moduleIndex);
+});
+
+test('/docs.html renders docs.md as the docs home', async (t) => {
+  const staticRoot = await makeTempDirectory('theseus-docs-home-');
+  t.after(() => fs.rm(staticRoot, { recursive: true, force: true }));
+
+  await writeFile(
+    staticRoot,
+    'docs/docs.md',
+    [
+      '# Runtime Docs Home',
+      '',
+      '## Start Here',
+      '',
+      'This is the docs home page.'
+    ].join('\n')
+  );
+
+  const { port } = await startTestServer({ staticRoot }, t);
+  const response = await requestServer({ port, path: '/docs.html' });
+
+  assert.equal(response.statusCode, 200);
+  assert.match(response.text, /<a class="brand" href="\/docs\.html">Theseus Docs<\/a>/);
+  assert.match(response.text, /<a href="\/docs\.html">Docs<\/a>/);
+  assert.match(response.text, /<h1>Runtime Docs Home<\/h1>/);
+  assert.match(response.text, /<h2 id="start-here">Start Here<\/h2>/);
+  assert.match(response.text, /This is the docs home page\./);
+});
+
+test('/docs entry points redirect to docs.html', async (t) => {
+  const { port } = await startTestServer({}, t);
+
+  for (const requestPath of ['/docs', '/docs/', '/docs/class-reference', '/docs/docs']) {
+    const response = await requestServer({ port, path: requestPath });
+
+    assert.equal(response.statusCode, 301);
+    assert.equal(response.headers.location, '/docs.html');
+  }
+});
+
+test('/docs/:keyword renders an impact-style docs sidebar', async (t) => {
+  const staticRoot = await makeTempDirectory('theseus-docs-sidebar-');
+  t.after(() => fs.rm(staticRoot, { recursive: true, force: true }));
+
+  await Promise.all([
+    writeFile(
+      staticRoot,
+      'docs/docs.md',
+      [
+        'title: Home Doc',
+        '---',
+        '# Home Doc',
+        '',
+        '## Home Section'
+      ].join('\n')
+    ),
+    writeFile(
+      staticRoot,
+      'docs/zeta.md',
+      [
+        'title: Zeta Doc',
+        '---',
+        '# Zeta Doc',
+        '',
+        '## Zeta Section'
+      ].join('\n')
+    ),
+    writeFile(
+      staticRoot,
+      'docs/beta.md',
+      [
+        'title: Beta Doc',
+        '---',
+        '# Beta Doc',
+        '',
+        '## Section One',
+        '',
+        '### Method Details',
+        '',
+        '## Section One'
+      ].join('\n')
+    ),
+    writeFile(
+      staticRoot,
+      'docs/alpha.md',
+      [
+        'title: Alpha Doc',
+        '---',
+        '# Alpha Doc',
+        '',
+        '## Alpha Section'
+      ].join('\n')
+    ),
+    writeFile(
+      staticRoot,
+      'docs/inactive.md',
+      [
+        'title: Inactive Doc',
+        'active: false',
+        '---',
+        '# Inactive Doc'
+      ].join('\n')
+    )
+  ]);
+
+  const { port } = await startTestServer({ staticRoot }, t);
+  const response = await requestServer({ port, path: '/docs/beta' });
+
+  assert.equal(response.statusCode, 200);
+  assert.match(response.text, /<a class="brand" href="\/docs\.html">Theseus Docs<\/a>/);
+  assert.match(response.text, /<a href="\/docs\.html">Docs<\/a>/);
+  assertInOrder(response.text, [
+    '<a class="docs-sidebar-link" href="/docs/alpha">Alpha Doc</a>',
+    '<a class="docs-sidebar-link" href="/docs/beta" aria-current="page">Beta Doc</a>',
+    '<a class="docs-sidebar-link" href="/docs/zeta">Zeta Doc</a>'
+  ]);
+  assert.doesNotMatch(response.text, /href="\/docs\/docs"/);
+  assert.doesNotMatch(response.text, /Home Doc/);
+  assert.doesNotMatch(response.text, /Inactive Doc/);
+  assert.match(response.text, /<h2 id="section-one">Section One<\/h2>/);
+  assert.match(response.text, /<h3 id="method-details">Method Details<\/h3>/);
+  assert.match(response.text, /<h2 id="section-one-2">Section One<\/h2>/);
+  assert.match(
+    response.text,
+    /<a class="docs-outline-link docs-outline-link--depth-2" href="#section-one">Section One<\/a>/
+  );
+  assert.match(
+    response.text,
+    /<a class="docs-outline-link docs-outline-link--depth-3" href="#method-details">Method Details<\/a>/
+  );
+  assert.match(
+    response.text,
+    /<a class="docs-outline-link docs-outline-link--depth-2" href="#section-one-2">Section One<\/a>/
+  );
 });
 
 test('/dist.html serves the generated baked games list when it exists', async (t) => {

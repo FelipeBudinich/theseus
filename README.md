@@ -48,7 +48,8 @@ npm run dev
 | `/dist.html` | Opens the generated baked game list from `public/dist/index.html` after `npm run bake`. |
 | `/tools/weltmeister.html` | Opens the Weltmeister level editor. |
 | `/tools/font-tool.html` | Opens the font atlas generator. |
-| `/docs.html` | Lists Markdown documentation from `public/docs/`. |
+| `/docs.html` | Opens the Impact runtime class reference from `public/docs/docs.md`. |
+| `/docs` | Redirects to `/docs.html`. |
 | `/docs/<keyword>` | Renders a single Markdown doc by filename keyword. |
 | `/docs.json?fields=keyword,title,date,tags` | Returns docs metadata as JSON. |
 
@@ -242,7 +243,8 @@ font.firstChar = 32;
 
 Markdown files in `public/docs/` are served through the docs CMS router:
 
-- `/docs.html` lists active docs.
+- `/docs.html` opens the Impact runtime class reference from `public/docs/docs.md`.
+- `/docs` redirects to `/docs.html`.
 - `/docs/<keyword>` renders a doc by filename keyword.
 - `/docs/tag/<tag>` lists docs with a tag.
 - `/docs.json` and `/json` expose docs metadata and selected fields as JSON.
