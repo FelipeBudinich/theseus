@@ -4,6 +4,9 @@ const VALIDATION_PREVIEW_SCALE = 4;
 const PRINTABLE_SAMPLE_LIMIT = 48;
 const PRINTABLE_SAMPLE_COLUMNS = 24;
 const DEFAULT_FILL_COLOR = '#ffffff';
+const PROJECT_PICKER_ROOT = 'games';
+const OUTPUT_PATH_BROWSE_URL = '/tools/weltmeister/api/browse';
+export const FONT_OUTPUT_PATH_STORAGE_KEY = 'theseus.fontTool.outputPath';
 
 export const FONT_PRESETS = Object.freeze([
   { id: 'printable-ascii', label: 'Printable ASCII (32-126)', firstChar: 32, lastChar: 126 },
@@ -152,7 +155,121 @@ const buildBlankGlyphWidth = ({ measuredWidth, spaceWidth }) =>
   clampMinimum(spaceWidth ?? Math.ceil(measuredWidth), 1);
 
 const sanitizeClientOutputPath = (value) =>
-  normalizePathSlashes(value).replace(/^\.\//, '').replace(/^\/+/, '');
+  normalizePathSlashes(value).trim().replace(/^\.\//, '').replace(/^\/+/, '');
+
+const splitPathSegments = (value) =>
+  sanitizeClientOutputPath(value)
+    .replace(/\/+$/g, '')
+    .split('/')
+    .filter(Boolean);
+
+const hasUnsafePathSegment = (segments) =>
+  segments.some((segment) => segment === '.' || segment === '..');
+
+export const normalizeFontOutputDirectory = (value = PROJECT_PICKER_ROOT) => {
+  const segments = splitPathSegments(value || PROJECT_PICKER_ROOT);
+
+  if (!segments.length) {
+    return PROJECT_PICKER_ROOT;
+  }
+
+  if (segments[0] !== PROJECT_PICKER_ROOT || hasUnsafePathSegment(segments)) {
+    throw new Error('Output folder must stay inside games/.');
+  }
+
+  return segments.join('/');
+};
+
+export const normalizeFontOutputFileName = (value) => {
+  const fileName = normalizePathSlashes(value).trim();
+
+  if (
+    !fileName ||
+    fileName.includes('/') ||
+    fileName.startsWith('.') ||
+    fileName.includes('..') ||
+    fileName === '.'
+  ) {
+    throw new Error('Filename must be a PNG file name without folders.');
+  }
+
+  return fileName.toLowerCase().endsWith('.png') ? fileName : `${fileName}.png`;
+};
+
+export const buildProjectFontOutputPath = ({ directoryPath, fileName }) =>
+  `${normalizeFontOutputDirectory(directoryPath)}/${normalizeFontOutputFileName(fileName)}`;
+
+export const normalizeFontOutputPath = (value) => {
+  const segments = splitPathSegments(value);
+
+  if (
+    segments.length < 2 ||
+    segments[0] !== PROJECT_PICKER_ROOT ||
+    hasUnsafePathSegment(segments)
+  ) {
+    throw new Error('Output path must stay inside games/ and end with .png.');
+  }
+
+  const fileName = segments[segments.length - 1];
+  if (
+    fileName.startsWith('.') ||
+    fileName.includes('..') ||
+    !fileName.toLowerCase().endsWith('.png')
+  ) {
+    throw new Error('Output path must stay inside games/ and end with .png.');
+  }
+
+  return segments.join('/');
+};
+
+export const getFontOutputFileNameFromPath = (value) => {
+  const segments = normalizeFontOutputPath(value).split('/');
+  return segments[segments.length - 1];
+};
+
+export const getFontOutputPickerStart = (value) => {
+  try {
+    const segments = normalizeFontOutputPath(value).split('/');
+    const fileName = segments.pop();
+
+    return {
+      directoryPath: segments.join('/'),
+      fileName
+    };
+  } catch {
+    return {
+      directoryPath: PROJECT_PICKER_ROOT,
+      fileName: 'font.font.png'
+    };
+  }
+};
+
+export const readPersistedFontOutputPath = (storage) => {
+  try {
+    if (!storage || typeof storage.getItem !== 'function') {
+      return null;
+    }
+
+    const storedValue = storage.getItem(FONT_OUTPUT_PATH_STORAGE_KEY);
+    return storedValue ? normalizeFontOutputPath(storedValue) : null;
+  } catch {
+    return null;
+  }
+};
+
+export const writePersistedFontOutputPath = (storage, value) => {
+  try {
+    if (!storage || typeof storage.setItem !== 'function') {
+      return null;
+    }
+
+    const outputPath = normalizeFontOutputPath(value);
+    storage.setItem(FONT_OUTPUT_PATH_STORAGE_KEY, outputPath);
+    return outputPath;
+  } catch {
+    return null;
+  }
+};
 
 const finiteMetric = (value, fallback) =>
   typeof value === 'number' && Number.isFinite(value) ? value : fallback;
@@ -698,11 +815,14 @@ const buildUsageSnippet = (filePath, firstChar) => {
   ].join('\n');
 };
 
-const createState = (elements) => ({
+const createState = (elements, outputPathStorage = null) => ({
   elements,
   localFonts: new Map(),
   manualMode: false,
   outputPathDirty: false,
+  outputPickerCurrentDir: PROJECT_PICKER_ROOT,
+  outputPickerLastFocus: null,
+  outputPathStorage,
   activeTempFontFace: null,
   activeTempFontFamily: '',
   activeLocalFontKey: '',
@@ -757,8 +877,190 @@ const resetSaveOutcome = (state) => {
   state.elements.usageSnippet.textContent = '';
 };
 
+const resetSaveOutcomeForOutputPathChange = (state) => {
+  state.elements.usageSnippet.textContent = '';
+  state.elements.saveSummary.textContent = state.renderResult?.validation.ok
+    ? 'Save is ready for the selected output path.'
+    : 'Save is disabled until validation passes.';
+};
+
 const updateSaveButtonState = (state) => {
   state.elements.saveAtlas.disabled = !(state.renderResult?.validation.ok && state.elements.atlasCanvas.width > 0);
+};
+
+const getPathBaseName = (value) => {
+  const segments = normalizePathSlashes(value).split('/').filter(Boolean);
+  return segments[segments.length - 1] || value;
+};
+
+const getOutputPickerParent = (directoryPath) => {
+  const directory = normalizeFontOutputDirectory(directoryPath);
+  if (directory === PROJECT_PICKER_ROOT) {
+    return PROJECT_PICKER_ROOT;
+  }
+
+  const parentSegments = directory.split('/').slice(0, -1);
+  return parentSegments.length ? parentSegments.join('/') : PROJECT_PICKER_ROOT;
+};
+
+const clearElement = (element) => {
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+};
+
+const setPathPickerStatus = (state, message, tone = 'info') => {
+  state.elements.pathPickerStatus.textContent = message;
+  state.elements.pathPickerStatus.dataset.tone = tone;
+};
+
+const createPathPickerEntry = (state, label, clickHandler) => {
+  const button = state.elements.outputPath.ownerDocument.createElement('button');
+  button.type = 'button';
+  button.className = 'path-picker-entry';
+  button.textContent = label;
+  button.addEventListener('click', clickHandler);
+  return button;
+};
+
+const renderEmptyPathPickerMessage = (state, container, message) => {
+  const emptyMessage = state.elements.outputPath.ownerDocument.createElement('p');
+  emptyMessage.className = 'path-picker-empty';
+  emptyMessage.textContent = message;
+  container.append(emptyMessage);
+};
+
+const renderOutputPathPickerEntries = (state, { dirs = [], files = [] }) => {
+  const { pathPickerDirs, pathPickerFiles } = state.elements;
+  const currentDir = state.outputPickerCurrentDir;
+
+  clearElement(pathPickerDirs);
+  clearElement(pathPickerFiles);
+
+  state.elements.pathPickerCurrent.textContent = currentDir;
+  state.elements.pathPickerParent.disabled = currentDir === PROJECT_PICKER_ROOT;
+
+  if (!dirs.length) {
+    renderEmptyPathPickerMessage(state, pathPickerDirs, 'No folders');
+  }
+
+  for (const dir of dirs) {
+    pathPickerDirs.append(
+      createPathPickerEntry(state, getPathBaseName(dir), () => {
+        loadOutputPathDirectory(state, dir);
+      })
+    );
+  }
+
+  const pngFiles = files.filter((filePath) => filePath.toLowerCase().endsWith('.png'));
+  if (!pngFiles.length) {
+    renderEmptyPathPickerMessage(state, pathPickerFiles, 'No PNG files');
+  }
+
+  for (const filePath of pngFiles) {
+    const fileName = getFontOutputFileNameFromPath(filePath);
+    pathPickerFiles.append(
+      createPathPickerEntry(state, fileName, () => {
+        state.elements.outputFileName.value = fileName;
+        setPathPickerStatus(state, `Selected ${fileName}.`, 'success');
+      })
+    );
+  }
+};
+
+const loadOutputPathDirectory = async (state, directoryPath) => {
+  const directory = normalizeFontOutputDirectory(directoryPath);
+  state.outputPickerCurrentDir = directory;
+  state.elements.pathPickerCurrent.textContent = directory;
+  state.elements.pathPickerParent.disabled = directory === PROJECT_PICKER_ROOT;
+  clearElement(state.elements.pathPickerDirs);
+  clearElement(state.elements.pathPickerFiles);
+  setPathPickerStatus(state, 'Loading project files...', 'info');
+
+  try {
+    const query = new URLSearchParams({ dir: directory, type: 'images' });
+    const response = await fetch(`${OUTPUT_PATH_BROWSE_URL}?${query}`);
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(result.error || `Browse failed with status ${response.status}.`);
+    }
+
+    const dirs = Array.isArray(result.dirs)
+      ? result.dirs.filter((dir) => {
+        try {
+          normalizeFontOutputDirectory(dir);
+          return true;
+        } catch {
+          return false;
+        }
+      })
+      : [];
+    const files = Array.isArray(result.files)
+      ? result.files.filter((filePath) => {
+        try {
+          normalizeFontOutputPath(filePath);
+          return true;
+        } catch {
+          return false;
+        }
+      })
+      : [];
+
+    renderOutputPathPickerEntries(state, { dirs, files });
+    setPathPickerStatus(state, 'Ready.', 'info');
+  } catch (error) {
+    renderOutputPathPickerEntries(state, { dirs: [], files: [] });
+    setPathPickerStatus(
+      state,
+      `Could not load ${directory}: ${describeError(error, 'Unknown error')}`,
+      'error'
+    );
+  }
+};
+
+const setOutputPathPickerOpen = (state, isOpen) => {
+  state.elements.outputPathDialog.classList.toggle('is-hidden', !isOpen);
+  state.elements.outputPathDialog.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+
+  if (isOpen) {
+    state.elements.outputFileName.focus();
+    return;
+  }
+
+  if (state.outputPickerLastFocus && typeof state.outputPickerLastFocus.focus === 'function') {
+    state.outputPickerLastFocus.focus();
+  }
+};
+
+const openOutputPathPicker = async (state) => {
+  const pickerStart = getFontOutputPickerStart(state.elements.outputPath.value);
+
+  state.outputPickerLastFocus = state.elements.outputPath.ownerDocument.activeElement;
+  state.elements.outputFileName.value = pickerStart.fileName;
+  setOutputPathPickerOpen(state, true);
+  await loadOutputPathDirectory(state, pickerStart.directoryPath);
+};
+
+const useSelectedOutputPath = (state) => {
+  const outputPath = buildProjectFontOutputPath({
+    directoryPath: state.outputPickerCurrentDir,
+    fileName: state.elements.outputFileName.value
+  });
+
+  state.elements.outputPath.value = outputPath;
+  state.outputPathDirty = true;
+  writePersistedFontOutputPath(state.outputPathStorage, outputPath);
+  resetSaveOutcomeForOutputPathChange(state);
+  setOutputPathPickerOpen(state, false);
+};
+
+const getFontToolStorage = (root) => {
+  try {
+    return root.defaultView?.localStorage ?? root.ownerDocument?.defaultView?.localStorage ?? null;
+  } catch {
+    return null;
+  }
 };
 
 const collectLocalFontEntries = (fontDataList) => {
@@ -965,19 +1267,11 @@ const renderAtlasAndValidation = async (state) => {
 };
 
 const saveRenderedAtlas = async (state) => {
-  const outputPath = sanitizeClientOutputPath(state.elements.outputPath.value.trim());
-
   if (!state.renderResult?.validation.ok) {
     throw new Error('Render and validation must succeed before saving.');
   }
 
-  if (
-    !outputPath.startsWith('games/example/media/') ||
-    !outputPath.toLowerCase().endsWith('.png') ||
-    outputPath.includes('..')
-  ) {
-    throw new Error('Output path must stay inside games/example/media/ and end with .png.');
-  }
+  const outputPath = normalizeFontOutputPath(state.elements.outputPath.value);
 
   const payload = {
     path: outputPath,
@@ -1023,6 +1317,16 @@ export const initFontTool = (root = document) => {
     alphaThreshold: root.querySelector('#alphaThreshold'),
     binaryAlpha: root.querySelector('#binaryAlpha'),
     outputPath: root.querySelector('#outputPath'),
+    outputPathDialog: root.querySelector('#outputPathDialog'),
+    closeOutputPathPicker: root.querySelector('#closeOutputPathPicker'),
+    cancelOutputPathPicker: root.querySelector('#cancelOutputPathPicker'),
+    useOutputPath: root.querySelector('#useOutputPath'),
+    pathPickerCurrent: root.querySelector('#pathPickerCurrent'),
+    pathPickerParent: root.querySelector('#pathPickerParent'),
+    pathPickerDirs: root.querySelector('#pathPickerDirs'),
+    pathPickerFiles: root.querySelector('#pathPickerFiles'),
+    outputFileName: root.querySelector('#outputFileName'),
+    pathPickerStatus: root.querySelector('#pathPickerStatus'),
     renderAtlas: root.querySelector('#renderAtlas'),
     saveAtlas: root.querySelector('#saveAtlas'),
     status: root.querySelector('#status'),
@@ -1036,7 +1340,7 @@ export const initFontTool = (root = document) => {
     usageSnippet: root.querySelector('#usageSnippet')
   };
 
-  const state = createState(elements);
+  const state = createState(elements, getFontToolStorage(root));
   const writeStatus = createStatusWriter(elements.status);
 
   populateSelectOptions(
@@ -1047,7 +1351,9 @@ export const initFontTool = (root = document) => {
   elements.preset.value = 'printable-ascii';
   elements.firstChar.value = '32';
   elements.lastChar.value = '126';
-  elements.outputPath.value = buildDefaultOutputPath('font');
+  const persistedOutputPath = readPersistedFontOutputPath(state.outputPathStorage);
+  elements.outputPath.value = persistedOutputPath ?? buildDefaultOutputPath('font');
+  state.outputPathDirty = Boolean(persistedOutputPath);
   applyPreviewScale(elements.atlasCanvas, ATLAS_PREVIEW_SCALE);
   applyPreviewScale(elements.validationCanvas, VALIDATION_PREVIEW_SCALE);
   setFallbackMode(
@@ -1158,6 +1464,67 @@ export const initFontTool = (root = document) => {
 
   elements.outputPath.addEventListener('input', () => {
     state.outputPathDirty = true;
+    resetSaveOutcomeForOutputPathChange(state);
+  });
+
+  elements.outputPath.addEventListener('click', () => {
+    openOutputPathPicker(state);
+  });
+
+  elements.outputPath.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    event.preventDefault();
+    openOutputPathPicker(state);
+  });
+
+  elements.closeOutputPathPicker.addEventListener('click', () => {
+    setOutputPathPickerOpen(state, false);
+  });
+
+  elements.cancelOutputPathPicker.addEventListener('click', () => {
+    setOutputPathPickerOpen(state, false);
+  });
+
+  elements.outputPathDialog.addEventListener('click', (event) => {
+    if (event.target === elements.outputPathDialog) {
+      setOutputPathPickerOpen(state, false);
+    }
+  });
+
+  elements.outputPathDialog.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setOutputPathPickerOpen(state, false);
+    }
+  });
+
+  elements.pathPickerParent.addEventListener('click', () => {
+    loadOutputPathDirectory(state, getOutputPickerParent(state.outputPickerCurrentDir));
+  });
+
+  elements.outputFileName.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter') {
+      return;
+    }
+
+    event.preventDefault();
+    try {
+      useSelectedOutputPath(state);
+      writeStatus('Output path selected.', 'success');
+    } catch (error) {
+      setPathPickerStatus(state, describeError(error, 'The output path is invalid.'), 'error');
+    }
+  });
+
+  elements.useOutputPath.addEventListener('click', () => {
+    try {
+      useSelectedOutputPath(state);
+      writeStatus('Output path selected.', 'success');
+    } catch (error) {
+      setPathPickerStatus(state, describeError(error, 'The output path is invalid.'), 'error');
+    }
   });
 
   elements.preset.addEventListener('change', () => {

@@ -121,19 +121,71 @@ test('saveImageFile writes valid PNG files inside example game media', async (t)
   );
 });
 
-test('saveImageFile rejects writes outside example game media', async (t) => {
+test('saveImageFile writes valid PNG files inside any game folder', async (t) => {
   const projectRoot = await makeTempProjectRoot();
   t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
 
   const result = await saveImageFile({
     projectRoot,
-    filePath: 'games/example/generated.font.png',
+    filePath: 'games/001-autorunner/media/generated/test.font.png',
+    data: ONE_BY_ONE_PNG_DATA_URL
+  });
+
+  assert.deepEqual(result, {
+    error: 0,
+    path: 'games/001-autorunner/media/generated/test.font.png'
+  });
+  assert.deepEqual(
+    await fs.readFile(path.join(projectRoot, 'games/001-autorunner/media/generated/test.font.png')),
+    ONE_BY_ONE_PNG_BUFFER
+  );
+});
+
+test('saveImageFile rejects non-PNG image paths', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  const result = await saveImageFile({
+    projectRoot,
+    filePath: 'games/example/media/generated/test.font.gif',
+    data: ONE_BY_ONE_PNG_DATA_URL
+  });
+
+  assert.deepEqual(result, {
+    error: '3',
+    msg: 'File must have a .png suffix'
+  });
+});
+
+test('saveImageFile rejects writes outside games', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  const result = await saveImageFile({
+    projectRoot,
+    filePath: 'public/generated.font.png',
     data: ONE_BY_ONE_PNG_DATA_URL
   });
 
   assert.deepEqual(result, {
     error: '4',
-    msg: 'Image path must stay inside games/example/media/'
+    msg: 'Image path must stay inside games/'
+  });
+});
+
+test('saveImageFile rejects traversal-shaped image paths', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  const result = await saveImageFile({
+    projectRoot,
+    filePath: '../games/example/media/generated/test.font.png',
+    data: ONE_BY_ONE_PNG_DATA_URL
+  });
+
+  assert.deepEqual(result, {
+    error: '4',
+    msg: 'Image path must stay inside games/'
   });
 });
 

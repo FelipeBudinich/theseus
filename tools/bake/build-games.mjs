@@ -87,6 +87,8 @@ const renderGamesIndexHtml = (games) => {
 		<nav>
 			<a href="/games.html">Games</a>
 			<a href="/docs.html">Docs</a>
+			<a href="/tools/font-tool.html">Font Tool</a>
+			<a href="/tools/weltmeister.html">Level Editor</a>
 		</nav>
 	</header>
 	<main class="content">

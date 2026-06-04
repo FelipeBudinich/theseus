@@ -532,6 +532,8 @@ function layout({
     <nav>
       <a href="${gamesIndexPath}">Games</a>
       <a href="${docsHomePath}">Docs</a>
+      <a href="/tools/font-tool.html">Font Tool</a>
+      <a href="/tools/weltmeister.html">Level Editor</a>
     </nav>
   </header>
   <main class="${escapeAttribute(contentClass)}">

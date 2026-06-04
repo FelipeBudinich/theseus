@@ -79,6 +79,10 @@ select:disabled {
   opacity: 0.55;
 }
 
+input[readonly] {
+  cursor: pointer;
+}
+
 input:focus-visible,
 select:focus-visible,
 button:focus-visible {
@@ -277,6 +281,105 @@ pre {
   image-rendering: crisp-edges;
 }
 
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(4, 8, 12, 0.72);
+}
+
+.path-picker {
+  width: min(920px, 100%);
+  max-height: min(760px, calc(100vh - 2rem));
+  overflow: auto;
+  padding: 1.2rem;
+}
+
+.compact-button {
+  width: auto;
+  min-width: 2.6rem;
+  padding: 0.55rem 0.75rem;
+}
+
+.path-picker-current {
+  margin-bottom: 1rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.24);
+  color: var(--accent-strong);
+  font-family: var(--mono);
+  word-break: break-word;
+}
+
+.path-picker-browser {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.path-picker-column {
+  min-height: 18rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+}
+
+.path-picker-column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.path-picker-column-header h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.path-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  max-height: 20rem;
+  overflow: auto;
+  padding: 0.8rem;
+}
+
+.path-picker-entry {
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  word-break: break-word;
+}
+
+.path-picker-empty {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.path-picker-status {
+  margin: 1rem 0;
+}
+
+.path-picker-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+}
+
+.path-picker-actions button {
+  width: auto;
+  min-width: 8rem;
+}
+
 .is-hidden {
   display: none;
 }
@@ -323,6 +426,18 @@ pre {
   .action-row,
   .panel-heading {
     flex-direction: column;
+  }
+
+  .path-picker-browser {
+    grid-template-columns: 1fr;
+  }
+
+  .path-picker-actions {
+    flex-direction: column;
+  }
+
+  .path-picker-actions button {
+    width: 100%;
   }
 
   .panel-meta {

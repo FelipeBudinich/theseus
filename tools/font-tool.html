@@ -90,7 +90,7 @@
 
         <div class="field-group field-group--wide">
           <label class="field-label" for="outputPath">Output path</label>
-          <input id="outputPath" type="text" value="games/example/media/font.font.png" spellcheck="false">
+          <input id="outputPath" type="text" value="games/example/media/font.font.png" spellcheck="false" readonly aria-haspopup="dialog">
         </div>
 
         <div class="field-group field-group--wide field-group--actions">
@@ -160,5 +160,48 @@
       </article>
     </section>
   </main>
+
+  <div class="dialog-backdrop is-hidden" id="outputPathDialog" aria-hidden="true">
+    <section class="path-picker panel" role="dialog" aria-modal="true" aria-labelledby="outputPathDialogTitle">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">Project files</p>
+          <h2 id="outputPathDialogTitle">Output path</h2>
+        </div>
+        <button class="compact-button" id="closeOutputPathPicker" type="button" aria-label="Close output path picker">x</button>
+      </div>
+
+      <div class="path-picker-current" id="pathPickerCurrent">games</div>
+
+      <div class="path-picker-browser">
+        <section class="path-picker-column" aria-labelledby="pathPickerFoldersHeading">
+          <div class="path-picker-column-header">
+            <h3 id="pathPickerFoldersHeading">Folders</h3>
+            <button class="compact-button" id="pathPickerParent" type="button">Up</button>
+          </div>
+          <div class="path-picker-list" id="pathPickerDirs"></div>
+        </section>
+
+        <section class="path-picker-column" aria-labelledby="pathPickerFilesHeading">
+          <div class="path-picker-column-header">
+            <h3 id="pathPickerFilesHeading">PNG files</h3>
+          </div>
+          <div class="path-picker-list" id="pathPickerFiles"></div>
+        </section>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="outputFileName">Filename</label>
+        <input id="outputFileName" type="text" value="font.font.png" spellcheck="false">
+      </div>
+
+      <p class="status path-picker-status" id="pathPickerStatus" data-tone="info">Ready.</p>
+
+      <div class="path-picker-actions">
+        <button id="cancelOutputPathPicker" type="button">Cancel</button>
+        <button id="useOutputPath" type="button">Use Path</button>
+      </div>
+    </section>
+  </div>
 </body>
 </html>

@@ -23,6 +23,14 @@ const joinPublicBase = (base, fileName) => {
   return `${normalizedBase}${normalizePublicPath(fileName)}`;
 };
 
+const nextPowerOfTwo = (value) => {
+  if (value <= 1) {
+    return 1;
+  }
+
+  return 2 ** Math.ceil(Math.log2(value));
+};
+
 const escapeInlineScriptJson = (value) => JSON.stringify(value).replace(/</g, '\\u003c');
 
 const buildTextureAtlasManifestAssignment = (manifest) =>
@@ -177,13 +185,25 @@ const packTexturesForBuild = async ({
     return null;
   }
 
+  const imageMetadata = await Promise.all(
+    textureInputs.map(async (textureInput) => sharp(textureInput.contents).metadata()),
+  );
+  const maxSourceWidth = Math.max(...imageMetadata.map((metadata) => metadata.width || 0));
+  const maxSourceHeight = Math.max(...imageMetadata.map((metadata) => metadata.height || 0));
+  const effectiveAtlasWidth = powerOfTwo
+    ? Math.max(atlasWidth, nextPowerOfTwo(maxSourceWidth))
+    : Math.max(atlasWidth, maxSourceWidth);
+  const effectiveAtlasHeight = powerOfTwo
+    ? Math.max(atlasHeight, nextPowerOfTwo(maxSourceHeight))
+    : Math.max(atlasHeight, maxSourceHeight);
+
   const packedFiles = await texturePacker.packAsync(textureInputs, {
     // Theseus still addresses images by their original internal coordinates.
     // Packing whole source images keeps ig.Image.draw() and drawTile() compatible
     // without having to remap trimmed or rotated sprite rectangles.
     textureName: atlasName,
-    width: atlasWidth,
-    height: atlasHeight,
+    width: effectiveAtlasWidth,
+    height: effectiveAtlasHeight,
     powerOfTwo,
     fixedSize: false,
     padding,

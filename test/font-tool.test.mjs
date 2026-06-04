@@ -5,14 +5,35 @@ import {
   buildBaselineGlyphPlacement,
   buildDefaultOutputPath,
   buildMetricAlphaRow,
+  buildProjectFontOutputPath,
   buildSharedBaselineMetrics,
   buildValidationSampleText,
+  FONT_OUTPUT_PATH_STORAGE_KEY,
   getExpectedGlyphCount,
+  getFontOutputFileNameFromPath,
+  getFontOutputPickerStart,
+  normalizeFontOutputFileName,
+  normalizeFontOutputPath,
   normalizeGlyphTextMetrics,
   parseMetricAlphaRow,
+  readPersistedFontOutputPath,
   slugifyFontName,
-  validateAtlasMetrics
+  validateAtlasMetrics,
+  writePersistedFontOutputPath
 } from '../tools/font-tool/font-tool.js';
+
+const createMemoryStorage = (entries = {}) => {
+  const values = new Map(Object.entries(entries));
+
+  return {
+    getItem(key) {
+      return values.has(key) ? values.get(key) : null;
+    },
+    setItem(key, value) {
+      values.set(key, String(value));
+    }
+  };
+};
 
 test('getExpectedGlyphCount returns the contiguous range size', () => {
   assert.equal(getExpectedGlyphCount(32, 126), 95);
@@ -28,6 +49,114 @@ test('slugifyFontName and buildDefaultOutputPath create stable example media fon
     'games/example/media/fredoka-one.font.png'
   );
   assert.equal(buildDefaultOutputPath(''), 'games/example/media/font.font.png');
+});
+
+test('project font output helpers build games-rooted PNG paths', () => {
+  assert.equal(
+    buildProjectFontOutputPath({
+      directoryPath: 'games/example/media',
+      fileName: 'fredoka-one.font'
+    }),
+    'games/example/media/fredoka-one.font.png'
+  );
+  assert.equal(
+    buildProjectFontOutputPath({
+      directoryPath: 'games/001-autorunner/media/generated',
+      fileName: 'runner.font.png'
+    }),
+    'games/001-autorunner/media/generated/runner.font.png'
+  );
+  assert.equal(
+    normalizeFontOutputPath(' ./games/example/media/font.font.png '),
+    'games/example/media/font.font.png'
+  );
+});
+
+test('project font output helpers select existing PNG names', () => {
+  assert.equal(
+    getFontOutputFileNameFromPath('games/example/media/existing.font.png'),
+    'existing.font.png'
+  );
+  assert.equal(normalizeFontOutputFileName('new-font'), 'new-font.png');
+});
+
+test('project font output helpers reject empty and traversal-like filenames', () => {
+  assert.throws(
+    () => buildProjectFontOutputPath({
+      directoryPath: 'games/example/media',
+      fileName: ''
+    }),
+    /Filename must be a PNG file name/
+  );
+  assert.throws(
+    () => buildProjectFontOutputPath({
+      directoryPath: 'games/example/media',
+      fileName: '../evil'
+    }),
+    /Filename must be a PNG file name/
+  );
+  assert.throws(
+    () => buildProjectFontOutputPath({
+      directoryPath: 'public/games',
+      fileName: 'font'
+    }),
+    /Output folder must stay inside games/
+  );
+});
+
+test('project font output helpers derive picker start from current path', () => {
+  assert.deepEqual(
+    getFontOutputPickerStart('games/001-autorunner/media/generated/runner.font.png'),
+    {
+      directoryPath: 'games/001-autorunner/media/generated',
+      fileName: 'runner.font.png'
+    }
+  );
+  assert.deepEqual(
+    getFontOutputPickerStart('public/font.png'),
+    {
+      directoryPath: 'games',
+      fileName: 'font.font.png'
+    }
+  );
+});
+
+test('persisted font output path restores only valid games-rooted PNG paths', () => {
+  const validStorage = createMemoryStorage({
+    [FONT_OUTPUT_PATH_STORAGE_KEY]: ' ./games/example/media/font.font.png '
+  });
+  const invalidStorage = createMemoryStorage({
+    [FONT_OUTPUT_PATH_STORAGE_KEY]: 'public/font.font.png'
+  });
+
+  assert.equal(
+    readPersistedFontOutputPath(validStorage),
+    'games/example/media/font.font.png'
+  );
+  assert.equal(readPersistedFontOutputPath(invalidStorage), null);
+  assert.equal(readPersistedFontOutputPath(null), null);
+});
+
+test('persisted font output path stores selected normalized paths', () => {
+  const storage = createMemoryStorage();
+  const selectedPath = buildProjectFontOutputPath({
+    directoryPath: 'games/example/media',
+    fileName: 'new-font'
+  });
+
+  assert.equal(
+    writePersistedFontOutputPath(storage, selectedPath),
+    'games/example/media/new-font.png'
+  );
+  assert.equal(
+    storage.getItem(FONT_OUTPUT_PATH_STORAGE_KEY),
+    'games/example/media/new-font.png'
+  );
+  assert.equal(writePersistedFontOutputPath(storage, 'public/font.png'), null);
+  assert.equal(
+    storage.getItem(FONT_OUTPUT_PATH_STORAGE_KEY),
+    'games/example/media/new-font.png'
+  );
 });
 
 test('parseMetricAlphaRow mirrors ig.Font metric parsing without a trailing separator', () => {
