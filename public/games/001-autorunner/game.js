@@ -11,16 +11,11 @@ import './entities/runner.js';
 const STORAGE_KEY = 'theseus-001-autorunner-best';
 
 export const WORLD = {
-	width: 480,
-	height: 270,
 	groundY: 388,
 	lossY: 320,
 	runnerAnchorX: 238,
 	runnerStartX: 168
 };
-
-export const GAME_WIDTH = WORLD.width;
-export const GAME_HEIGHT = WORLD.height;
 
 const readBestDistance = () => {
 	try {

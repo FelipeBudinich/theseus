@@ -1,8 +1,10 @@
 import ig from '../../lib/impact/impact.js';
 
-import { AutorunnerGame, GAME_HEIGHT, GAME_WIDTH } from './game.js';
+import { AutorunnerGame } from './game.js';
 
 const canvas = document.getElementById('canvas');
+const GAME_WIDTH = 480
+const GAME_HEIGHT = 270;
 
 const fitCanvas = () => {
 	if (!canvas) {
