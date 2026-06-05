@@ -3,6 +3,7 @@ import ig from '../../lib/impact/impact.js';
 import { AutorunnerAudio } from './lib/audio.js';
 import { LevelStart } from './levels/start.js';
 import './levels/middle.js';
+import './levels/end.js';
 
 import './entities/dust.js';
 import './entities/hud.js';

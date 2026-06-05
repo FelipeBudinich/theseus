@@ -47,6 +47,25 @@ const moduleUrl = (relativePath) =>
 const getLayer = (level, name) =>
 	level.layer.find((layer) => layer.name === name);
 
+const getLevelChangeTarget = (level) =>
+	level.entities.find((entity) => entity.type === 'EntityLevelchange')?.settings?.level;
+
+test('autorunner registers a start to middle to end level chain', async () => {
+	installBrowserLikeGlobals();
+
+	const ig = (await import(moduleUrl('public/lib/impact/impact.js'))).default;
+	const { LevelStart } = await import(moduleUrl('public/games/001-autorunner/levels/start.js'));
+	const { LevelMiddle } = await import(moduleUrl('public/games/001-autorunner/levels/middle.js'));
+	const { LevelEnd } = await import(moduleUrl('public/games/001-autorunner/levels/end.js'));
+
+	assert.equal(getLevelChangeTarget(LevelStart), 'middle');
+	assert.equal(getLevelChangeTarget(LevelMiddle), 'end');
+	assert.equal(getLevelChangeTarget(LevelEnd), 'start');
+	assert.equal(ig.Game.getLevelByName('start'), LevelStart);
+	assert.equal(ig.Game.getLevelByName('middle'), LevelMiddle);
+	assert.equal(ig.Game.getLevelByName('end'), LevelEnd);
+});
+
 test('autorunner restarts in the level where the player lost', async () => {
 	installBrowserLikeGlobals();
 
@@ -54,6 +73,7 @@ test('autorunner restarts in the level where the player lost', async () => {
 	const { AutorunnerGame } = await import(moduleUrl('public/games/001-autorunner/game.js'));
 	const { LevelStart } = await import(moduleUrl('public/games/001-autorunner/levels/start.js'));
 	const { LevelMiddle } = await import(moduleUrl('public/games/001-autorunner/levels/middle.js'));
+	const { LevelEnd } = await import(moduleUrl('public/games/001-autorunner/levels/end.js'));
 
 	ig.system = {
 		clear() {},
@@ -74,7 +94,7 @@ test('autorunner restarts in the level where the player lost', async () => {
 	assert.equal(game.currentLevel, LevelMiddle);
 	assert.equal(game.collisionMap.data, getLayer(LevelMiddle, 'collision').data);
 
-	game.loadLevelDeferred(LevelStart);
+	game.loadLevelDeferred(LevelEnd);
 	game.lose();
 	game.update();
 	game.restart();
