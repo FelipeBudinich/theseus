@@ -53,13 +53,22 @@ export const AutorunnerGame = ig.Game.extend({
 	},
 
 	restart: function() {
+		const levelToLoad = this.levelAtLoss || this.currentLevel || LevelStart;
+
 		this.runner = null;
 		this.distance = 0;
 		this.speed = 0;
 		this.frozenDistance = 0;
 		this.fallTime = 0;
 		this.state = 'playing';
-		this.loadLevel(LevelStart);
+		this.levelAtLoss = null;
+		this._levelToLoad = null;
+		this.loadLevel(levelToLoad);
+	},
+
+	loadLevel: function(data) {
+		this.currentLevel = data || LevelStart;
+		this.parent(this.currentLevel);
 	},
 
 	lose: function() {
@@ -68,6 +77,8 @@ export const AutorunnerGame = ig.Game.extend({
 		}
 
 		this.state = 'lost';
+		this.levelAtLoss = this.currentLevel || LevelStart;
+		this._levelToLoad = null;
 		this.fallTime = 0;
 		this.frozenDistance = this.runner
 			? Math.max(0, this.runner.pos.x - WORLD.runnerStartX)
