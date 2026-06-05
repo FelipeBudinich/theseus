@@ -36,7 +36,7 @@ const writeBestDistance = (distance) => {
 };
 
 export const AutorunnerGame = ig.Game.extend({
-	gravity: 0,
+	gravity: 982,
 	autoSort: true,
 
 	init: function() {
@@ -95,7 +95,7 @@ export const AutorunnerGame = ig.Game.extend({
 			this.screen.x = Math.max(0, this.runner.pos.x - WORLD.runnerAnchorX);
 			this.screen.y = 0;
 			this.distance = Math.max(0, this.runner.pos.x - WORLD.runnerStartX);
-			this.speed = this.runner.runSpeed;
+			this.speed = this.runner.vel.x;
 		}
 		else if (this.state === 'lost') {
 			this.distance = this.frozenDistance;

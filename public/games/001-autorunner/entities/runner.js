@@ -3,26 +3,27 @@ import ig from '../../../lib/impact/impact.js';
 import { WORLD } from '../game.js';
 
 ig.EntityRunner = ig.Entity.extend({
-	size: {x: 17, y: 23},
-	gravityFactor: 0,
+	size: {x: 9, y: 15},
+	offset: {x:4, y:8},
+	gravityFactor: 1,
 	collides: ig.Entity.COLLIDES.ACTIVE,
 	zIndex: 30,
 
-	accelY: 982,
 	coyoteWindow: 0.115,
 	jumpBufferWindow: 0.115,
 	jumpHoldDuration: 0.22,
 	jumpImpulse: 321,
 	minJumpHeightScale: 0.15,
 	maxJumpHeightScale: 2,
-	diveSpeedMultiplier: 1.1,
+	diveSpeedMultiplier: 1.2,
+	diveFreezeDuration: 0.016,
 	ledgeGrabFallSpeed: 120,
 	ledgeGrabVerticalReach: 42,
 	ledgeJumpWindow: 0.16,
 	maxFallSpeed: 640,
-	maxRunSpeed: 740,
-	runSpeed: 146,
-	speedRamp: 2.4,
+	maxRunSpeed: 240,
+	startRunSpeed: 180,
+	accel: {x:30, y:0},
 	jumpPoseDuration: 0.08,
 	landPoseDuration: 0.12,
 
@@ -37,9 +38,16 @@ ig.EntityRunner = ig.Entity.extend({
 		this.jumpPoseTimer = 0;
 		this.landPoseTimer = 0;
 		this.ledgeJumpTimer = 0;
+		this.diveFreezeTimer = 0;
+		this.diveFreezeVelocityX = 0;
 		this.canDive = false;
 		this.diveActive = false;
 		this.stride = 0;
+		this.vel.x = this.startRunSpeed;
+		this.vel.y = 0;
+		this.maxVel.x = this.maxRunSpeed;
+		this.maxVel.y = this.maxFallSpeed;
+		this.gravityFactor = 1;
 		this.addAnim('run', 0.16, [0, 1, 2, 3]);
 		this.addAnim('jump', 0.16, [4]);
 		this.addAnim('goingUp', 0.16, [5]);
@@ -48,18 +56,29 @@ ig.EntityRunner = ig.Entity.extend({
 		ig.game.runner = this;
 	},
 
+	handleMovementTrace: function(res) {
+		this.movementTrace = res;
+		this.traceVelocity = {x: this.vel.x, y: this.vel.y};
+		this.parent(res);
+	},
+
 	update: function() {
 		if (ig.game.state === 'lost') {
-			this.updateFallingBody();
 			return;
+		}
+
+		if (this.vel.x <= 120){
+			this.accel.x = 600;
+			if (this.vel.x < -10 && this.standing){
+				this.currentAnim.angle = (45).toRad();
+			}
+		} else {
+			this.currentAnim.angle = 0;
+			this.accel.x = 30;
 		}
 
 		const dt = Math.min(ig.system.tick, 1 / 30);
 		const wasStanding = this.standing;
-
-		this.last.x = this.pos.x;
-		this.last.y = this.pos.y;
-		this.standing = false;
 
 		if (this.ledgeJumpTimer > 0) {
 			this.ledgeJumpTimer = Math.max(0, this.ledgeJumpTimer - dt);
@@ -87,7 +106,7 @@ ig.EntityRunner = ig.Entity.extend({
 			startedJump = true;
 		}
 		else if (jumpPressed) {
-			this.startDive();
+			this.startDiveFreeze();
 		}
 
 		if (startedJump && ig.input.released('jump')) {
@@ -97,36 +116,36 @@ ig.EntityRunner = ig.Entity.extend({
 			this.updateJumpControl(dt);
 		}
 
-		this.runSpeed = Math.min(this.maxRunSpeed, this.runSpeed + this.speedRamp * dt);
-		this.vel.x = this.runSpeed;
-		const fallSpeedMultiplier = this.diveActive ? this.diveSpeedMultiplier : 1;
-		this.vel.y = Math.min(
-			this.maxFallSpeed * fallSpeedMultiplier,
-			this.vel.y + this.accelY * fallSpeedMultiplier * dt
-		);
-		const attemptedVelocityX = this.vel.x;
-		const attemptedVelocityY = this.vel.y;
-		const movementTrace = ig.game.collisionMap.trace(
-			this.pos.x,
-			this.pos.y,
-			this.vel.x * dt,
-			this.vel.y * dt,
-			this.size.x,
-			this.size.y
-		);
-		this.handleMovementTrace(movementTrace);
+		if (this.diveFreezeTimer > 0) {
+			this.updateDiveFreeze(dt);
+			return;
+		}
+
+		this.gravityFactor = this.diveActive ? this.diveSpeedMultiplier : 1;
+		this.movementTrace = null;
+		this.traceVelocity = {x: this.vel.x, y: this.vel.y};
+		this.parent();
+
+		const movementTrace = this.movementTrace || {collision: {}};
+		const attemptedVelocityX = this.traceVelocity.x;
+		const attemptedVelocityY = this.traceVelocity.y;
 
 		const landed = this.standing && movementTrace.collision.y && attemptedVelocityY > 0;
 		if (landed && !wasStanding) {
 			this.landPoseTimer = this.landPoseDuration;
 			this.ledgeJumpTimer = 0;
+			this.diveFreezeTimer = 0;
 			this.canDive = false;
-			this.diveActive = false;
+			if (this.diveActive){
+				this.diveActive = false;
+				this.vel.x = this.startRunSpeed;
+			}
 			ig.game.audio.land();
 			this.spawnDust(8, 26);
 		}
 		else if (this.standing) {
 			this.ledgeJumpTimer = 0;
+			this.diveFreezeTimer = 0;
 			this.canDive = false;
 			this.diveActive = false;
 		}
@@ -140,17 +159,6 @@ ig.EntityRunner = ig.Entity.extend({
 		if (this.pos.y > WORLD.lossY) {
 			ig.game.lose();
 		}
-	},
-
-	updateFallingBody: function() {
-		const dt = Math.min(ig.system.tick, 1 / 30);
-		this.last.x = this.pos.x;
-		this.last.y = this.pos.y;
-		this.vel.y = Math.min(this.maxFallSpeed, this.vel.y + this.accelY * dt);
-		this.pos.y += this.vel.y * dt;
-		this.vel.x = 0;
-		this.runSpeed = 0;
-		this.updateAnimationState(dt);
 	},
 
 	getJumpImpulseForScale: function(heightScale) {
@@ -180,9 +188,10 @@ ig.EntityRunner = ig.Entity.extend({
 		let y = 0;
 		let minY = 0;
 		let velocityY = -impulse;
+		const gravity = ig.game.gravity * this.gravityFactor;
 
 		for (let i = 0; i < 180; i++) {
-			velocityY = Math.min(this.maxFallSpeed, velocityY + this.accelY * dt);
+			velocityY = (velocityY + gravity * dt);
 			y += velocityY * dt;
 			minY = Math.min(minY, y);
 
@@ -195,7 +204,10 @@ ig.EntityRunner = ig.Entity.extend({
 	},
 
 	startJump: function() {
+		this.diveFreezeTimer = 0;
+		this.diveActive = false;
 		this.vel.y = -this.getJumpImpulseForScale(this.maxJumpHeightScale);
+		this.vel.x = Math.max(this.vel.x, this.startRunSpeed);
 		this.jumpBuffer = 0;
 		this.coyoteTimer = 0;
 		this.jumpControlActive = true;
@@ -203,9 +215,37 @@ ig.EntityRunner = ig.Entity.extend({
 		this.jumpPoseTimer = this.jumpPoseDuration;
 		this.ledgeJumpTimer = 0;
 		this.canDive = true;
-		this.diveActive = false;
 		ig.game.audio.jump();
 		this.spawnDust(5, -30);
+	},
+
+	startDiveFreeze: function() {
+		if (!this.canDive || this.standing || this.diveActive || this.diveFreezeTimer > 0) {
+			return;
+		}
+
+		this.jumpBuffer = 0;
+		this.coyoteTimer = 0;
+		this.jumpControlActive = false;
+		this.diveFreezeTimer = this.diveFreezeDuration;
+		this.diveFreezeVelocityX = this.vel.x;
+	},
+
+	updateDiveFreeze: function(dt) {
+		this.diveFreezeTimer = Math.max(0, this.diveFreezeTimer - dt);
+		this.accel.x = 0;
+		this.accel.y = 0;
+		this.gravityFactor = 0;
+		this.vel.x = 0;
+		this.vel.y = 0;
+		this.movementTrace = null;
+		this.traceVelocity = {x: 0, y: 0};
+		this.updateAnimationState(dt);
+
+		if (this.diveFreezeTimer <= 0) {
+			this.vel.x = Math.max(this.diveFreezeVelocityX, this.startRunSpeed);
+			this.startDive();
+		}
 	},
 
 	startDive: function() {
@@ -218,7 +258,7 @@ ig.EntityRunner = ig.Entity.extend({
 		this.jumpControlActive = false;
 		this.canDive = false;
 		this.diveActive = true;
-		this.vel.y = Math.max(this.vel.y, this.maxFallSpeed * this.diveSpeedMultiplier);
+		this.vel.y = this.maxVel.y;
 		this.spawnDust(4, 16);
 	},
 
@@ -286,8 +326,6 @@ ig.EntityRunner = ig.Entity.extend({
 		if (this.currentAnim !== nextAnim) {
 			this.currentAnim = nextAnim.rewind();
 		}
-
-		this.currentAnim.update();
 	},
 
 	updateJumpControl: function(dt) {
