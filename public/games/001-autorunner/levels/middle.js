@@ -1,34 +1,7 @@
 import ig from "../../../lib/impact/impact.js";
 
-const LevelStart = /*JSON[*/{
+const LevelMiddle = /*JSON[*/{
   "entities": [
-    {
-      "type": "EntityLevelchange",
-      "x": 9460,
-      "y": 4,
-      "settings": {
-        "size": {
-          "x": 92,
-          "y": 16
-        },
-        "name": "exit",
-        "level": "middle"
-      }
-    },
-    {
-      "type": "EntityTrigger",
-      "x": 9460,
-      "y": 28,
-      "settings": {
-        "size": {
-          "x": 92,
-          "y": 196
-        },
-        "target": {
-          "1": "exit"
-        }
-      }
-    },
     {
       "type": "EntityRunner",
       "x": 76,
@@ -51283,8 +51256,8 @@ const LevelStart = /*JSON[*/{
     }
   ]
 }/*]JSON*/;
-const LevelStartResources = [new ig.Image("games/001-autorunner/media/sheet.png")];
+const LevelMiddleResources = [new ig.Image("games/001-autorunner/media/sheet.png")];
 
-ig.Game.registerLevel("LevelStart", LevelStart);
+ig.Game.registerLevel("LevelMiddle", LevelMiddle);
 
-export { LevelStart, LevelStartResources };
+export { LevelMiddle, LevelMiddleResources };

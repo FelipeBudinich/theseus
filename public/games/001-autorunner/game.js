@@ -2,11 +2,14 @@ import ig from '../../lib/impact/impact.js';
 
 import { AutorunnerAudio } from './lib/audio.js';
 import { LevelStart } from './levels/start.js';
+import './levels/middle.js';
 
 import './entities/dust.js';
 import './entities/hud.js';
 import './entities/loss-overlay.js';
 import './entities/runner.js';
+import './entities/levelchange.js';
+import './entities/trigger.js';
 
 const STORAGE_KEY = 'theseus-001-autorunner-best';
 

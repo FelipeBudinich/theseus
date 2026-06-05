@@ -7,6 +7,7 @@ ig.EntityRunner = ig.Entity.extend({
 	offset: {x:4, y:8},
 	gravityFactor: 1,
 	collides: ig.Entity.COLLIDES.ACTIVE,
+	type: ig.Entity.TYPE.A,
 	zIndex: 30,
 
 	coyoteWindow: 0.115,
