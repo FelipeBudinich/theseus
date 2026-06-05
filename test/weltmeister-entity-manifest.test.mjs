@@ -7,6 +7,7 @@ import { pathToFileURL } from 'node:url';
 
 import {
   buildEntityManifestArtifacts,
+  buildEntityManifestEntries,
   checkEntityManifestArtifacts,
   writeEntityManifestArtifacts
 } from '../tools/weltmeister/build-weltmeister-entity-manifest.mjs';
@@ -140,7 +141,7 @@ test('writeEntityManifestArtifacts is reproducible and checkEntityManifestArtifa
   assert.equal(stale.matches, false);
 });
 
-test('ESM Weltmeister entity loader consumes the manifest and registers entity classes without AJAX discovery', async (t) => {
+test('ESM Weltmeister entity loader fetches the matching entity folder and registers classes', async (t) => {
   installBrowserLikeGlobals();
   delete globalThis.$;
   delete globalThis.wm;
@@ -156,8 +157,16 @@ test('ESM Weltmeister entity loader consumes the manifest and registers entity c
       path.join(moduleToolRoot, 'entities.js')
     ),
     fs.copyFile(
-      path.resolve('tools/weltmeister/entity-manifest.js'),
-      path.join(moduleToolRoot, 'entity-manifest.js')
+      path.resolve('tools/weltmeister/config.js'),
+      path.join(moduleToolRoot, 'config.js')
+    ),
+    fs.copyFile(
+      path.resolve('tools/weltmeister/request.js'),
+      path.join(moduleToolRoot, 'request.js')
+    ),
+    fs.copyFile(
+      path.resolve('tools/weltmeister/wm.js'),
+      path.join(moduleToolRoot, 'wm.js')
     )
   ]);
   await fs.symlink(path.resolve('public/lib'), path.join(moduleRoot, 'lib'), 'dir');
@@ -165,18 +174,51 @@ test('ESM Weltmeister entity loader consumes the manifest and registers entity c
 
   const moduleUrl = `${pathToFileURL(path.join(moduleRoot, 'tools/weltmeister/entities.js')).href}?test=${Date.now()}`;
   const {
-    entityManifest,
+    getEntityDirectoryForLevelPath,
     getLegacyEntityModuleMap,
+    listEntityManifestEntries,
     prepareWeltmeisterEntityState
   } = await import(moduleUrl);
 
-  assert.equal(entityManifest.length > 0, true);
   assert.equal(
-    entityManifest.some((entry) => entry.filePath === 'games/example/entities/blob.js'),
-    true
+    getEntityDirectoryForLevelPath('games/example/levels/title.js'),
+    'games/example/entities'
+  );
+  assert.equal(
+    getEntityDirectoryForLevelPath('public/games/001-autorunner/levels/start.js'),
+    'games/001-autorunner/entities'
   );
 
-  const prepared = await prepareWeltmeisterEntityState();
+  const manifestEntries = buildEntityManifestEntries({
+    sourceFiles: [
+      'games/example/entities/blob.js',
+      'games/example/entities/levelchange.js',
+      'games/example/entities/player.js'
+    ]
+  });
+  const fetchCalls = [];
+  const fetchImpl = async (url) => {
+    fetchCalls.push(url);
+    return {
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      json: async () => ({
+        sourceDirectories: ['games/example/entities'],
+        entities: manifestEntries
+      })
+    };
+  };
+
+  const prepared = await prepareWeltmeisterEntityState({
+    levelPath: 'games/example/levels/title.js',
+    fetchImpl
+  });
+
+  assert.deepEqual(fetchCalls, [
+    '/tools/weltmeister/api/entities?dir=games%2Fexample%2Fentities'
+  ]);
+  assert.equal(prepared.entityDirectory, 'games/example/entities');
   assert.equal(
     prepared.entityModules['games.example.entities.blob'],
     'games/example/entities/blob.js'
@@ -189,6 +231,7 @@ test('ESM Weltmeister entity loader consumes the manifest and registers entity c
     getLegacyEntityModuleMap()['games.example.entities.levelchange'],
     'games/example/entities/levelchange.js'
   );
+  assert.equal(listEntityManifestEntries().length, manifestEntries.length);
 
   const blobEntry = prepared.loadedEntries.find((entry) => entry.className === 'EntityBlob');
   assert.equal(typeof blobEntry?.entityClass, 'function');

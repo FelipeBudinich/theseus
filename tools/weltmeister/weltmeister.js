@@ -26,6 +26,7 @@ import {
 } from './level-format.js';
 import { requestJson, requestText } from './request.js';
 import { clearLastLevel, getLastLevel, setLastLevel } from './storage.js';
+import { prepareWeltmeisterEntityState } from './entities.js';
 
 const getDefaultLevelExtension = () =>
   config.project.outputFormat === 'json' ? '.json' : '.js';
@@ -102,7 +103,7 @@ const Weltmeister = (wm.Weltmeister = ig.Class.extend({
 
     this.loadDialog = new wm.ModalDialogPathSelect('Load Level', 'Load', 'scripts');
     this.loadDialog.onOk = this.load.bind(this);
-    this.loadDialog.setPath(config.project.levelPath);
+    this.loadDialog.setPath(config.project.loadPath || config.project.levelPath);
     qs('#levelLoad').addEventListener('click', this.showLoadDialog.bind(this));
     qs('#levelNew').addEventListener('click', this.showNewDialog.bind(this));
 
@@ -339,7 +340,7 @@ const Weltmeister = (wm.Weltmeister = ig.Class.extend({
     this.resize();
   },
 
-  loadNew: function() {
+  loadNew: async function() {
     clearLastLevel();
     while (this.layers.length) {
       this.layers[0].destroy();
@@ -349,6 +350,7 @@ const Weltmeister = (wm.Weltmeister = ig.Class.extend({
     this.entities.clear();
     this.levelData = { entities: [], layer: [] };
     this.setFilePath(getUntitledFilePath());
+    await this.loadEntityModulesForLevel(this.filePath);
     this.resetModified();
     this.draw();
   },
@@ -358,11 +360,24 @@ const Weltmeister = (wm.Weltmeister = ig.Class.extend({
 
     try {
       var data = await requestText(filePath + '?nocache=' + Math.random());
+      await this.loadEntityModulesForLevel(filePath);
       this.loadResponse(data);
     } catch (error) {
       clearLastLevel();
       console.error('Failed to load Weltmeister level', error);
     }
+  },
+
+  loadEntityModulesForLevel: async function(filePath) {
+    var prepared = await prepareWeltmeisterEntityState({
+      levelPath: filePath
+    });
+
+    if (this.entities) {
+      this.entities.importEntityClass(prepared.entityModules);
+    }
+
+    return prepared;
   },
 
   loadResponse: function(data) {

@@ -1,7 +1,7 @@
 import ig from '../../../lib/impact/impact.js';
 
 import { worldRect } from '../lib/drawing.js';
-import { WORLD } from '../levels/segments.js';
+import { WORLD } from '../game.js';
 
 ig.EntityDust = ig.Entity.extend({
 	size: {x: 3, y: 3},

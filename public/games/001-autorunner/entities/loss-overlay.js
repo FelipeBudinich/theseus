@@ -1,15 +1,20 @@
 import ig from '../../../lib/impact/impact.js';
 
 import { screenRect } from '../lib/drawing.js';
-import { WORLD } from '../levels/segments.js';
+import { WORLD } from '../game.js';
 
 ig.EntityLossOverlay = ig.Entity.extend({
-	size: {x: WORLD.width, y: WORLD.height},
+	size: {x: 0, y: 0},
 	gravityFactor: 0,
 	collides: ig.Entity.COLLIDES.NEVER,
 	zIndex: 1000,
 	titleFont: new ig.Font('games/001-autorunner/media/font-bold-32.png'),
 	bodyFont: new ig.Font('games/001-autorunner/media/font-32.png'),
+
+	init: function(x, y, settings) {
+		this.parent(x, y, settings);
+		this.size = {x: WORLD.width, y: WORLD.height};
+	},
 
 	update: function() {},
 

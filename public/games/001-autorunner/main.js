@@ -28,4 +28,4 @@ ig.input?.unbindAll?.();
 fitCanvas();
 window.addEventListener('resize', fitCanvas, false);
 
-ig.main('#canvas', AutorunnerGame, 60, GAME_WIDTH, GAME_HEIGHT, 2);
+ig.main('#canvas', AutorunnerGame, 60, GAME_WIDTH, GAME_HEIGHT, 4);

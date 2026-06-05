@@ -5,7 +5,9 @@ import path from 'node:path';
 import test from 'node:test';
 
 import {
+  browseEntityManifest,
   browseFiles,
+  normalizeEntitySourceDirectory,
   saveImageFile,
   saveFile
 } from '../tools/weltmeister/api/node-api.mjs';
@@ -225,6 +227,46 @@ test('browseFiles returns image and script listings for Weltmeister pickers', as
       files: [
         'games/example/media/scripts/player.js',
         'games/example/media/scripts/player.json'
+      ]
+    }
+  );
+});
+
+test('browseEntityManifest returns entities from the requested game entity folder', async (t) => {
+  const projectRoot = await makeTempProjectRoot();
+  t.after(() => fs.rm(projectRoot, { recursive: true, force: true }));
+
+  await writeProjectFile(projectRoot, 'games/example/entities/blob.js');
+  await writeProjectFile(projectRoot, 'games/example/entities/player.js');
+  await writeProjectFile(projectRoot, 'games/001-autorunner/entities/runner.js');
+  await writeProjectFile(projectRoot, 'games/001-autorunner/entities/readme.txt');
+
+  assert.equal(
+    normalizeEntitySourceDirectory('public/games/example/entities'),
+    'games/example/entities'
+  );
+  assert.equal(
+    normalizeEntitySourceDirectory('games/001-autorunner/entities'),
+    'games/001-autorunner/entities'
+  );
+  assert.equal(normalizeEntitySourceDirectory('games/example/levels'), '');
+
+  assert.deepEqual(
+    await browseEntityManifest({
+      projectRoot,
+      dir: 'games/001-autorunner/entities'
+    }),
+    {
+      sourceDirectories: ['games/001-autorunner/entities'],
+      entities: [
+        {
+          key: 'games/001-autorunner/entities/runner',
+          moduleId: 'games.001-autorunner.entities.runner',
+          filePath: 'games/001-autorunner/entities/runner.js',
+          importPath: '../../games/001-autorunner/entities/runner.js',
+          className: 'EntityRunner',
+          displayName: 'Runner'
+        }
       ]
     }
   );

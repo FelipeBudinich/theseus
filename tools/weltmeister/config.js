@@ -8,6 +8,9 @@ const config = (wm.config ??= {
     // Legacy entity globbing is no longer used on the ESM editor path.
     entityFiles: 'games/example/entities/**/*.js',
 
+    // The load picker starts at the games root, shown relative to public/.
+    loadPath: 'games/',
+
     // Weltmeister now edits the native ESM level tree by default.
     levelPath: 'games/example/levels/',
 
@@ -88,7 +91,8 @@ const config = (wm.config ??= {
 
   api: {
     save: '/tools/weltmeister/api/save',
-    browse: '/tools/weltmeister/api/browse'
+    browse: '/tools/weltmeister/api/browse',
+    entities: '/tools/weltmeister/api/entities'
   }
 });
 

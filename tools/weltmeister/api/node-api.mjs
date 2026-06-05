@@ -2,6 +2,11 @@ import express from 'express';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
+import {
+  buildEntityManifestEntries,
+  scanEntitySourceFiles
+} from '../build-weltmeister-entity-manifest.mjs';
+
 const LEGACY_FILE_ROOT = '../../../';
 const IMAGE_EXTENSIONS = new Set(['.png', '.gif', '.jpg', '.jpeg']);
 const GAMES_ROOT = 'games/';
@@ -218,6 +223,33 @@ const browseFiles = async ({ projectRoot, dir = '', type = '' }) => {
   };
 };
 
+const normalizeEntitySourceDirectory = (dir = '') => {
+  const sanitizedDir = normalizeRelativePath(dir).replace(/^public\//, '');
+  const match = sanitizedDir.match(/^games\/([^/]+)\/entities(?:\/.*)?$/);
+  return match ? sanitizedDir : '';
+};
+
+const browseEntityManifest = async ({ projectRoot, dir = '' }) => {
+  const sourceDirectory = normalizeEntitySourceDirectory(dir);
+
+  if (!sourceDirectory) {
+    return {
+      sourceDirectories: [],
+      entities: []
+    };
+  }
+
+  const sourceFiles = await scanEntitySourceFiles({
+    projectRoot,
+    sourceDirectories: [sourceDirectory]
+  });
+
+  return {
+    sourceDirectories: [sourceDirectory],
+    entities: buildEntityManifestEntries({ sourceFiles })
+  };
+};
+
 const createJsonResponder =
   (handler) =>
   async (req, res, next) => {
@@ -284,12 +316,24 @@ const createWeltmeisterApiRouter = ({ projectRoot }) => {
     )
   );
 
+  router.all(
+    '/entities',
+    createJsonResponder((req) =>
+      browseEntityManifest({
+        projectRoot,
+        dir: req.query?.dir
+      })
+    )
+  );
+
   return router;
 };
 
 export {
+  browseEntityManifest,
   browseFiles,
   createWeltmeisterApiRouter,
+  normalizeEntitySourceDirectory,
   saveImageFile,
   sanitizeLegacyPath,
   saveFile

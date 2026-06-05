@@ -1,28 +1,27 @@
 import ig from '../../../lib/impact/impact.js';
 
-import { WORLD } from '../levels/segments.js';
+import { WORLD } from '../game.js';
 
 ig.EntityRunner = ig.Entity.extend({
-	size: {x: 34, y: 60},
+	size: {x: 17, y: 23},
 	gravityFactor: 0,
-	collides: ig.Entity.COLLIDES.NEVER,
+	collides: ig.Entity.COLLIDES.ACTIVE,
 	zIndex: 30,
 
-	accelY: 1720,
-	coyoteWindow: 0.105,
+	accelY: 982,
+	coyoteWindow: 0.115,
 	jumpBufferWindow: 0.115,
 	jumpHoldDuration: 0.22,
-	jumpImpulse: 642,
+	jumpImpulse: 321,
 	minJumpHeightScale: 0.15,
-	maxJumpHeightScale: 2.6,
+	maxJumpHeightScale: 2,
 	diveSpeedMultiplier: 1.1,
 	ledgeGrabFallSpeed: 120,
 	ledgeGrabVerticalReach: 42,
 	ledgeJumpWindow: 0.16,
-	maxFallSpeed: 1160,
-	maxRunSpeed: 1548,
-	runSpeed: 292,
-	spriteScale: 2,
+	maxFallSpeed: 640,
+	maxRunSpeed: 740,
+	runSpeed: 146,
 	speedRamp: 2.4,
 	jumpPoseDuration: 0.08,
 	landPoseDuration: 0.12,
@@ -41,7 +40,6 @@ ig.EntityRunner = ig.Entity.extend({
 		this.canDive = false;
 		this.diveActive = false;
 		this.stride = 0;
-		this.currentPlatform = null;
 		this.addAnim('run', 0.16, [0, 1, 2, 3]);
 		this.addAnim('jump', 0.16, [4]);
 		this.addAnim('goingUp', 0.16, [5]);
@@ -106,11 +104,20 @@ ig.EntityRunner = ig.Entity.extend({
 			this.maxFallSpeed * fallSpeedMultiplier,
 			this.vel.y + this.accelY * fallSpeedMultiplier * dt
 		);
-		this.pos.x += this.vel.x * dt;
-		this.pos.y += this.vel.y * dt;
+		const attemptedVelocityX = this.vel.x;
+		const attemptedVelocityY = this.vel.y;
+		const movementTrace = ig.game.collisionMap.trace(
+			this.pos.x,
+			this.pos.y,
+			this.vel.x * dt,
+			this.vel.y * dt,
+			this.size.x,
+			this.size.y
+		);
+		this.handleMovementTrace(movementTrace);
 
-		const landedPlatform = ig.game.resolveRunnerPlatform(this);
-		if (landedPlatform && !wasStanding) {
+		const landed = this.standing && movementTrace.collision.y && attemptedVelocityY > 0;
+		if (landed && !wasStanding) {
 			this.landPoseTimer = this.landPoseDuration;
 			this.ledgeJumpTimer = 0;
 			this.canDive = false;
@@ -118,13 +125,13 @@ ig.EntityRunner = ig.Entity.extend({
 			ig.game.audio.land();
 			this.spawnDust(8, 26);
 		}
-		else if (landedPlatform) {
+		else if (this.standing) {
 			this.ledgeJumpTimer = 0;
 			this.canDive = false;
 			this.diveActive = false;
 		}
-		else {
-			ig.game.resolveRunnerLedgeHit(this);
+		else if (movementTrace.collision.x && attemptedVelocityX > 0) {
+			this.resolveCollisionLedgeHit();
 		}
 
 		this.stride += (this.standing ? 18 : 8) * dt;
@@ -197,13 +204,12 @@ ig.EntityRunner = ig.Entity.extend({
 		this.ledgeJumpTimer = 0;
 		this.canDive = true;
 		this.diveActive = false;
-		this.currentPlatform = null;
 		ig.game.audio.jump();
 		this.spawnDust(5, -30);
 	},
 
 	startDive: function() {
-		if (!this.canDive || this.standing || this.currentPlatform || this.diveActive) {
+		if (!this.canDive || this.standing || this.diveActive) {
 			return;
 		}
 
@@ -216,9 +222,37 @@ ig.EntityRunner = ig.Entity.extend({
 		this.spawnDust(4, 16);
 	},
 
-	grantLedgeJump: function(platform) {
+	resolveCollisionLedgeHit: function() {
+		const collisionMap = ig.game.collisionMap;
+		const tileSize = collisionMap.tilesize;
+		const sampleX = this.pos.x + this.size.x + 1;
+		const firstTileY = Math.max(0, Math.floor((this.pos.y - this.ledgeGrabVerticalReach) / tileSize));
+		const lastTileY = Math.min(
+			collisionMap.height - 1,
+			Math.floor((this.pos.y + this.size.y - 1) / tileSize)
+		);
+		const previousBottom = this.last.y + this.size.y;
+
+		for (let tileY = firstTileY; tileY <= lastTileY; tileY++) {
+			const tileTop = tileY * tileSize;
+			const hasTile = collisionMap.getTile(sampleX, tileTop + 1);
+			const hasTileAbove = collisionMap.getTile(sampleX, tileTop - 1);
+			const nearLedgeTop =
+				this.pos.y < tileTop + this.ledgeGrabVerticalReach &&
+				this.pos.y + this.size.y > tileTop + 10;
+			const missedLandingLine = previousBottom > tileTop + 8;
+
+			if (hasTile && !hasTileAbove && nearLedgeTop && missedLandingLine) {
+				this.grantLedgeJump();
+				return true;
+			}
+		}
+
+		return false;
+	},
+
+	grantLedgeJump: function() {
 		this.ledgeJumpTimer = this.ledgeJumpWindow;
-		this.currentPlatform = null;
 		if (this.vel.y > this.ledgeGrabFallSpeed) {
 			this.vel.y = this.ledgeGrabFallSpeed;
 		}
@@ -306,25 +340,7 @@ ig.EntityRunner = ig.Entity.extend({
 				},
 			});
 		}
-	},
-
-	draw: function() {
-		if (!this.currentAnim) {
-			return;
-		}
-
-		const spriteWidth = this.animSheet.width * this.spriteScale;
-		const spriteHeight = this.animSheet.height * this.spriteScale;
-		const x = this.pos.x + (this.size.x - spriteWidth) / 2 - ig.game._rscreen.x;
-		const y = this.pos.y + this.size.y - spriteHeight - ig.game._rscreen.y;
-		const context = ig.system.context;
-
-		context.save();
-		context.translate(ig.system.getDrawPos(x), ig.system.getDrawPos(y));
-		context.scale(this.spriteScale, this.spriteScale);
-		this.currentAnim.draw(0, 0);
-		context.restore();
-	},
+	}
 });
 
 ig.registerClass('EntityRunner', ig.EntityRunner);
