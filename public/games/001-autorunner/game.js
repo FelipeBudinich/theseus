@@ -50,6 +50,7 @@ export const AutorunnerGame = ig.Game.extend({
 
 		this.audio = new AutorunnerAudio();
 		this.bestDistance = readBestDistance();
+		//this.hud = new HUD();
 		this.restart();
 	},
 
@@ -109,5 +110,6 @@ export const AutorunnerGame = ig.Game.extend({
 
 	draw: function() {
 		this.parent();
+		//this.hud.draw();
 	},
 });
