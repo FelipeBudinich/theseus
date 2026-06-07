@@ -9,6 +9,7 @@ import './entities/dust.js';
 import './entities/hud.js';
 import './entities/loss-overlay.js';
 import './entities/runner.js';
+import './entities/spikes.js';
 import './entities/levelchange.js';
 import './entities/trigger.js';
 

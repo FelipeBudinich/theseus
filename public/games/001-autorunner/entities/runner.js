@@ -1,6 +1,7 @@
 import ig from '../../../lib/impact/impact.js';
 
 import { WORLD } from '../game.js';
+import './runner-dead.js';
 
 ig.EntityRunner = ig.Entity.extend({
 	size: {x: 9, y: 15},
@@ -363,6 +364,36 @@ ig.EntityRunner = ig.Entity.extend({
 		}
 
 		this.jumpControlActive = false;
+	},
+
+	kill: function() {
+		if (!this._killed) {
+			this.spawnDeadRunner();
+
+			if (typeof ig.game.lose == 'function') {
+				ig.game.lose();
+			}
+
+			if (ig.game.runner === this) {
+				ig.game.runner = null;
+			}
+		}
+
+		this.parent();
+	},
+
+	spawnDeadRunner: function() {
+		if (!ig.EntityRunnerDead || typeof ig.game.spawnEntity != 'function') {
+			return null;
+		}
+
+		return ig.game.spawnEntity(ig.EntityRunnerDead, this.pos.x, this.pos.y, {
+			angle: this.currentAnim ? this.currentAnim.angle : 0,
+			vel: {
+				x: this.vel.x,
+				y: -200
+			}
+		});
 	},
 
 	spawnDust: function(count, xOffset) {
