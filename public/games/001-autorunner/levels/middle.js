@@ -30,6 +30,17 @@ const LevelMiddle = /*JSON[*/{
       }
     },
     {
+      "type": "EntityKillTrigger",
+      "x": 0,
+      "y": 272,
+      "settings": {
+        "size": {
+          "x": 9600,
+          "y": 32
+        }
+      }
+    },
+    {
       "type": "EntityRunner",
       "x": 76,
       "y": 200
