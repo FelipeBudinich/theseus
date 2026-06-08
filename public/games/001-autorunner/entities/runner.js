@@ -143,7 +143,7 @@ ig.EntityRunner = ig.Entity.extend({
 				this.vel.x = this.startRunSpeed;
 			}
 			ig.game.audio.land();
-			this.spawnDust(8, 26);
+			this.spawnDust(10);
 		}
 		else if (this.standing) {
 			this.ledgeJumpTimer = 0;
@@ -218,7 +218,7 @@ ig.EntityRunner = ig.Entity.extend({
 		this.ledgeJumpTimer = 0;
 		this.canDive = true;
 		ig.game.audio.jump();
-		this.spawnDust(5, -30);
+		this.spawnDust(10);
 	},
 
 	startDiveFreeze: function() {
@@ -261,7 +261,6 @@ ig.EntityRunner = ig.Entity.extend({
 		this.canDive = false;
 		this.diveActive = true;
 		this.vel.y = this.maxVel.y;
-		this.spawnDust(4, 16);
 	},
 
 	resolveCollisionLedgeHit: function() {
@@ -297,9 +296,10 @@ ig.EntityRunner = ig.Entity.extend({
 		this.ledgeJumpTimer = this.ledgeJumpWindow;
 		if (this.vel.y > this.ledgeGrabFallSpeed) {
 			this.vel.y = this.ledgeGrabFallSpeed;
+			this.spawnDust(1);
 		}
 
-		this.spawnDust(3, 20);
+		
 	},
 
 	updateAnimationState: function(dt) {
@@ -396,18 +396,15 @@ ig.EntityRunner = ig.Entity.extend({
 		});
 	},
 
-	spawnDust: function(count, xOffset) {
+	spawnDust: function(count) {
+
 		for (let i = 0; i < count; i++) {
-			ig.game.spawnEntity(ig.EntityDust, this.pos.x + xOffset, this.pos.y + this.size.y - 4, {
+			ig.game.spawnEntity(ig.EntityDust, this.pos.x - (3 + (Math.random() * 6)), this.pos.y + (3 + (Math.random() * 6)), {
 				vel: {
-					x: -70 - Math.random() * 160,
-					y: -20 - Math.random() * 70,
+					x: -this.vel.x * (0.5 + Math.random() * 0.1),
+					y: -this.vel.y * (0.5 + Math.random() * 0.1),
 				},
-				life: 0.22 + Math.random() * 0.18,
-				size: {
-					x: 2 + Math.random() * 5,
-					y: 2 + Math.random() * 4,
-				},
+				life: Math.random() * 0.24,
 			});
 		}
 	}

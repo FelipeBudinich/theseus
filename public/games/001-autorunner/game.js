@@ -9,10 +9,12 @@ import './entities/dust.js';
 import './entities/hud.js';
 import './entities/loss-overlay.js';
 import './entities/runner.js';
+import './entities/runner-enter.js';
 import './entities/spikes.js';
 import './entities/levelchange.js';
 import './entities/trigger.js';
 import './entities/kill-trigger.js';
+import './entities/spawn-point.js';
 
 const STORAGE_KEY = 'theseus-001-autorunner-best';
 
@@ -41,6 +43,12 @@ const writeBestDistance = (distance) => {
 	}
 };
 
+const normalizeSpawnPointIndex = (value) => {
+	const index = Number(value);
+
+	return Number.isFinite(index) && index > 0 ? Math.floor(index) : 0;
+};
+
 export const AutorunnerGame = ig.Game.extend({
 	gravity: 982,
 	autoSort: true,
@@ -48,6 +56,7 @@ export const AutorunnerGame = ig.Game.extend({
 	init: function() {
 		ig.input.bind('Space', 'jump');
 		ig.input.bind('MousePrimary', 'jump');
+		ig.spawnPoint = 0;
 
 		this.audio = new AutorunnerAudio();
 		this.bestDistance = readBestDistance();
@@ -57,6 +66,11 @@ export const AutorunnerGame = ig.Game.extend({
 
 	restart: function() {
 		const levelToLoad = this.levelAtLoss || this.currentLevel || LevelStart;
+		const respawningFromLoss = Boolean(this.levelAtLoss);
+
+		if (!respawningFromLoss) {
+			ig.spawnPoint = 0;
+		}
 
 		this.runner = null;
 		this.distance = 0;
@@ -66,12 +80,86 @@ export const AutorunnerGame = ig.Game.extend({
 		this.state = 'playing';
 		this.levelAtLoss = null;
 		this._levelToLoad = null;
+		this._runnerEnterSpawn = null;
+		this._loadingForRespawn = respawningFromLoss;
 		this.loadLevel(levelToLoad);
+		this._loadingForRespawn = false;
 	},
 
 	loadLevel: function(data) {
+		if (!this._loadingForRespawn) {
+			ig.spawnPoint = 0;
+		}
+
+		this.runner = null;
+		this._runnerEnterSpawn = null;
 		this.currentLevel = data || LevelStart;
 		this.parent(this.currentLevel);
+		this.moveRunnerToSpawnPoint();
+	},
+
+	getSpawnPoint: function(index) {
+		if (!ig.EntitySpawnPoint) {
+			return null;
+		}
+
+		const targetIndex = normalizeSpawnPointIndex(index);
+		const spawnPoints = this.getEntitiesByType(ig.EntitySpawnPoint);
+		let defaultSpawnPoint = null;
+
+		for (let i = 0; i < spawnPoints.length; i++) {
+			const spawnPoint = spawnPoints[i];
+			const spawnPointIndex = normalizeSpawnPointIndex(spawnPoint.index);
+
+			if (spawnPointIndex === 0 && !defaultSpawnPoint) {
+				defaultSpawnPoint = spawnPoint;
+			}
+
+			if (spawnPointIndex === targetIndex) {
+				return spawnPoint;
+			}
+		}
+
+		return defaultSpawnPoint;
+	},
+
+	moveRunnerToSpawnPoint: function() {
+		const spawnPoint = this.getSpawnPoint(ig.spawnPoint);
+		let runner = this.getEntitiesByType('EntityRunner')[0];
+
+		if (!runner || !spawnPoint) {
+			if (!runner && spawnPoint && ig.EntityRunnerEnter) {
+				this.spawnRunnerEnterAtSpawnPoint(spawnPoint);
+			}
+			return;
+		}
+
+		runner.pos.x = spawnPoint.pos.x;
+		runner.pos.y = spawnPoint.pos.y;
+		runner.last.x = spawnPoint.pos.x;
+		runner.last.y = spawnPoint.pos.y;
+	},
+
+	spawnRunnerEnterAtSpawnPoint: function(spawnPoint) {
+		this.screen.x = Math.max(0, spawnPoint.pos.x - WORLD.runnerAnchorX);
+		this.screen.y = 0;
+
+		const enterY = this.screen.y - ig.EntityRunnerEnter.prototype.size.y - 1;
+		this.spawnEntity(ig.EntityRunnerEnter, spawnPoint.pos.x, enterY);
+	},
+
+	spawnRunnerFromEnter: function(x, y) {
+		this._runnerEnterSpawn = {x, y};
+	},
+
+	spawnPendingRunnerFromEnter: function() {
+		if (!this._runnerEnterSpawn || !ig.EntityRunner) {
+			return null;
+		}
+
+		const spawn = this._runnerEnterSpawn;
+		this._runnerEnterSpawn = null;
+		return this.spawnEntity(ig.EntityRunner, spawn.x, spawn.y);
 	},
 
 	lose: function() {
@@ -107,6 +195,7 @@ export const AutorunnerGame = ig.Game.extend({
 		}
 
 		this.parent();
+		this.spawnPendingRunnerFromEnter();
 
 		if (this.runner && this.state === 'playing') {
 			this.screen.x = Math.max(0, this.runner.pos.x - WORLD.runnerAnchorX);

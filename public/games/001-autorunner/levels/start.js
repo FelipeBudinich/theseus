@@ -41,6 +41,77 @@ const LevelStart = /*JSON[*/{
       }
     },
     {
+      "type": "EntitySpawnPoint",
+      "x": 144,
+      "y": 208,
+      "settings": {
+        "size": {
+          "x": 16,
+          "y": 16
+        }
+      }
+    },
+    {
+      "type": "EntitySpawnPoint",
+      "x": 8128,
+      "y": 208,
+      "settings": {
+        "index": 5,
+        "size": {
+          "x": 16,
+          "y": 16
+        }
+      }
+    },
+    {
+      "type": "EntitySpawnPoint",
+      "x": 2160,
+      "y": 192,
+      "settings": {
+        "size": {
+          "x": 16,
+          "y": 16
+        },
+        "index": 2
+      }
+    },
+    {
+      "type": "EntitySpawnPoint",
+      "x": 6128,
+      "y": 240,
+      "settings": {
+        "size": {
+          "x": 16,
+          "y": 16
+        },
+        "index": 4
+      }
+    },
+    {
+      "type": "EntitySpawnPoint",
+      "x": 512,
+      "y": 112,
+      "settings": {
+        "size": {
+          "x": 16,
+          "y": 16
+        },
+        "index": 1
+      }
+    },
+    {
+      "type": "EntitySpawnPoint",
+      "x": 3328,
+      "y": 208,
+      "settings": {
+        "size": {
+          "x": 16,
+          "y": 16
+        },
+        "index": 3
+      }
+    },
+    {
       "type": "EntitySpikes",
       "x": 640,
       "y": 224,
@@ -207,11 +278,6 @@ const LevelStart = /*JSON[*/{
           "y": 16
         }
       }
-    },
-    {
-      "type": "EntityRunner",
-      "x": 76,
-      "y": 200
     }
   ],
   "layer": [
@@ -35247,7 +35313,7 @@ const LevelStart = /*JSON[*/{
           0,
           0,
           0,
-          0,
+          15,
           0,
           117,
           100,
@@ -38360,7 +38426,7 @@ const LevelStart = /*JSON[*/{
           0,
           0,
           0,
-          0,
+          15,
           117,
           0,
           0,
@@ -39035,7 +39101,7 @@ const LevelStart = /*JSON[*/{
           0,
           0,
           0,
-          0,
+          15,
           117,
           0,
           0,
@@ -39335,7 +39401,7 @@ const LevelStart = /*JSON[*/{
           0,
           0,
           0,
-          0,
+          15,
           0,
           0,
           0,
@@ -40414,7 +40480,7 @@ const LevelStart = /*JSON[*/{
           0,
           0,
           0,
-          0,
+          15,
           0,
           0,
           0,

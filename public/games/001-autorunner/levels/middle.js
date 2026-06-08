@@ -41,9 +41,45 @@ const LevelMiddle = /*JSON[*/{
       }
     },
     {
-      "type": "EntityRunner",
-      "x": 76,
-      "y": 200
+      "type": "EntitySpawnPoint",
+      "x": 68,
+      "y": 192
+    },
+    {
+      "type": "EntitySpawnPoint",
+      "x": 1632,
+      "y": 176,
+      "settings": {
+        "index": 1,
+        "size": {
+          "x": 16,
+          "y": 16
+        }
+      }
+    },
+    {
+      "type": "EntitySpawnPoint",
+      "x": 4400,
+      "y": 144,
+      "settings": {
+        "index": 2,
+        "size": {
+          "x": 16,
+          "y": 16
+        }
+      }
+    },
+    {
+      "type": "EntitySpawnPoint",
+      "x": 7264,
+      "y": 176,
+      "settings": {
+        "index": 3,
+        "size": {
+          "x": 16,
+          "y": 16
+        }
+      }
     }
   ],
   "layer": [
@@ -36526,7 +36562,7 @@ const LevelMiddle = /*JSON[*/{
           0,
           100,
           63,
-          0,
+          15,
           0,
           0,
           0,
@@ -37557,7 +37593,7 @@ const LevelMiddle = /*JSON[*/{
           118,
           0,
           0,
-          0,
+          15,
           0,
           0,
           101,
@@ -37909,7 +37945,7 @@ const LevelMiddle = /*JSON[*/{
           117,
           118,
           0,
-          0,
+          15,
           0,
           0,
           0,

@@ -41,9 +41,33 @@ const LevelEnd = /*JSON[*/{
       }
     },
     {
-      "type": "EntityRunner",
-      "x": 76,
-      "y": 200
+      "type": "EntitySpawnPoint",
+      "x": 20,
+      "y": 192
+    },
+    {
+      "type": "EntitySpawnPoint",
+      "x": 3680,
+      "y": 144,
+      "settings": {
+        "index": 1,
+        "size": {
+          "x": 16,
+          "y": 16
+        }
+      }
+    },
+    {
+      "type": "EntitySpawnPoint",
+      "x": 7424,
+      "y": 192,
+      "settings": {
+        "index": 2,
+        "size": {
+          "x": 16,
+          "y": 16
+        }
+      }
     }
   ],
   "layer": [
@@ -36481,7 +36505,7 @@ const LevelEnd = /*JSON[*/{
           0,
           0,
           0,
-          0,
+          15,
           0,
           0,
           0,
@@ -38521,7 +38545,7 @@ const LevelEnd = /*JSON[*/{
           0,
           0,
           0,
-          0,
+          15,
           0,
           0,
           0,

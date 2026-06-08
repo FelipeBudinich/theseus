@@ -1,38 +1,43 @@
 import ig from '../../../lib/impact/impact.js';
 
-import { worldRect } from '../lib/drawing.js';
-import { WORLD } from '../game.js';
-
-ig.EntityDust = ig.Entity.extend({
-	size: {x: 3, y: 3},
-	gravityFactor: 0,
+const EntityDust = ig.Entity.extend({
+	size: {x: 1, y: 1},
+	gravityFactor: -0.1,
 	collides: ig.Entity.COLLIDES.NEVER,
-	zIndex: 24,
+	zIndex: 31,
 	life: 0.3,
 	age: 0,
-	color: '#d4b56a',
+
+	animSheet: new ig.AnimationSheet('games/001-autorunner/media/dust.png', 16, 16),
+
+	init: function(x, y, settings) {
+		this.parent(x, y, settings || {});
+		this.size.x = 16;
+		this.size.y = 16;
+		this.addAnim('puff', this.life / 7, [0, 1, 2, 3, 4, 5, 6], true);
+		this.currentAnim.angle = (180 - (Math.random()*90)).toRad();
+	},
 
 	update: function() {
-		const dt = Math.min(ig.system.tick, 1 / 30);
-		this.age += dt;
-		this.last.x = this.pos.x;
-		this.last.y = this.pos.y;
-		this.vel.y += 260 * dt;
-		this.pos.x += this.vel.x * dt;
-		this.pos.y += this.vel.y * dt;
 
 		if (
-			this.age >= this.life ||
-			this.pos.x + this.size.x < ig.game.screen.x - WORLD.pruneBehind
+			this.age >= this.life
 		) {
 			this.kill();
 		}
+		this.age += ig.system.tick;
+
+		this.parent();
 	},
 
 	draw: function() {
-		const alpha = Math.max(0, 1 - this.age / this.life);
-		worldRect(this.pos.x, this.pos.y, this.size.x, this.size.y, this.color, alpha);
+		this.currentAnim.alpha = Math.min(0.22, 1 - this.age / this.life);
+		this.parent();
 	},
 });
 
-ig.registerClass('EntityDust', ig.EntityDust);
+ig.EntityDust = EntityDust;
+ig.registerClass('EntityDust', EntityDust);
+
+export { EntityDust };
+export default EntityDust;

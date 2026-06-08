@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "atlases": [
+    {
+      "image": "/dist/packed-textures/theseus-atlas.webp",
+      "width": 2048,
+      "height": 1024
+    }
+  ],
+  "images": {
+    "media/fredoka-one.font.png": {
+      "atlas": 0,
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 2048,
+        "h": 38
+      },
+      "sourceSize": {
+        "w": 2048,
+        "h": 38
+      }
+    },
+    "media/tiles-70.png": {
+      "atlas": 0,
+      "frame": {
+        "x": 0,
+        "y": 38,
+        "w": 980,
+        "h": 910
+      },
+      "sourceSize": {
+        "w": 980,
+        "h": 910
+      }
+    },
+    "media/title.png": {
+      "atlas": 0,
+      "frame": {
+        "x": 980,
+        "y": 38,
+        "w": 640,
+        "h": 239
+      },
+      "sourceSize": {
+        "w": 640,
+        "h": 239
+      }
+    },
+    "media/04b03.font.png": {
+      "atlas": 0,
+      "frame": {
+        "x": 1620,
+        "y": 38,
+        "w": 422,
+        "h": 9
+      },
+      "sourceSize": {
+        "w": 422,
+        "h": 9
+      }
+    },
+    "media/blob.png": {
+      "atlas": 0,
+      "frame": {
+        "x": 1620,
+        "y": 47,
+        "w": 192,
+        "h": 28
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 28
+      }
+    },
+    "media/coin.png": {
+      "atlas": 0,
+      "frame": {
+        "x": 1812,
+        "y": 47,
+        "w": 108,
+        "h": 36
+      },
+      "sourceSize": {
+        "w": 108,
+        "h": 36
+      }
+    },
+    "media/heart-empty.png": {
+      "atlas": 0,
+      "frame": {
+        "x": 1920,
+        "y": 47,
+        "w": 53,
+        "h": 45
+      },
+      "sourceSize": {
+        "w": 53,
+        "h": 45
+      }
+    },
+    "media/heart-full.png": {
+      "atlas": 0,
+      "frame": {
+        "x": 1973,
+        "y": 47,
+        "w": 53,
+        "h": 45
+      },
+      "sourceSize": {
+        "w": 53,
+        "h": 45
+      }
+    },
+    "media/fireball.png": {
+      "atlas": 0,
+      "frame": {
+        "x": 1620,
+        "y": 75,
+        "w": 36,
+        "h": 36
+      },
+      "sourceSize": {
+        "w": 36,
+        "h": 36
+      }
+    },
+    "media/player.png": {
+      "atlas": 0,
+      "frame": {
+        "x": 980,
+        "y": 277,
+        "w": 525,
+        "h": 300
+      },
+      "sourceSize": {
+        "w": 525,
+        "h": 300
+      }
+    },
+    "media/touch-buttons.png": {
+      "atlas": 0,
+      "frame": {
+        "x": 1505,
+        "y": 277,
+        "w": 512,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 512,
+        "h": 128
+      }
+    }
+  }
+}
