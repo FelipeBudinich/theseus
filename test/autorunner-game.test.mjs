@@ -218,6 +218,44 @@ test('dead runner stops tracing collision tiles after its first tile hit', async
 	assert.equal(deadRunner.pos.y > ig.system.height, true);
 });
 
+test('kill trigger extends trigger and kills the runner that touches it', async () => {
+	installBrowserLikeGlobals();
+
+	const ig = (await import(moduleUrl('public/lib/impact/impact.js'))).default;
+	const { AutorunnerGame } = await import(moduleUrl('public/games/001-autorunner/game.js'));
+	const { EntityKillTrigger } = await import(moduleUrl('public/games/001-autorunner/entities/kill-trigger.js'));
+
+	ig.system = {
+		clear() {},
+		context: { globalAlpha: 1 },
+		tick: 1 / 60
+	};
+	ig.input = {
+		bind() {},
+		pressed() {
+			return false;
+		}
+	};
+
+	const game = new AutorunnerGame();
+	const runner = game.getEntitiesByType('EntityRunner')[0];
+	const killTrigger = game.spawnEntity(EntityKillTrigger, runner.pos.x, runner.pos.y, {
+		size: {x: 16, y: 16}
+	});
+
+	assert.equal(killTrigger instanceof ig.EntityTrigger, true);
+	assert.equal(killTrigger._wmScalable, true);
+	assert.equal(killTrigger.checkAgainst, ig.Entity.TYPE.A);
+	assert.equal(killTrigger.collides, ig.Entity.COLLIDES.NEVER);
+
+	game.checkEntities();
+
+	assert.equal(runner._killed, true);
+	assert.equal(game.state, 'lost');
+	assert.equal(game.runner, null);
+	assert.equal(game.getEntitiesByType('EntityRunnerDead').length, 1);
+});
+
 test('autorunner spikes register as a scalable runner hazard and repeat when drawn', async () => {
 	installBrowserLikeGlobals();
 

@@ -12,6 +12,7 @@ import './entities/runner.js';
 import './entities/spikes.js';
 import './entities/levelchange.js';
 import './entities/trigger.js';
+import './entities/kill-trigger.js';
 
 const STORAGE_KEY = 'theseus-001-autorunner-best';
 
